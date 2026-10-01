@@ -8,11 +8,11 @@
   <meta property="og:title" content="OpenVLHarness: Real-World Visual Agentic Tool-Use with Multimodal Memory">
   <meta property="og:description" content="A capability layer + persistent multimodal memory lifts six MLLM backbones by 9.2–12.6 points across 23 benchmarks.">
   <meta property="og:type" content="website">
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cg fill='none' stroke='%232653c1' stroke-width='3.2' stroke-linecap='round'%3E%3Cpath d='M3 11V3h8M21 3h8v8M29 21v8h-8M11 29H3v-8'/%3E%3C/g%3E%3Ccircle cx='16' cy='16' r='5' fill='%23c9520e'/%3E%3C/svg%3E">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22 viewBox%3D%220 0 32 32%22%3E%3Cdefs%3E%3CclipPath id%3D%22c%22%3E%3Crect x%3D%2211.2%22 y%3D%2210.4%22 width%3D%229.6%22 height%3D%2211.2%22 rx%3D%222.2%22%2F%3E%3C%2FclipPath%3E%3C%2Fdefs%3E%3Cg fill%3D%22none%22 stroke%3D%22%232653c1%22 stroke-width%3D%222.8%22 stroke-linecap%3D%22round%22 stroke-linejoin%3D%22round%22%3E%3Cpath d%3D%22M10.5 4.5H9.8a2.8 2.8 0 0 0-2.8 2.8v5.2a3.5 3.5 0 0 1-3.5 3.5 3.5 3.5 0 0 1 3.5 3.5v5.2a2.8 2.8 0 0 0 2.8 2.8h.7%22%2F%3E%3Cpath d%3D%22M21.5 4.5h.7A2.8 2.8 0 0 1 25 7.3v5.2a3.5 3.5 0 0 0 3.5 3.5 3.5 3.5 0 0 0-3.5 3.5v5.2a2.8 2.8 0 0 1-2.8 2.8h-.7%22%2F%3E%3C%2Fg%3E%3Cg clip-path%3D%22url%28%23c%29%22%3E%3Crect x%3D%2211.2%22 y%3D%2210.4%22 width%3D%229.6%22 height%3D%222.9%22 fill%3D%22%232a1b5c%22%2F%3E%3Crect x%3D%2211.2%22 y%3D%2213.2%22 width%3D%229.6%22 height%3D%222.9%22 fill%3D%22%238a2f6f%22%2F%3E%3Crect x%3D%2211.2%22 y%3D%2216%22 width%3D%229.6%22 height%3D%222.9%22 fill%3D%22%23d4552a%22%2F%3E%3Crect x%3D%2211.2%22 y%3D%2218.8%22 width%3D%229.6%22 height%3D%222.9%22 fill%3D%22%23f1b33c%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="static/css/style.css?v=10">
+  <link rel="stylesheet" href="static/css/style.css?v=11">
   <script>
     try { var t = localStorage.getItem('ovh-theme'); if (t) document.documentElement.setAttribute('data-theme', t); } catch (e) {}
   </script>
@@ -56,7 +56,7 @@
 <nav class="nav">
   <div class="wrap">
     <a class="brand" href="#top">
-      <svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M3 11V3h8M21 3h8v8M29 21v8h-8M11 29H3v-8"/></g><circle cx="16" cy="16" r="5" fill="var(--ev)"/></svg>
+      <svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true"><defs><clipPath id="bmClip"><rect x="11.4" y="10.6" width="9.2" height="10.8" rx="2.2"/></clipPath></defs><g fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path class="bm-l" d="M10.5 4.5H9.8a2.8 2.8 0 0 0-2.8 2.8v5.2a3.5 3.5 0 0 1-3.5 3.5 3.5 3.5 0 0 1 3.5 3.5v5.2a2.8 2.8 0 0 0 2.8 2.8h.7"/><path class="bm-r" d="M21.5 4.5h.7A2.8 2.8 0 0 1 25 7.3v5.2a3.5 3.5 0 0 0 3.5 3.5 3.5 3.5 0 0 0-3.5 3.5v5.2a2.8 2.8 0 0 1-2.8 2.8h-.7"/></g><g clip-path="url(#bmClip)"><rect class="bm-b" x="11.4" y="10.6" width="9.2" height="2.75" fill="#2a1b5c"/><rect class="bm-b" x="11.4" y="13.3" width="9.2" height="2.75" fill="#8a2f6f"/><rect class="bm-b" x="11.4" y="16" width="9.2" height="2.75" fill="#d4552a"/><rect class="bm-b" x="11.4" y="18.7" width="9.2" height="2.75" fill="#f1b33c"/></g></svg>
       OpenVLHarness
     </a>
     <div class="nav-links">
@@ -82,7 +82,7 @@
   <div class="wrap">
     <div>
       <div class="title-box">
-        <div class="det-box" id="detBox"><span class="det-label">harness · 0.99</span><i></i><i></i><i></i><i></i></div>
+        <div class="det-box" id="detBox"><span class="det-label" aria-hidden="true"><b>Visual_Grounding_Tool</b> · "pill" → 134 objects</span><i></i><i></i><i></i><i></i></div>
         <h1>Open<span class="vl">VL</span>Harness</h1>
       </div>
     </div>
@@ -113,7 +113,7 @@
 
     <div class="hero-charts">
       <div class="card chart-card reveal">
-        <div class="chart-title">Average Performance across 23 benchmarks</div>
+        <div class="chart-title">Average over 23 benchmarks <span class="chart-sub">Base vs. + OpenVLHarness</span></div>
         <div class="legend">
           <span><i style="background:var(--s-base)"></i>Base MLLM</span>
           <span><i style="background:var(--s-ours)"></i>+ OpenVLHarness</span>
@@ -121,7 +121,7 @@
         <div class="chart" id="heroBars" role="img" aria-label="Grouped bar chart: average score of six backbones with and without OpenVLHarness"></div>
       </div>
       <div class="card chart-card reveal">
-        <div class="chart-title">Score vs. cost: OpenVLHarness sets the frontier</div>
+        <div class="chart-title">GPT-6 Luna: score vs. cost <span class="chart-sub">12 benchmarks · labels: reasoning effort</span></div>
         <div class="legend" id="paretoLegend"></div>
         <div class="chart" id="heroPareto" role="img" aria-label="Line chart of average score versus model-token cost for four methods across four reasoning-effort settings"></div>
       </div>
@@ -133,46 +133,47 @@
 <section class="block" id="method">
   <div class="wrap">
     <div class="sec-head reveal">
-      <span class="sec-tag">METHOD · LIVE EXAMPLE</span>
-      <h2>A capability layer and a memory that remembers pixels</h2>
-      <p class="lead">Step through one real trajectory: <em>"How far apart are the window and cabinet centers?"</em> Watch each tool call pass through the capability layer, come back as rendered evidence, and land in persistent memory, where the coding agent can compute over it.</p>
+      <span class="sec-tag">METHOD</span>
+      <h2>Capability layer and persistent multimodal memory</h2>
+      <p class="lead">Replay of recorded trajectories. Select an example; click a panel to expand it.</p>
+    </div>
+
+    <div class="tp-pick reveal" id="tpPick">
+      <div class="seg tp-dom" id="tpDomain" role="group" aria-label="Task domain"></div>
+      <div class="tp-strip" id="tpStrip" role="listbox" aria-label="Examples"></div>
     </div>
 
     <div class="card method-fig reveal" id="methodFig">
+      <div class="tp-head" id="tpHead"></div>
       <div class="mf-grid">
         <div class="mf-main">
           <div class="mf-row top">
             <div class="box b-user" id="mfUser">
-              <h5><svg class="ico"><use href="#i-eye"/></svg>User input</h5>
-              <div class="q">How far apart are the window and cabinet centers?</div>
-              <div class="thumbs">
-                <figure><img src="static/images/method/input_image_1.png" alt="Input image 1: office corner with bin and cabinet"><figcaption>input_image_1</figcaption></figure>
-                <figure><img src="static/images/method/input_image_2.png" alt="Input image 2: printer and window"><figcaption>input_image_2</figcaption></figure>
-                <figure><img src="static/images/method/input_image_3.png" alt="Input image 3: printer above cabinets"><figcaption>input_image_3</figcaption></figure>
-              </div>
-              <div class="final" id="mfFinal">Final answer: <span class="ans" id="mfAns">…</span></div>
+              <h5><svg class="ico"><use href="#i-eye"/></svg>User input<button type="button" class="xp" data-x="user" aria-label="Expand"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h6v6M10 20H4v-6M20 4l-7 7M4 20l7-7"/></svg></button></h5>
+              <div class="q" id="mfQ"></div>
+              <div class="mk-legend" id="mfMk"></div>
+              <div class="thumbs" id="mfThumbs"></div>
+              <div class="final" id="mfFinal">Answer: <span class="ans" id="mfAns">…</span><span class="gt" id="mfGt"></span></div>
             </div>
             <div class="box b-orch" id="mfOrch">
-              <div>
-                <svg class="brain"><use href="#i-brain"/></svg>
-                <div class="t">MLLM<br>Orchestrator</div>
-                <div class="st" id="mfOrchSt">idle</div>
-              </div>
+              <h5><svg class="ico brain"><use href="#i-brain"/></svg>MLLM orchestrator<button type="button" class="xp" data-x="orch" aria-label="Expand"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h6v6M10 20H4v-6M20 4l-7 7M4 20l7-7"/></svg></button></h5>
+              <div class="orch-st"><span class="st" id="mfOrchSt">idle</span><span class="tok" id="mfTok"></span></div>
+              <div class="thought" id="mfThought" aria-live="off"></div>
             </div>
             <div class="box b-env" id="mfEnv">
-              <h5>Environment Update</h5>
+              <h5>Environment Update<button type="button" class="xp" data-x="env" aria-label="Expand"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h6v6M10 20H4v-6M20 4l-7 7M4 20l7-7"/></svg></button></h5>
               <div class="mono-box" id="mfEnvTxt"></div>
             </div>
           </div>
 
           <div class="mf-row mid">
             <div class="box b-call" id="mfCall">
-              <h5>Tool call</h5>
-              <div class="mono-box" id="mfCallTxt"><span class="ev-empty">waiting for the orchestrator…</span></div>
+              <h5>Tool call<button type="button" class="xp" data-x="call" aria-label="Expand"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h6v6M10 20H4v-6M20 4l-7 7M4 20l7-7"/></svg></button></h5>
+              <div class="mono-box" id="mfCallTxt"></div>
             </div>
             <div class="box b-ev" id="mfEv">
-              <h5 style="color:var(--ev)">Rendered tool evidence</h5>
-              <div id="mfEvBody"><span class="ev-empty">Raw outputs (masks, arrays, poses) are rendered into images + concise text the model can inspect.</span></div>
+              <h5 style="color:var(--ev)">Rendered tool evidence<button type="button" class="xp" data-x="ev" aria-label="Expand"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h6v6M10 20H4v-6M20 4l-7 7M4 20l7-7"/></svg></button></h5>
+              <div id="mfEvBody"></div>
             </div>
           </div>
 
@@ -216,52 +217,61 @@
         </div>
 
         <aside class="mem" id="mfMem">
-          <h5><svg class="ico" style="width:16px;height:16px"><use href="#i-mem"/></svg>Persistent Multimodal Memory</h5>
-          <div class="mem-io"><span id="ioStore">↓ store results</span><span id="ioFetch">↑ fetch artifacts</span></div>
+          <h5><svg class="ico" style="width:16px;height:16px"><use href="#i-mem"/></svg>Persistent multimodal memory<button type="button" class="xp" data-x="mem" aria-label="Expand"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h6v6M10 20H4v-6M20 4l-7 7M4 20l7-7"/></svg></button></h5>
+          <div class="mem-io"><span id="ioStore">↓ store</span><span id="ioFetch">↑ fetch</span></div>
           <div class="mem-sec">
-            <div class="h"><svg style="width:13px;height:13px"><use href="#i-img"/></svg>Image artifacts</div>
+            <div class="h"><svg style="width:13px;height:13px"><use href="#i-img"/></svg>Image artifacts<span class="cnt" id="memCount"></span></div>
             <div class="mem-imgs" id="memImgs"></div>
           </div>
           <div class="mem-sec">
-            <div class="h"><svg style="width:13px;height:13px"><use href="#i-data"/></svg>Structured data</div>
+            <div class="h"><svg style="width:13px;height:13px"><use href="#i-data"/></svg>Structured data bindings</div>
             <div class="mem-data" id="memData"></div>
           </div>
           <div class="mem-sec">
             <div class="h"><svg style="width:13px;height:13px"><use href="#i-link"/></svg>Web references</div>
-            <div class="mem-web">webpage_url_k · registered when search is used</div>
+            <div class="mem-web" id="memWeb"></div>
           </div>
         </aside>
       </div>
 
       <div class="mf-controls">
         <button class="ctl" id="mfPrev" aria-label="Previous step"><svg><use href="#i-prev"/></svg></button>
-        <button class="ctl play-btn" id="mfPlay" aria-label="Play or pause"><svg><use href="#i-pause"/></svg></button>
+        <button class="ctl play-btn" id="mfPlay" aria-label="Pause"><svg><use href="#i-pause"/></svg></button>
         <button class="ctl" id="mfNext" aria-label="Next step"><svg><use href="#i-next"/></svg></button>
+        <button class="ctl speed" id="mfSpeed" aria-pressed="false" aria-label="Playback speed">1×</button>
         <div class="steps" id="mfSteps"></div>
       </div>
       <div class="mf-caption" id="mfCaption"><div class="s"></div><div class="t"></div><p class="d"></p></div>
+    </div>
+
+    <div class="tp-x" id="tpX" hidden>
+      <div class="tp-x-bd" data-close></div>
+      <div class="tp-x-dlg" role="dialog" aria-modal="true" aria-labelledby="tpXTitle">
+        <div class="tp-x-top"><h3 id="tpXTitle"></h3><button class="ctl" data-close aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
+        <div class="tp-x-body" id="tpXBody"></div>
+      </div>
     </div>
 
     <div class="pillars">
       <div class="card pillar t reveal">
         <div class="pi"><svg><use href="#i-layers"/></svg></div>
         <h3>Task-level tool interfaces</h3>
-        <p>Each capability is defined by what it does: its typed inputs and the evidence it exposes. Backends are wrapped behind it, so Grounding can run on SAM 3 or Grounding DINO, and OCR on PaddleOCR-VL or DeepSeek-OCR, without changing the orchestrator's vocabulary.</p>
+        <p>A capability is defined by its operation, typed inputs, and the evidence it exposes. Backends are interchangeable: Visual Grounding runs on SAM 3 or Grounding DINO, OCR on PaddleOCR-VL or DeepSeek-OCR.</p>
       </div>
       <div class="card pillar a reveal">
         <div class="pi"><svg><use href="#i-eye"/></svg></div>
         <h3>Model-facing evidence rendering</h3>
-        <p>An RLE mask is precise but unreadable to a model. Every capability ships an output processor that turns raw results into a labeled overlay, a colorized depth map, or a trajectory plot, plus a concise description and compact structured fields.</p>
+        <p>An output processor renders each raw result into a model-facing observation: a labeled mask overlay, a colorized depth map, or a trajectory plot, with a concise description and compact structured fields.</p>
       </div>
       <div class="card pillar v reveal">
         <div class="pi"><svg><use href="#i-mem"/></svg></div>
         <h3>Persistent multimodal memory</h3>
-        <p>An artifact registry separates payload from handle. Images (<code>tool_image_6</code>), data bindings (<code>depth_result</code>), and web references (<code>webpage_url_1</code>) persist across turns, and the Python Coding Agent receives them as live variables.</p>
+        <p>A per-query artifact registry separates payloads from handles. Images (<code>tool_generated_image_n</code>), data bindings (<code>depth_result</code>), and web references (<code>webpage_url_n</code>) persist across turns; the Python Coding Agent receives bindings as variables.</p>
       </div>
     </div>
 
     <details class="card cap-table reveal">
-      <summary>All nine capabilities, their interfaces and swappable backends</summary>
+      <summary>Nine capabilities: interfaces and backends</summary>
       <table>
         <thead><tr><th>Capability</th><th>Interface</th><th>Backends (default in bold)</th></tr></thead>
         <tbody>
@@ -285,8 +295,8 @@
   <div class="wrap">
     <div class="sec-head reveal">
       <span class="sec-tag">PLAYGROUND</span>
-      <h2>Try yours!</h2>
-      <p class="lead">Upload an image, ask a question, and watch every tool call and memory artifact as the harness works.</p>
+      <h2>Playground</h2>
+      <p class="lead">Interactive demo with user-provided images. Coming soon.</p>
     </div>
       <!-- TODO(playground): placeholder UI, not wired to a backend -->
       <div class="card playground reveal">
@@ -318,7 +328,7 @@
             <div class="ghost-step"><span class="gi"></span><span class="gl" style="width:64%"></span></div>
             <div class="ghost-step"><span class="gi"></span><span class="gl" style="width:30%"></span></div>
             <div class="pg-overlay">
-              <div><strong>Interactive playground</strong><span>Upload an image, ask a question, and watch every tool call and memory artifact as the harness works.</span></div>
+              <div><strong>Coming soon</strong></div>
             </div>
           </div>
         </div>
@@ -335,19 +345,19 @@
   <div class="wrap">
     <div class="sec-head reveal">
       <span class="sec-tag">INSIGHTS</span>
-      <h2>What we found</h2>
-      <p class="lead">Five takeaways from 23 benchmarks, seven backbones, component ablations, and a failure study of 9,980 trajectories.</p>
+      <h2>Findings</h2>
+      <p class="lead">23 benchmarks, seven backbones, component ablations, and a failure analysis of 9,980 trajectories.</p>
     </div>
 
     <!-- 1 -->
     <div class="insight">
       <div class="ins-text reveal">
         <div class="ins-num">INSIGHT 01</div>
-        <h3>Gains hold on every backbone, across all four domains.</h3>
-        <p>OpenVLHarness improves the average of every backbone we tried, from an 8B open model to frontier APIs. With <strong>GPT-6 Sol it improves all 23 of 23 benchmarks</strong>. The biggest jumps come where the model needs evidence it cannot produce itself: exhaustive counting, box-level grounding, and multimodal search.</p>
+        <h3>Consistent gains across backbones and domains</h3>
+        <p>Average gains of +9.2 to +12.6 points over the base model across six backbones. With GPT-6 Sol, every one of the 23 benchmarks improves. Gains are largest on counting, grounding, and multimodal search.</p>
         <div class="ins-stat">
           <div><div class="n">23 / 23</div><div class="l">benchmarks improved with GPT-6 Sol</div></div>
-          <div><div class="n">+11.2</div><div class="l">average gain with GPT-6 Sol over 23 benchmarks (54.3 → 65.5)</div></div>
+          <div><div class="n">+11.2</div><div class="l">GPT-6 Sol, 23-benchmark average (54.3 → 65.5)</div></div>
         </div>
       </div>
       <div class="card ins-fig reveal">
@@ -366,11 +376,11 @@
     <div class="insight flip">
       <div class="ins-text reveal">
         <div class="ins-num">INSIGHT 02</div>
-        <h3>Tool access isn't enough. The harness design matters.</h3>
-        <p>Existing visual tool-use harnesses often fall <em>below</em> the no-tool baseline. With GPT-6 Luna, <strong>Codex averages 41.5, under the base model's 43.2</strong>; OpenVLHarness reaches 55.8. On Qwen2.5-VL-7B, our training-free harness also beats agents that were <strong>fine-tuned</strong> for tool use.</p>
+        <h3>Effective tool use depends on the harness</h3>
+        <p>With GPT-6 Luna, Codex (41.5) and Visual Sketchpad (42.8) average below the no-tool baseline (43.2); OpenVLHarness reaches 55.8. On Qwen2.5-VL-7B, OpenVLHarness (35.6) exceeds the training-based baselines without updating model weights.</p>
         <div class="ins-stat">
-          <div><div class="n">+13.8</div><div class="l">over the best training-free baseline (OctoTools) on Qwen3-VL-8B</div></div>
-          <div><div class="n">+6.2</div><div class="l">over the best fine-tuned agent on Qwen2.5-VL-7B</div></div>
+          <div><div class="n">+13.8</div><div class="l">over OctoTools, the strongest training-free baseline (Qwen3-VL-8B)</div></div>
+          <div><div class="n">+6.2</div><div class="l">over PixelReasoner, the strongest training-based baseline (Qwen2.5-VL-7B)</div></div>
         </div>
       </div>
       <div class="card ins-fig reveal">
@@ -384,11 +394,11 @@
     <div class="insight">
       <div class="ins-text reveal">
         <div class="ins-num">INSIGHT 03</div>
-        <h3>Evidence and reasoning are complementary.</h3>
-        <p>Raising reasoning effort helps every method, but the base model and Codex flatten out. At max effort they reach 58.3 and 57.4, still <strong>below OpenVLHarness at medium effort (62.9)</strong>, which costs less than half as much. Give the harness more reasoning and it keeps climbing, to <strong>68.6</strong>.</p>
+        <h3>Evidence acquisition complements reasoning effort</h3>
+        <p>GPT-6 Luna on 12 benchmarks. At max effort, Base and Codex reach 58.3 and 57.4, below OpenVLHarness at medium effort (62.9) at less than half their model-token cost. OpenVLHarness reaches 66.6 at high and 68.6 at max effort.</p>
         <div class="ins-stat">
-          <div><div class="n">62.9</div><div class="l">ours at medium effort, $0.94 / 1k questions</div></div>
-          <div><div class="n">58.5</div><div class="l">best non-harness setting (Visual Sketchpad, max) at $4.28</div></div>
+          <div><div class="n">62.9</div><div class="l">OpenVLHarness, medium effort, $0.94 / 1k questions</div></div>
+          <div><div class="n">58.5</div><div class="l">best baseline setting (Visual Sketchpad, max), $4.28 / 1k questions</div></div>
         </div>
       </div>
       <div class="card ins-fig reveal">
@@ -402,11 +412,11 @@
     <div class="insight flip">
       <div class="ins-text reveal">
         <div class="ins-num">INSIGHT 04</div>
-        <h3>Both mechanisms pull their weight.</h3>
-        <p>Starting from the bare model, we add raw tool access, then the capability layer, then memory. Each step adds points. Text-only memory barely helps (+0.7 / +0.3). The jump comes when tool-generated <strong>images become reusable handles</strong> (+2.2 / +3.4), and it is largest on search and deep research (+6.2 / +3.5).</p>
+        <h3>Both mechanisms contribute</h3>
+        <p>Components are added cumulatively to the no-tool baseline (Qwen3-VL-8B / 32B, overall average): raw tool access +3.8 / +4.3, capability layer +3.4 / +3.2, textual memory +0.7 / +0.3, multimodal memory +2.2 / +3.4. The multimodal-memory step is largest on visual search and deep research (+6.2 / +3.5).</p>
         <div class="ins-stat">
-          <div><div class="n">+3.4 / +3.2</div><div class="l">from the capability layer (8B / 32B)</div></div>
-          <div><div class="n">+2.2 / +3.4</div><div class="l">from multimodal (vs. textual) memory</div></div>
+          <div><div class="n">+3.4 / +3.2</div><div class="l">capability layer (8B / 32B)</div></div>
+          <div><div class="n">+2.2 / +3.4</div><div class="l">multimodal over textual memory (8B / 32B)</div></div>
         </div>
       </div>
       <div class="card ins-fig reveal">
@@ -422,9 +432,9 @@
     <div class="insight">
       <div class="ins-text reveal">
         <div class="ins-num">INSIGHT 05</div>
-        <h3>Diagnose failures, then specialize the right way.</h3>
-        <p>A Kimi K3 critic labeled 9,980 failed Qwen3-VL-8B trajectories (92% agreement with humans). Failures differ by domain: <strong>72%</strong> of counting failures are wrong tool outputs in crowded scenes, <strong>49%</strong> of search failures are a tool that was never called, and only <strong>2–8%</strong> are evidence the model ignored.</p>
-        <p>The critic's proposed remedies tell you which knob to turn. Where <strong>harness text</strong> edits dominate, harness search wins. Where <strong>new tools</strong> dominate, tool generation wins, with no weight updates.</p>
+        <h3>Failure analysis guides specialization</h3>
+        <p>Kimi K3 critiques 9,980 failed Qwen3-VL-8B trajectories (92% agreement with human labels on 100 samples). Primary causes differ by domain: incorrect tool output accounts for 72% of counting and grounding failures, and an omitted tool call for 49% of search failures. Unusable or ignored correct tool outputs account for 2–8%.</p>
+        <p>Harness search improves ERQA and RealWorldQA (+4.1, +3.7), where harness-text remedies dominate. Tool generation improves SparBench and FREAK-VQA (+8.2, +4.5), where task-specific-tool remedies dominate. Neither updates model weights.</p>
       </div>
       <div class="card ins-fig reveal">
         <div class="chart-kicker">Qwen3-VL-8B · four datasets with contrasting remedy profiles</div>
@@ -444,8 +454,8 @@
   <div class="wrap">
     <div class="sec-head reveal">
       <span class="sec-tag">EXAMPLES</span>
-      <h2>Real trajectories, every tool call included</h2>
-      <p class="lead">Nineteen full rollouts from the paper's appendix and beyond. Filter by task or capability, then open one to step through the model's reasoning, each tool call, and the evidence it got back.</p>
+      <h2>Trajectories</h2>
+      <p class="lead">19 recorded trajectories (17 from the paper's appendix). Selecting one replays it in the method figure.</p>
     </div>
     <div class="exg-filters reveal">
       <div class="seg" id="exgDomain"></div>
@@ -517,14 +527,15 @@
 
 <footer>
   <div class="wrap">
-    OpenVLHarness · project page template inspired by academic project pages.<br>
+    OpenVLHarness<br>
     Questions? Open an issue on <a href="#" data-placeholder>GitHub</a>.
   </div>
 </footer>
 
 <div class="tip" id="tip"></div>
-<script src="static/js/data.js?v=9"></script>
+<script src="static/js/data.js?v=10"></script>
 <script src="static/js/examples.js?v=9"></script>
-<script src="static/js/main.js?v=10"></script>
+<script src="static/js/main.js?v=11"></script>
+<script src="static/js/player.js?v=1"></script>
 </body>
 </html>

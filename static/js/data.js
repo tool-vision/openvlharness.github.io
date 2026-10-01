@@ -75,13 +75,13 @@ Average|35.99 33.31 32.15 47.14|40.10 38.61 37.66 52.51|43.18 42.78 41.46 55.76|
 
   // Harness comparisons (Table 1 averages + Table 8)
   const HARNESS = [
-    { id: 'q8', label: 'Qwen3-VL-8B', note: 'Training-free harnesses on the same backbone. Mean of three runs, 23 benchmarks.',
+    { id: 'q8', label: 'Qwen3-VL-8B', note: 'Training-free harnesses, same backbone. 23 benchmarks, mean of three runs.',
       bars: [['Base (no tools)', 35.99, '--s-base'], ['OctoTools', 33.31, '--s-octo'], ['Visual Sketchpad', 32.15, '--s-vs'], ['OpenVLHarness', 47.14, '--s-ours']] },
-    { id: 'q32', label: 'Qwen3-VL-32B', note: 'Training-free harnesses on the same backbone. Mean of three runs, 23 benchmarks.',
+    { id: 'q32', label: 'Qwen3-VL-32B', note: 'Training-free harnesses, same backbone. 23 benchmarks, mean of three runs.',
       bars: [['Base (no tools)', 40.10, '--s-base'], ['OctoTools', 38.61, '--s-octo'], ['Visual Sketchpad', 37.66, '--s-vs'], ['OpenVLHarness', 52.51, '--s-ours']] },
-    { id: 'luna', label: 'GPT-6 Luna', note: 'Codex runs in code mode with web search disabled. A coding-agent harness does not automatically help multimodal reasoning.',
+    { id: 'luna', label: 'GPT-6 Luna', note: 'Codex: code mode, web search disabled. 23 benchmarks, single run.',
       bars: [['Base (no tools)', 43.18, '--s-base'], ['Visual Sketchpad', 42.78, '--s-vs'], ['Codex', 41.46, '--s-codex'], ['OpenVLHarness', 55.76, '--s-ours']] },
-    { id: 'q25', label: 'vs. fine-tuned (Qwen2.5-VL-7B)', note: 'AdaReasoner, PixelReasoner and DeepEyesV2 fine-tune the backbone for tool use; OpenVLHarness uses the same weights out of the box.',
+    { id: 'q25', label: 'Qwen2.5-VL-7B (training-based)', note: 'AdaReasoner, PixelReasoner and DeepEyesV2 fine-tune the backbone; OpenVLHarness uses the original weights. 23 benchmarks.',
       bars: [['AdaReasoner', 27.54, '--s-other', 'fine-tuned'], ['PixelReasoner', 29.34, '--s-other', 'fine-tuned'], ['DeepEyesV2', 26.66, '--s-other', 'fine-tuned'], ['OpenVLHarness', 35.58, '--s-ours', 'training-free']] },
   ];
 
