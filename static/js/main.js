@@ -193,7 +193,7 @@
     pts.forEach(p => { if (p[1] > best) { front.push(p); best = p[1]; } });
     const fpath = front.map((p, i) => (i ? 'L' : 'M') + x(p[0]) + ',' + y(p[1])).join(' ') + ` L${W - m.r},${y(best)}`;
     // region dominated by the frontier
-    S('path', { d: fpath + ` L${W - m.r},${Hh - m.b} L${x(front[0][0])},${Hh - m.b} Z`, class: 'anim-fade', style: 'fill:var(--teal-soft);transition-delay:1.4s;fill-opacity:.6' }, svg);
+    S('path', { d: fpath + ` L${W - m.r},${Hh - m.b} L${x(front[0][0])},${Hh - m.b} Z`, class: 'anim-fade', style: 'fill:var(--cap-soft);transition-delay:1.4s;fill-opacity:.6' }, svg);
     S('path', { d: fpath, class: 'anim-fade', style: 'fill:none;stroke:var(--ink-3);stroke-width:1.5;stroke-dasharray:4 4;transition-delay:1.6s' }, svg);
     D.EFFORT.forEach((s, si) => {
       const isOurs = s.key === 'ours';
@@ -363,8 +363,8 @@
     // gap annotation: ours@medium vs best baseline@max
     const bestMax = Math.max(...D.EFFORT.filter(s => s.key !== 'ours').map(s => s.score[3]));
     const g = S('g', { class: 'anim-fade', style: 'transition-delay:1.6s' }, svg);
-    S('line', { x1: x(0), x2: x(3), y1: y(D.EFFORT[3].score[0]), y2: y(D.EFFORT[3].score[0]), style: 'stroke:var(--teal);stroke-width:1;stroke-dasharray:3 4' }, g);
-    S('text', { x: x(3) - 2, y: y(D.EFFORT[3].score[0]) + 15, 'text-anchor': 'end', class: 'val-label', style: 'font-size:10.5px;fill:var(--teal)', text: `ours @ medium (62.9) > best baseline @ max (${bestMax.toFixed(1)})` }, g);
+    S('line', { x1: x(0), x2: x(3), y1: y(D.EFFORT[3].score[0]), y2: y(D.EFFORT[3].score[0]), style: 'stroke:var(--cap);stroke-width:1;stroke-dasharray:3 4' }, g);
+    S('text', { x: x(3) - 2, y: y(D.EFFORT[3].score[0]) + 15, 'text-anchor': 'end', class: 'val-label', style: 'font-size:10.5px;fill:var(--cap)', text: `ours @ medium (62.9) > best baseline @ max (${bestMax.toFixed(1)})` }, g);
     D.EFFORT.forEach((s, si) => {
       const isOurs = s.key === 'ours';
       const d = s.score.map((v, i) => (i ? 'L' : 'M') + x(i) + ',' + y(v)).join(' ');
@@ -405,7 +405,7 @@
       else S('rect', { x: x0, y: y(v), width: bw, height: y(0) - y(v), rx: 4, class: 'anim-bar', style: `fill:var(--s-base);transition-delay:${delay}ms` }, svg);
       if (i) {
         const yTop = y(Math.max(v, prev)), hgt = Math.max(2, Math.abs(y(v) - y(prev)));
-        const col = d >= 0 ? (last ? 'var(--violet)' : 'var(--teal)') : 'var(--neg)';
+        const col = d >= 0 ? (last ? 'var(--mem)' : 'var(--cap)') : 'var(--neg)';
         S('rect', { x: x0, y: yTop, width: bw, height: hgt, rx: 3, class: 'anim-bar', style: `fill:${col};transition-delay:${delay + 200}ms;transform-origin:50% ${d >= 0 ? '100%' : '0'}` }, svg);
         // connector from previous bar top
         S('line', { x1: x0 - (gw - bw), x2: x0, y1: y(prev), y2: y(prev), class: 'anim-fade', style: `stroke:var(--ink-3);stroke-width:1;stroke-dasharray:2 3;transition-delay:${delay}ms` }, svg);
@@ -448,9 +448,9 @@
     S('text', { x: narrow ? 0 : gx0, y: narrow ? gTop - 22 : 14, class: 'ax-title', style: 'font-weight:600;fill:var(--ink-2)', text: 'Gain after specialization (pts)' }, svg);
     const lg2 = S('g', {}, svg);
     const lgy = narrow ? gTop - 8 : 30;
-    S('rect', { x: gx0, y: lgy - 8, width: 10, height: 8, rx: 2, style: 'fill:var(--amber)' }, lg2);
+    S('rect', { x: gx0, y: lgy - 8, width: 10, height: 8, rx: 2, style: 'fill:var(--ev)' }, lg2);
     S('text', { x: gx0 + 14, y: lgy, class: 'ax-label', style: 'font-size:11px', text: 'harness search' }, lg2);
-    S('rect', { x: gx0 + 104, y: lgy - 8, width: 10, height: 8, rx: 2, style: 'fill:var(--teal)' }, lg2);
+    S('rect', { x: gx0 + 104, y: lgy - 8, width: 10, height: 8, rx: 2, style: 'fill:var(--cap)' }, lg2);
     S('text', { x: gx0 + 118, y: lgy, class: 'ax-label', style: 'font-size:11px', text: 'tool generation' }, lg2);
 
     // zero line + ticks for gains
@@ -465,7 +465,7 @@
       const by = yy + 12, bh = 22;
       S('text', { x: 0, y: narrow ? by - 4 : by + bh / 2 + 4, class: 'cat-label', style: 'font-weight:600;fill:var(--ink)', text: r.name }, svg);
       let acc = 0;
-      [['tool', 'var(--teal)', 'tools'], ['text', 'var(--amber)', 'text'], ['none', 'var(--s-base)', 'none']].forEach(([k, col, lab], j) => {
+      [['tool', 'var(--cap)', 'tools'], ['text', 'var(--ev)', 'text'], ['none', 'var(--s-base)', 'none']].forEach(([k, col, lab], j) => {
         const v = r[k]; if (!v) return;
         const x0 = sx(acc) + (acc ? 1 : 0), x1 = sx(acc + v) - 1;
         const rect = S('rect', { x: x0, y: narrow ? by + 2 : by, width: Math.max(1, x1 - x0), height: bh, rx: 3, class: 'anim-hbar', style: `fill:${col};transition-delay:${i * 120 + j * 160}ms` }, svg);
@@ -476,7 +476,7 @@
       // gains
       const gy = narrow ? gTop + i * rowH : yy;
       if (narrow) S('text', { x: 0, y: gy + 27, class: 'cat-label', style: 'font-weight:600;fill:var(--ink)', text: r.name }, svg);
-      [['hs', 'var(--amber)', 'Harness search'], ['tg', 'var(--teal)', 'Tool generation']].forEach(([k, col, lab], j) => {
+      [['hs', 'var(--ev)', 'Harness search'], ['tg', 'var(--cap)', 'Tool generation']].forEach(([k, col, lab], j) => {
         const v = r[k];
         const y0 = gy + 10 + j * 15, h = 12;
         const xa = Math.min(gx(0), gx(v)), w = Math.max(2, Math.abs(gx(v) - gx(0)));
@@ -612,7 +612,7 @@
         const im = IMGS[s.ev.img];
         b.innerHTML = `<div class="ev"><div><img src="${im.src}" alt="${im.h}"${im.sq ? ' class="sq"' : ''}><div class="cap">${im.h}</div></div><pre>${s.ev.text}</pre></div>`;
       } else if (s.ev && s.ev.code) {
-        b.innerHTML = `<div class="ev" style="grid-template-columns:1fr"><pre>${s.ev.code.replace('→ 1.1957', '<b style="color:var(--teal)">→ d = 1.1957 m</b>')}</pre></div>`;
+        b.innerHTML = `<div class="ev" style="grid-template-columns:1fr"><pre>${s.ev.code.replace('→ 1.1957', '<b style="color:var(--cap)">→ d = 1.1957 m</b>')}</pre></div>`;
       }
       b.firstElementChild && b.firstElementChild.classList.add('swap');
     }

@@ -8,11 +8,11 @@
   <meta property="og:title" content="OpenVLHarness: Real-World Visual Agentic Tool-Use with Multimodal Memory">
   <meta property="og:description" content="A capability layer + persistent multimodal memory lifts six MLLM backbones by 9.2–12.6 points across 23 benchmarks.">
   <meta property="og:type" content="website">
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cg fill='none' stroke='%230c8273' stroke-width='3.2' stroke-linecap='round'%3E%3Cpath d='M3 11V3h8M21 3h8v8M29 21v8h-8M11 29H3v-8'/%3E%3C/g%3E%3Ccircle cx='16' cy='16' r='5' fill='%23c96a0e'/%3E%3C/svg%3E">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cg fill='none' stroke='%232653c1' stroke-width='3.2' stroke-linecap='round'%3E%3Cpath d='M3 11V3h8M21 3h8v8M29 21v8h-8M11 29H3v-8'/%3E%3C/g%3E%3Ccircle cx='16' cy='16' r='5' fill='%23c9520e'/%3E%3C/svg%3E">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="static/css/style.css?v=9">
+  <link rel="stylesheet" href="static/css/style.css?v=10">
   <script>
     try { var t = localStorage.getItem('ovh-theme'); if (t) document.documentElement.setAttribute('data-theme', t); } catch (e) {}
   </script>
@@ -56,7 +56,7 @@
 <nav class="nav">
   <div class="wrap">
     <a class="brand" href="#top">
-      <svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M3 11V3h8M21 3h8v8M29 21v8h-8M11 29H3v-8"/></g><circle cx="16" cy="16" r="5" fill="var(--amber)"/></svg>
+      <svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M3 11V3h8M21 3h8v8M29 21v8h-8M11 29H3v-8"/></g><circle cx="16" cy="16" r="5" fill="var(--ev)"/></svg>
       OpenVLHarness
     </a>
     <div class="nav-links">
@@ -171,7 +171,7 @@
               <div class="mono-box" id="mfCallTxt"><span class="ev-empty">waiting for the orchestrator…</span></div>
             </div>
             <div class="box b-ev" id="mfEv">
-              <h5 style="color:var(--amber)">Rendered tool evidence</h5>
+              <h5 style="color:var(--ev)">Rendered tool evidence</h5>
               <div id="mfEvBody"><span class="ev-empty">Raw outputs (masks, arrays, poses) are rendered into images + concise text the model can inspect.</span></div>
             </div>
           </div>
@@ -429,8 +429,8 @@
       <div class="card ins-fig reveal">
         <div class="chart-kicker">Qwen3-VL-8B · four datasets with contrasting remedy profiles</div>
         <div class="legend">
-          <span><i style="background:var(--teal)"></i>New task-specific tools (A+B+C)</span>
-          <span><i style="background:var(--amber)"></i>Harness text (Y)</span>
+          <span><i style="background:var(--cap)"></i>New task-specific tools (A+B+C)</span>
+          <span><i style="background:var(--ev)"></i>Harness text (Y)</span>
           <span><i style="background:var(--s-base)"></i>No remedy (Z)</span>
         </div>
         <div class="chart" id="remedy" role="img" aria-label="Stacked bars of remedy channel shares and diverging bars of gains from harness search and tool generation"></div>
@@ -489,7 +489,7 @@
       <span class="muted" style="font-size:13px">Scroll horizontally on small screens →</span>
     </div>
     <div class="tbl-wrap reveal"><table class="res" id="resTable"></table></div>
-    <p class="tbl-cap"><b>Bold</b> = best within each backbone group; <span style="text-decoration:underline;text-decoration-color:var(--teal);text-decoration-thickness:2px;text-underline-offset:3px">underline</span> = best across all shown backbones. Qwen3-VL results are means of three runs; GPT-6, GPT-5 and Kimi K3 results are single runs. GPT-5 and Kimi K3 are from the appendix (Table 6).</p>
+    <p class="tbl-cap"><b>Bold</b> = best within each backbone group; <span style="text-decoration:underline;text-decoration-color:var(--cap);text-decoration-thickness:2px;text-underline-offset:3px">underline</span> = best across all shown backbones. Qwen3-VL results are means of three runs; GPT-6, GPT-5 and Kimi K3 results are single runs. GPT-5 and Kimi K3 are from the appendix (Table 6).</p>
   </div>
 </section>
 
@@ -525,6 +525,6 @@
 <div class="tip" id="tip"></div>
 <script src="static/js/data.js?v=9"></script>
 <script src="static/js/examples.js?v=9"></script>
-<script src="static/js/main.js?v=9"></script>
+<script src="static/js/main.js?v=10"></script>
 </body>
 </html>
