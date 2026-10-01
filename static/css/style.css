@@ -382,8 +382,8 @@ details.abstract p { font-size: 15px; color: var(--ink-2); margin-top: 12px; tex
 }
 .mf-main { display: grid; gap: 12px; grid-template-rows: auto auto auto auto; min-width: 0; }
 .mf-row { display: grid; gap: 12px; min-width: 0; }
-.mf-row.top { grid-template-columns: 1.2fr 0.8fr 1.1fr; }
-.mf-row.mid { grid-template-columns: 1fr 1.25fr; }
+.mf-row.top { grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr) minmax(0, 1.1fr); }
+.mf-row.mid { grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr); }
 .box {
   border: 1px solid var(--line); border-radius: 12px; background: var(--surface); padding: 12px 13px;
   transition: border-color .35s, box-shadow .35s, background .35s; position: relative; min-width: 0;
@@ -394,8 +394,8 @@ details.abstract p { font-size: 15px; color: var(--ink-2); margin-top: 12px; tex
 .box.lit-a { box-shadow: 0 0 0 3px var(--amber-soft); border-color: var(--amber); }
 .box.lit-v { box-shadow: 0 0 0 3px var(--violet-soft); border-color: var(--violet); }
 .b-user .q { font-size: 13.5px; line-height: 1.4; margin-bottom: 8px; color: var(--ink); }
-.thumbs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
-.thumbs figure { margin: 0; }
+.thumbs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
+.thumbs figure { margin: 0; min-width: 0; }
 .thumbs img { width: 100%; aspect-ratio: 4/3; object-fit: cover; border-radius: 6px; border: 1px solid var(--line); }
 .thumbs figcaption { font-family: var(--f-mono); font-size: 9.5px; color: var(--ink-3); margin-top: 2px; text-align: center; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .final {
