@@ -1,0 +1,583 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>OpenVLHarness</title>
+  <meta name="description" content="OpenVLHarness: Real-World Visual Agentic Tool-Use with Multimodal Memory. A training-free harness that gives any multimodal LLM a capability layer and persistent multimodal memory.">
+  <meta property="og:title" content="OpenVLHarness: Real-World Visual Agentic Tool-Use with Multimodal Memory">
+  <meta property="og:description" content="A capability layer + persistent multimodal memory lifts six MLLM backbones by 9.2–12.6 points across 23 benchmarks.">
+  <meta property="og:type" content="website">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cg fill='none' stroke='%230c8273' stroke-width='3.2' stroke-linecap='round'%3E%3Cpath d='M3 11V3h8M21 3h8v8M29 21v8h-8M11 29H3v-8'/%3E%3C/g%3E%3Ccircle cx='16' cy='16' r='5' fill='%23c96a0e'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="static/css/style.css?v=7">
+  <script>
+    try { var t = localStorage.getItem('ovh-theme'); if (t) document.documentElement.setAttribute('data-theme', t); } catch (e) {}
+  </script>
+</head>
+<body>
+
+<!-- ============ icon sprite ============ -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-zoom" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5 21 21M10.5 7.5v6M7.5 10.5h6"/></symbol>
+    <symbol id="i-ground" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 8V3h5M16 3h5v5M21 16v5h-5M8 21H3v-5"/><rect x="8" y="8" width="8" height="8" rx="1.5" transform="rotate(45 12 12)"/></symbol>
+    <symbol id="i-ocr" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 7V3h4M17 3h4v4M21 17v4h-4M7 21H3v-4"/><path d="M8 8h8M8 12h8M8 16h5"/></symbol>
+    <symbol id="i-depth" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="3" y="9" width="12" height="12" rx="2"/><path d="M7 9V5.5A2.5 2.5 0 0 1 9.5 3H19a2 2 0 0 1 2 2v9.5a2.5 2.5 0 0 1-2.5 2.5H15"/></symbol>
+    <symbol id="i-camera" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M3 8.5A1.5 1.5 0 0 1 4.5 7h2.3L8.5 4.5h5L15.2 7h2.3A1.5 1.5 0 0 1 19 8.5V17a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 3 17z"/><circle cx="11" cy="12.5" r="3"/><path d="M19.5 12.5 22 10M19.5 12.5V16" stroke-linecap="round"/></symbol>
+    <symbol id="i-tsearch" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M13 21H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h8l4 4v4"/><path d="M8 8h5M8 12h4"/><circle cx="17" cy="16.5" r="3"/><path d="m19.2 18.7 2 2"/></symbol>
+    <symbol id="i-isearch" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v4"/><path d="m3 15 4-4 4 4"/><circle cx="14" cy="8" r="1.4"/><circle cx="17" cy="16" r="3"/><path d="m19.2 18.2 2 2"/></symbol>
+    <symbol id="i-web" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="15" rx="2"/><path d="M3 8.5h18M6 6.3h.01M8.5 6.3h.01"/><path d="m12 11 6 2.5-2.5 1-1 2.5z" fill="currentColor"/></symbol>
+    <symbol id="i-code" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="m7 10 3 2.5L7 15M12.5 15H17"/></symbol>
+    <symbol id="i-brain" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5a3 3 0 0 0-5.6-1.5A3 3 0 0 0 3.5 7.5a3.2 3.2 0 0 0 .4 5.5A3.3 3.3 0 0 0 6 18.5a3 3 0 0 0 6 .5z"/><path d="M12 5v14"/><path d="M12 9h3.5M12 14h4.5M15.5 9l1.5-2M16.5 14l1.8 1.8"/><circle cx="17.6" cy="6.2" r="1.3"/><circle cx="19.1" cy="16.6" r="1.3"/><circle cx="16.2" cy="9" r=".3"/></symbol>
+    <symbol id="i-mem" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><ellipse cx="12" cy="5.5" rx="8" ry="2.5"/><path d="M4 5.5v13c0 1.4 3.6 2.5 8 2.5s8-1.1 8-2.5v-13M4 12c0 1.4 3.6 2.5 8 2.5s8-1.1 8-2.5"/></symbol>
+    <symbol id="i-img" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="9.5" r="1.6"/><path d="m4 18 5.5-5.5L13 16l3-3 4 4"/></symbol>
+    <symbol id="i-data" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M8 3H7a2 2 0 0 0-2 2v4a2 2 0 0 1-2 2 2 2 0 0 1 2 2v5a2 2 0 0 0 2 2h1M16 3h1a2 2 0 0 1 2 2v4a2 2 0 0 0 2 2 2 2 0 0 0-2 2v5a2 2 0 0 1-2 2h-1"/></symbol>
+    <symbol id="i-link" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 3.8 5.6 3.8 9s-1.3 6.4-3.8 9c-2.5-2.6-3.8-5.6-3.8-9S9.5 5.6 12 3z"/></symbol>
+    <symbol id="i-layers" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="m12 3 9 5-9 5-9-5z"/><path d="m3 13 9 5 9-5"/></symbol>
+    <symbol id="i-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></symbol>
+    <symbol id="i-paper" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6M8 13h8M8 17h6"/></symbol>
+    <symbol id="i-arxiv" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="m5 4 14 16M19 4l-6.5 7.5M5 20l4.5-5"/></symbol>
+    <symbol id="i-github" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-3.16 19.49c.5.09.68-.22.68-.48v-1.7c-2.78.6-3.37-1.34-3.37-1.34-.45-1.16-1.11-1.47-1.11-1.47-.9-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.9 1.52 2.34 1.08 2.91.83.09-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.94 0-1.09.39-1.98 1.03-2.68-.1-.25-.45-1.27.1-2.65 0 0 .84-.27 2.75 1.02a9.5 9.5 0 0 1 5 0c1.91-1.3 2.75-1.02 2.75-1.02.55 1.38.2 2.4.1 2.65.64.7 1.03 1.59 1.03 2.68 0 3.84-2.34 4.68-4.57 4.93.36.31.68.92.68 1.85v2.75c0 .27.18.58.69.48A10 10 0 0 0 12 2z"/></symbol>
+    <symbol id="i-play" viewBox="0 0 24 24" fill="currentColor"><path d="M7 4.5v15a1 1 0 0 0 1.5.86l12-7.5a1 1 0 0 0 0-1.72l-12-7.5A1 1 0 0 0 7 4.5z"/></symbol>
+    <symbol id="i-pause" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4.5" width="4" height="15" rx="1"/><rect x="14" y="4.5" width="4" height="15" rx="1"/></symbol>
+    <symbol id="i-prev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m15 5-7 7 7 7"/></symbol>
+    <symbol id="i-next" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m9 5 7 7-7 7"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12.5 4.5 4.5L19 7.5"/></symbol>
+    <symbol id="i-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="8" y="8" width="13" height="13" rx="2"/><path d="M16 8V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h3"/></symbol>
+    <symbol id="i-upload" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="9.5" r="1.6"/><path d="m4 18 5.5-5.5L13 16l3-3 4 4"/></symbol>
+    <symbol id="i-restart" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></symbol>
+  </defs>
+</svg>
+
+<!-- ============ nav ============ -->
+<nav class="nav">
+  <div class="wrap">
+    <a class="brand" href="#top">
+      <svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M3 11V3h8M21 3h8v8M29 21v8h-8M11 29H3v-8"/></g><circle cx="16" cy="16" r="5" fill="var(--amber)"/></svg>
+      OpenVLHarness
+    </a>
+    <div class="nav-links">
+      <a href="#demo">Demo</a>
+      <a href="#idea">Idea</a>
+      <a href="#method">Method</a>
+      <a href="#insights">Insights</a>
+      <a href="#examples">Examples</a>
+      <a href="#results">Results</a>
+      <a href="#cite">Cite</a>
+    </div>
+    <button class="theme-btn" id="themeBtn" aria-label="Toggle color theme">
+      <svg class="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+      <svg class="moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></svg>
+    </button>
+  </div>
+</nav>
+
+<main id="top">
+
+<!-- ============ hero ============ -->
+<header class="hero">
+  <div class="wrap">
+    <div>
+      <div class="title-box">
+        <div class="det-box" id="detBox"><span class="det-label">harness · 0.99</span><i></i><i></i><i></i><i></i></div>
+        <h1>Open<span class="vl">VL</span>Harness</h1>
+      </div>
+    </div>
+    <p class="subtitle">Real-World Visual Agentic Tool-Use with Multimodal Memory</p>
+
+    <p class="authors">
+      <span>Yu Zhou<sup>1</sup></span>,
+      <span>Cheng-Fu Yang<sup>1</sup></span>,
+      <span>Rui Sun<sup>1</sup></span>,
+      <span>Di Wu<sup>1</sup></span>,
+      <span>Sibo Peng<sup>1</sup></span>,
+      <span>Mingyang Zhang<sup>1</sup></span>,
+      <span>Zhen Yang<sup>2</sup></span>,
+      <span>Ruiyi Zhang<sup>2</sup></span>,
+      <span>Nanyun Peng<sup>1</sup></span>,
+      <span>Zhe Gan<sup>2</sup></span>,
+      <span>Kai-Wei Chang<sup>1</sup></span>
+    </p>
+    <p class="affils"><sup>1</sup>University of California, Los Angeles &nbsp;·&nbsp; <sup>2</sup>Apple</p>
+
+    <!-- TODO(links): replace href="#" with real URLs, then remove the "soon" spans -->
+    <div class="btn-row">
+      <a class="btn primary" href="#" data-placeholder><svg><use href="#i-paper"/></svg>Paper<span class="soon">soon</span></a>
+      <a class="btn" href="#" data-placeholder><svg><use href="#i-arxiv"/></svg>arXiv<span class="soon">soon</span></a>
+      <a class="btn" href="#" data-placeholder><svg><use href="#i-github"/></svg>Code<span class="soon">soon</span></a>
+      <a class="btn" href="#demo"><svg><use href="#i-play"/></svg>Demo</a>
+    </div>
+
+    <p class="tagline">Thinking longer gives diminishing returns. <span class="hl">Gathering evidence doesn't.</span></p>
+
+    <div class="hero-charts">
+      <div class="card chart-card reveal">
+        <div class="chart-kicker">Average over 23 benchmarks</div>
+        <div class="chart-title">Gains across six backbones</div>
+        <div class="legend">
+          <span><i style="background:var(--s-base)"></i>Base MLLM</span>
+          <span><i style="background:var(--s-ours)"></i>+ OpenVLHarness</span>
+        </div>
+        <div class="chart" id="heroBars" role="img" aria-label="Grouped bar chart: average score of six backbones with and without OpenVLHarness"></div>
+      </div>
+      <div class="card chart-card reveal">
+        <div class="chart-kicker">GPT-6 Luna · 12 benchmarks · reasoning effort medium → max</div>
+        <div class="chart-title">Score vs. cost: the harness sets the frontier</div>
+        <div class="legend" id="paretoLegend"></div>
+        <div class="chart" id="heroPareto" role="img" aria-label="Line chart of average score versus model-token cost for four methods across four reasoning-effort settings"></div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ============ demo + playground ============ -->
+<section class="block" id="demo">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="sec-tag">DEMO</span>
+      <h2>See it in action</h2>
+      <p class="lead">Watch the orchestrator ground objects, measure depth, search the web, and write code over what it found, then try it on your own image.</p>
+    </div>
+    <div class="demo-grid">
+      <!-- TODO(video): replace this block with <video> or a YouTube <iframe> -->
+      <div class="video-ph reveal" id="video">
+        <div class="frame-corners"><i></i><i></i><i></i><i></i></div>
+        <div class="rec">REC · demo.mp4</div>
+        <div>
+          <div class="play"><svg><use href="#i-play"/></svg></div>
+          <h3>Demo video coming soon</h3>
+          <p>A walkthrough of OpenVLHarness solving real-world visual tasks.</p>
+        </div>
+      </div>
+
+      <!-- TODO(playground): placeholder UI, not wired to a backend -->
+      <div class="card playground reveal" id="playground">
+        <div class="pg-bar">
+          <div class="dots"><i></i><i></i><i></i></div>
+          <span class="title">playground · openvlharness</span>
+          <span class="badge">COMING SOON</span>
+        </div>
+        <div class="pg-body">
+          <div class="pg-left">
+            <div class="drop">
+              <div><svg><use href="#i-upload"/></svg>Drop an image here<br><span style="font-size:12.5px">or pick an example below</span></div>
+            </div>
+            <div class="ask">
+              <input type="text" placeholder="Ask a question about the image…" disabled aria-label="Question (disabled)">
+              <button disabled>Run</button>
+            </div>
+            <div class="chips">
+              <span class="chip">How many pills?</span>
+              <span class="chip">What awards has this won?</span>
+              <span class="chip">How far apart are…?</span>
+            </div>
+          </div>
+          <div class="pg-right">
+            <h4>Tool trace</h4>
+            <div class="ghost-step"><span class="gi"></span><span class="gl" style="width:55%"></span></div>
+            <div class="ghost-step"><span class="gi"></span><span class="gl" style="width:72%"></span></div>
+            <div class="ghost-step"><span class="gi"></span><span class="gl" style="width:40%"></span></div>
+            <div class="ghost-step"><span class="gi"></span><span class="gl" style="width:64%"></span></div>
+            <div class="ghost-step"><span class="gi"></span><span class="gl" style="width:30%"></span></div>
+            <div class="pg-overlay">
+              <div><strong>Interactive playground</strong><span>Upload an image, ask a question, and watch every tool call and memory artifact as the harness works.</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ idea / takeaway ============ -->
+<section class="block" id="idea">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="sec-tag">THE IDEA</span>
+      <h2>Don't just think harder. Look closer.</h2>
+    </div>
+    <div class="idea-grid">
+      <div class="idea-text reveal">
+        <p>Many real-world visual questions can't be answered by reasoning over the input alone. You may need to <strong>localize dozens of tiny objects</strong>, <strong>look up a long-tail entity</strong> on the web, or <strong>compute a 3D distance</strong> from depth and camera poses. Spending more reasoning tokens helps only a little: moving GPT-6 Luna from <em>xhigh</em> to <em>max</em> effort more than doubles its spend for <strong>+3.0 points</strong>.</p>
+        <p><strong>OpenVLHarness</strong> wraps any MLLM with two mechanisms. A <strong style="color:var(--teal)">capability layer</strong> puts perception, search, and code tools behind task-level interfaces and renders their outputs as evidence the model can read. A <strong style="color:var(--violet)">persistent multimodal memory</strong> keeps every image, mask, depth array, and web page addressable by handle, so later steps can inspect it again and <em>compute</em> over it.</p>
+        <div class="kpis">
+          <div class="kpi"><div class="n teal">+9.2–12.6</div><div class="l">avg. points over the base model, across six open &amp; proprietary backbones</div></div>
+          <div class="kpi"><div class="n">23</div><div class="l">benchmarks covering perception, search, VQA, and spatial reasoning</div></div>
+          <div class="kpi"><div class="n">9</div><div class="l">capabilities with swappable backends (SAM 3, Depth Anything 3, …)</div></div>
+          <div class="kpi"><div class="n">0</div><div class="l">weight updates. Training-free, yet it beats fine-tuned tool-use agents</div></div>
+        </div>
+        <details class="abstract">
+          <summary>Read the full abstract</summary>
+          <p>Multimodal large language models (MLLMs) have made rapid progress on visual reasoning, yet many tasks require evidence that is difficult to obtain through internal reasoning alone: a controlled study on 12 benchmarks shows that simply increasing the inference budget yields only modest gains. Such tasks demand grounded perception, external knowledge, and numerical measurements obtained through heterogeneous tools, whose outputs must be made interpretable to the model and retained across reasoning steps. We introduce OpenVLHarness, a multimodal reasoning harness organized around a capability layer and persistent multimodal memory. The capability layer combines task-level tool interfaces with evidence rendering, providing consistent access to heterogeneous backends and converting their outputs into model-readable observations. Persistent multimodal memory retains the corresponding images, structured data, and web references as addressable artifacts throughout each query. A coding interface executes generated programs over stored data, enabling computations that combine results from multiple tools. Together, these mechanisms support an iterative process of acquiring, inspecting, and composing multimodal evidence. Evaluated on 23 benchmarks across perception, spatial reasoning, visual search, and multimodal question answering, OpenVLHarness consistently surpasses strong MLLM backbones and outperforms existing visual tool-use baselines across six open and proprietary backbones of different scales, improving average performance by 9.2–12.6 points, including +11.2 with Qwen3-VL-8B, +9.2 with Kimi K3, and +11.2 with GPT-6 Sol. In that study, even though OpenVLHarness incurs additional cost from multi-step tool use, giving the base GPT-6 Luna an even larger reasoning budget (1.27× the cost of OpenVLHarness) improves the average only from 49.6 to 51.5, compared with 62.9 for OpenVLHarness.</p>
+        </details>
+      </div>
+
+      <div class="card compare reveal" id="compareFig">
+        <div class="chart-kicker" style="margin-bottom:12px">Three ways to spend a budget · GPT-6 Luna, 12 benchmarks</div>
+        <div class="cmp-row">
+          <div class="cmp">
+            <div>
+              <h4>Think longer</h4>
+              <div class="sub">Base model, more reasoning effort</div>
+              <div class="pipe"><span class="node">image</span><span class="arr">→</span><span class="node">MLLM ⟳</span><span class="arr">→</span><span class="node">answer</span></div>
+            </div>
+            <div class="meter" data-lo="49.65" data-hi="58.31">
+              <div class="meter-track"><div class="meter-fill hi"></div><div class="meter-fill lo"></div></div>
+              <div class="meter-txt"><span>medium <b>49.7</b> · $0.62</span><span>max <b>58.3</b> · $2.92</span></div>
+            </div>
+          </div>
+          <div class="cmp">
+            <div>
+              <h4>Generic coding agent</h4>
+              <div class="sub">Codex in code mode, no visual tools</div>
+              <div class="pipe"><span class="node">image</span><span class="arr">→</span><span class="node">MLLM</span><span class="arr">⇄</span><span class="node">python</span></div>
+            </div>
+            <div class="meter" data-lo="48.06" data-hi="57.43">
+              <div class="meter-track"><div class="meter-fill hi"></div><div class="meter-fill lo"></div></div>
+              <div class="meter-txt"><span>medium <b>48.1</b> · $1.33</span><span>max <b>57.4</b> · $2.48</span></div>
+            </div>
+          </div>
+          <div class="cmp ours">
+            <div>
+              <h4>OpenVLHarness</h4>
+              <div class="sub">Acquire, inspect &amp; compose evidence</div>
+              <div class="pipe"><span class="node">image</span><span class="arr">→</span><span class="node t">MLLM</span><span class="arr">⇄</span><span class="node a">tools</span><span class="arr">⇄</span><span class="node v">memory</span></div>
+            </div>
+            <div class="meter" data-lo="62.89" data-hi="68.63">
+              <div class="meter-track"><div class="meter-fill hi"></div><div class="meter-fill lo"></div></div>
+              <div class="meter-txt"><span>medium <b>62.9</b> · $0.94</span><span>max <b>68.6</b> · $2.45</span></div>
+            </div>
+          </div>
+        </div>
+        <p class="compare-cap">Solid bar = medium effort, dashed extension = max effort (average score, 0–100 scale). OpenVLHarness at <em>medium</em> effort beats every other method at <em>any</em> effort, at roughly a third of their max-effort cost. Costs are model tokens per 1k questions, excluding tool execution.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ method ============ -->
+<section class="block" id="method">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="sec-tag">METHOD</span>
+      <h2>A capability layer and a memory that remembers pixels</h2>
+      <p class="lead">Step through one real trajectory: <em>"How far apart are the window and cabinet centers?"</em> Watch each tool call pass through the capability layer, come back as rendered evidence, and land in persistent memory, where the coding agent can compute over it.</p>
+    </div>
+
+    <div class="card method-fig reveal" id="methodFig">
+      <div class="mf-grid">
+        <div class="mf-main">
+          <div class="mf-row top">
+            <div class="box b-user" id="mfUser">
+              <h5><svg class="ico"><use href="#i-eye"/></svg>User input</h5>
+              <div class="q">How far apart are the window and cabinet centers?</div>
+              <div class="thumbs">
+                <figure><img src="static/images/method/input_image_1.png" alt="Input image 1: office corner with bin and cabinet"><figcaption>input_image_1</figcaption></figure>
+                <figure><img src="static/images/method/input_image_2.png" alt="Input image 2: printer and window"><figcaption>input_image_2</figcaption></figure>
+                <figure><img src="static/images/method/input_image_3.png" alt="Input image 3: printer above cabinets"><figcaption>input_image_3</figcaption></figure>
+              </div>
+              <div class="final" id="mfFinal">Final answer: <span class="ans" id="mfAns">…</span></div>
+            </div>
+            <div class="box b-orch" id="mfOrch">
+              <div>
+                <svg class="brain"><use href="#i-brain"/></svg>
+                <div class="t">MLLM<br>Orchestrator</div>
+                <div class="st" id="mfOrchSt">idle</div>
+              </div>
+            </div>
+            <div class="box b-env" id="mfEnv">
+              <h5>Environment Update</h5>
+              <div class="mono-box" id="mfEnvTxt"></div>
+            </div>
+          </div>
+
+          <div class="mf-row mid">
+            <div class="box b-call" id="mfCall">
+              <h5>Tool call</h5>
+              <div class="mono-box" id="mfCallTxt"><span class="ev-empty">waiting for the orchestrator…</span></div>
+            </div>
+            <div class="box b-ev" id="mfEv">
+              <h5 style="color:var(--amber)">Rendered tool evidence</h5>
+              <div id="mfEvBody"><span class="ev-empty">Raw outputs (masks, arrays, poses) are rendered into images + concise text the model can inspect.</span></div>
+            </div>
+          </div>
+
+          <div>
+            <div class="flow"><span class="pipe-v down" id="flowDown"></span><span class="pipe-v up" id="flowUp"></span></div>
+            <div class="cap-layer" id="mfCap">
+              <div class="lbl">Capability Layer</div>
+              <div class="cap-groups">
+                <div class="cap-group"><div class="gl">Perception</div>
+                  <div class="cap-items">
+                    <div class="cap" data-cap="zoom"><svg><use href="#i-zoom"/></svg>Zoom-in</div>
+                    <div class="cap" data-cap="ground"><svg><use href="#i-ground"/></svg>Grounding</div>
+                    <div class="cap" data-cap="ocr"><svg><use href="#i-ocr"/></svg>OCR</div>
+                    <div class="cap" data-cap="depth"><svg><use href="#i-depth"/></svg>Depth</div>
+                    <div class="cap" data-cap="camera"><svg><use href="#i-camera"/></svg>Camera pose</div>
+                  </div>
+                </div>
+                <div class="cap-group"><div class="gl">Search</div>
+                  <div class="cap-items">
+                    <div class="cap" data-cap="tsearch"><svg><use href="#i-tsearch"/></svg>Text search</div>
+                    <div class="cap" data-cap="isearch"><svg><use href="#i-isearch"/></svg>Image search</div>
+                    <div class="cap" data-cap="web"><svg><use href="#i-web"/></svg>Web visit</div>
+                  </div>
+                </div>
+                <div class="cap-group"><div class="gl">Coding</div>
+                  <div class="cap-items">
+                    <div class="cap" data-cap="code"><svg><use href="#i-code"/></svg>Coding Agent</div>
+                  </div>
+                </div>
+              </div>
+              <div class="backends">
+                <span class="be" data-be="sam">SAM 3</span>
+                <span class="be" data-be="da">Depth Anything 3</span>
+                <span class="be" data-be="ocr">PaddleOCR-VL</span>
+                <span class="be" data-be="serper">Search engines</span>
+                <span class="be" data-be="coder">Coding model</span>
+                <span class="be" data-be="imgp">Image processors</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <aside class="mem" id="mfMem">
+          <h5><svg class="ico" style="width:16px;height:16px"><use href="#i-mem"/></svg>Persistent Multimodal Memory</h5>
+          <div class="mem-io"><span id="ioStore">↓ store results</span><span id="ioFetch">↑ fetch artifacts</span></div>
+          <div class="mem-sec">
+            <div class="h"><svg style="width:13px;height:13px"><use href="#i-img"/></svg>Image artifacts</div>
+            <div class="mem-imgs" id="memImgs"></div>
+          </div>
+          <div class="mem-sec">
+            <div class="h"><svg style="width:13px;height:13px"><use href="#i-data"/></svg>Structured data</div>
+            <div class="mem-data" id="memData"></div>
+          </div>
+          <div class="mem-sec">
+            <div class="h"><svg style="width:13px;height:13px"><use href="#i-link"/></svg>Web references</div>
+            <div class="mem-web">webpage_url_k · registered when search is used</div>
+          </div>
+        </aside>
+      </div>
+
+      <div class="mf-controls">
+        <button class="ctl" id="mfPrev" aria-label="Previous step"><svg><use href="#i-prev"/></svg></button>
+        <button class="ctl play-btn" id="mfPlay" aria-label="Play or pause"><svg><use href="#i-pause"/></svg></button>
+        <button class="ctl" id="mfNext" aria-label="Next step"><svg><use href="#i-next"/></svg></button>
+        <div class="steps" id="mfSteps"></div>
+      </div>
+      <div class="mf-caption" id="mfCaption"><div class="s"></div><div class="t"></div><p class="d"></p></div>
+    </div>
+
+    <div class="pillars">
+      <div class="card pillar t reveal">
+        <div class="pi"><svg><use href="#i-layers"/></svg></div>
+        <h3>Task-level tool interfaces</h3>
+        <p>Each capability is defined by what it does: its typed inputs and the evidence it exposes. Backends are wrapped behind it, so Grounding can run on SAM 3 or Grounding DINO, and OCR on PaddleOCR-VL or DeepSeek-OCR, without changing the orchestrator's vocabulary.</p>
+      </div>
+      <div class="card pillar a reveal">
+        <div class="pi"><svg><use href="#i-eye"/></svg></div>
+        <h3>Model-facing evidence rendering</h3>
+        <p>An RLE mask is precise but unreadable to a model. Every capability ships an output processor that turns raw results into a labeled overlay, a colorized depth map, or a trajectory plot, plus a concise description and compact structured fields.</p>
+      </div>
+      <div class="card pillar v reveal">
+        <div class="pi"><svg><use href="#i-mem"/></svg></div>
+        <h3>Persistent multimodal memory</h3>
+        <p>An artifact registry separates payload from handle. Images (<code>tool_image_6</code>), data bindings (<code>depth_result</code>), and web references (<code>webpage_url_1</code>) persist across turns, and the Python Coding Agent receives them as live variables.</p>
+      </div>
+    </div>
+
+    <div class="card cap-table reveal">
+      <table>
+        <thead><tr><th>Capability</th><th>Interface</th><th>Backends (default in bold)</th></tr></thead>
+        <tbody>
+          <tr><td><span class="grp">perception</span>Zoom-in</td><td>image, box → cropped image</td><td><b>built-in</b></td></tr>
+          <tr><td><span class="grp">perception</span>Visual Grounding</td><td>image, text query → boxes, masks, annotated image</td><td><b>SAM 3</b>; Grounding DINO</td></tr>
+          <tr><td><span class="grp">perception</span>OCR</td><td>image → transcribed text</td><td><b>PaddleOCR-VL</b>; DeepSeek-OCR</td></tr>
+          <tr><td><span class="grp">perception</span>Depth Estimation</td><td>image → depth map</td><td><b>Depth Anything 3</b>; VGGT</td></tr>
+          <tr><td><span class="grp">perception</span>Camera Trajectory</td><td>images → camera poses, trajectory plot</td><td><b>Depth Anything 3</b>; VGGT</td></tr>
+          <tr><td><span class="grp">search</span>Text Search</td><td>text query → summarized results with cited URLs</td><td><b>Serper</b>; Gemini w/ Google Search</td></tr>
+          <tr><td><span class="grp">search</span>Image Search</td><td>image → visual matches (entities, URLs)</td><td><b>Serper (Google Lens)</b>; Gemini w/ Google Search</td></tr>
+          <tr><td><span class="grp">search</span>Webpage Visit</td><td>URLs, goal → goal-relevant evidence</td><td><b>Serper + LLM extractor</b></td></tr>
+          <tr><td><span class="grp">compute</span>Python Coding Agent</td><td>objective → program output, new bindings</td><td><b>single-shot code generator</b>; full coding agent</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ============ insights ============ -->
+<section class="block" id="insights">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="sec-tag">INSIGHTS</span>
+      <h2>What we found</h2>
+      <p class="lead">Five takeaways from 23 benchmarks, seven backbones, component ablations, and a failure study of 9,980 trajectories.</p>
+    </div>
+
+    <!-- 1 -->
+    <div class="insight">
+      <div class="ins-text reveal">
+        <div class="ins-num">INSIGHT 01</div>
+        <h3>Gains hold on every backbone, across all four domains.</h3>
+        <p>OpenVLHarness improves the average of every backbone we tried, from an 8B open model to frontier APIs. With <strong>GPT-6 Sol it improves all 23 of 23 benchmarks</strong>. The biggest jumps come where the model needs evidence it cannot produce itself: exhaustive counting, box-level grounding, and multimodal search.</p>
+        <div class="ins-stat">
+          <div><div class="n">23 / 23</div><div class="l">benchmarks improved with GPT-6 Sol</div></div>
+          <div><div class="n">+30.1</div><div class="l">on FSCD-LVIS grounding with GPT-6 Sol (5.2 → 35.2)</div></div>
+        </div>
+      </div>
+      <div class="card ins-fig reveal">
+        <div class="fig-controls">
+          <div class="seg" id="dbSeg"></div>
+        </div>
+        <div class="legend">
+          <span><i style="background:var(--s-base);border-radius:50%"></i>Base</span>
+          <span><i style="background:var(--s-ours);border-radius:50%"></i>+ OpenVLHarness</span>
+        </div>
+        <div class="chart" id="dumbbell" role="img" aria-label="Dumbbell chart of base vs OpenVLHarness score on each of the 23 benchmarks"></div>
+      </div>
+    </div>
+
+    <!-- 2 -->
+    <div class="insight flip">
+      <div class="ins-text reveal">
+        <div class="ins-num">INSIGHT 02</div>
+        <h3>Tool access isn't enough. The harness design matters.</h3>
+        <p>Existing visual tool-use harnesses often fall <em>below</em> the no-tool baseline. With GPT-6 Luna, <strong>Codex averages 41.5, under the base model's 43.2</strong>; OpenVLHarness reaches 55.8. On Qwen2.5-VL-7B, our training-free harness also beats agents that were <strong>fine-tuned</strong> for tool use.</p>
+        <div class="ins-stat">
+          <div><div class="n">+13.8</div><div class="l">over the best training-free baseline (OctoTools) on Qwen3-VL-8B</div></div>
+          <div><div class="n">+6.2</div><div class="l">over the best fine-tuned agent on Qwen2.5-VL-7B</div></div>
+        </div>
+      </div>
+      <div class="card ins-fig reveal">
+        <div class="fig-controls"><div class="seg" id="hcSeg"></div></div>
+        <div class="chart" id="harnessCmp" role="img" aria-label="Bar chart comparing harnesses on the same backbone"></div>
+        <div class="chart-note" id="hcNote"></div>
+      </div>
+    </div>
+
+    <!-- 3 -->
+    <div class="insight">
+      <div class="ins-text reveal">
+        <div class="ins-num">INSIGHT 03</div>
+        <h3>Evidence and reasoning are complementary.</h3>
+        <p>Raising reasoning effort helps every method, but the base model and Codex flatten out. At max effort they reach 58.3 and 57.4, still <strong>below OpenVLHarness at medium effort (62.9)</strong>, which costs less than half as much. Give the harness more reasoning and it keeps climbing, to <strong>68.6</strong>.</p>
+        <div class="ins-stat">
+          <div><div class="n">62.9</div><div class="l">ours at medium effort, $0.94 / 1k questions</div></div>
+          <div><div class="n">58.5</div><div class="l">best non-harness setting (Visual Sketchpad, max) at $4.28</div></div>
+        </div>
+      </div>
+      <div class="card ins-fig reveal">
+        <div class="chart-kicker">GPT-6 Luna · 12-benchmark average</div>
+        <div class="legend" id="effortLegend"></div>
+        <div class="chart" id="effortChart" role="img" aria-label="Line chart of average score by reasoning effort for four methods"></div>
+      </div>
+    </div>
+
+    <!-- 4 -->
+    <div class="insight flip">
+      <div class="ins-text reveal">
+        <div class="ins-num">INSIGHT 04</div>
+        <h3>Both mechanisms pull their weight.</h3>
+        <p>Starting from the bare model, we add raw tool access, then the capability layer, then memory. Each step adds points. Text-only memory barely helps (+0.7 / +0.3). The jump comes when tool-generated <strong>images become reusable handles</strong> (+2.2 / +3.4), and it is largest on search and deep research (+6.2 / +3.5).</p>
+        <div class="ins-stat">
+          <div><div class="n">+3.4 / +3.2</div><div class="l">from the capability layer (8B / 32B)</div></div>
+          <div><div class="n">+2.2 / +3.4</div><div class="l">from multimodal (vs. textual) memory</div></div>
+        </div>
+      </div>
+      <div class="card ins-fig reveal">
+        <div class="fig-controls">
+          <div class="seg" id="abModel"></div>
+          <div class="seg" id="abDomain"></div>
+        </div>
+        <div class="chart" id="ablation" role="img" aria-label="Waterfall chart of ablation steps"></div>
+      </div>
+    </div>
+
+    <!-- 5 -->
+    <div class="insight">
+      <div class="ins-text reveal">
+        <div class="ins-num">INSIGHT 05</div>
+        <h3>Diagnose failures, then specialize the right way.</h3>
+        <p>A Kimi K3 critic labeled 9,980 failed Qwen3-VL-8B trajectories (92% agreement with humans). Failures differ by domain: <strong>72%</strong> of counting failures are wrong tool outputs in crowded scenes, <strong>49%</strong> of search failures are a tool that was never called, and only <strong>2–8%</strong> are evidence the model ignored.</p>
+        <p>The critic's proposed remedies tell you which knob to turn. Where <strong>harness text</strong> edits dominate, harness search wins. Where <strong>new tools</strong> dominate, tool generation wins, with no weight updates.</p>
+      </div>
+      <div class="card ins-fig reveal">
+        <div class="chart-kicker">Qwen3-VL-8B · four datasets with contrasting remedy profiles</div>
+        <div class="legend">
+          <span><i style="background:var(--teal)"></i>New task-specific tools (A+B+C)</span>
+          <span><i style="background:var(--amber)"></i>Harness text (Y)</span>
+          <span><i style="background:var(--s-base)"></i>No remedy (Z)</span>
+        </div>
+        <div class="chart" id="remedy" role="img" aria-label="Stacked bars of remedy channel shares and diverging bars of gains from harness search and tool generation"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ examples ============ -->
+<section class="block" id="examples">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="sec-tag">EXAMPLES</span>
+      <h2>Trajectories that chain tools through memory</h2>
+      <p class="lead">Each answer comes from several capabilities whose outputs are reused by handle, not paraphrased from earlier turns.</p>
+    </div>
+    <div class="ex-tabs" id="exTabs"></div>
+    <div class="card ex-panel reveal" id="exPanel"></div>
+  </div>
+</section>
+
+<!-- ============ full results ============ -->
+<section class="block" id="results">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="sec-tag">RESULTS</span>
+      <h2>Full results on 23 benchmarks</h2>
+      <p class="lead">Scores grouped by backbone. Base = backbone without tools; OT = OctoTools; VS = Visual Sketchpad; CX = Codex; Ours = OpenVLHarness.</p>
+    </div>
+    <div class="tbl-controls">
+      <div class="seg" id="tblSeg"></div>
+      <span class="muted" style="font-size:13px">Scroll horizontally on small screens →</span>
+    </div>
+    <div class="tbl-wrap reveal"><table class="res" id="resTable"></table></div>
+    <p class="tbl-cap"><b>Bold</b> = best within each backbone group; <span style="text-decoration:underline;text-decoration-color:var(--teal);text-decoration-thickness:2px;text-underline-offset:3px">underline</span> = best across all shown backbones. Qwen3-VL results are means of three runs; GPT-6, GPT-5 and Kimi K3 results are single runs. GPT-5 and Kimi K3 are from the appendix (Table 6).</p>
+  </div>
+</section>
+
+<!-- ============ cite ============ -->
+<section class="block" id="cite">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="sec-tag">CITE</span>
+      <h2>Cite this work</h2>
+    </div>
+    <!-- TODO(bibtex): replace with the final entry -->
+    <div class="card bib reveal">
+      <button class="copy-btn" id="copyBib"><svg><use href="#i-copy"/></svg><span>Copy</span></button>
+<pre id="bibText">@article{openvlharness2026,
+  title   = {OpenVLHarness: Real World Visual Agentic Tool-Use with Multimodal Memory},
+  author  = {Zhou, Yu and Yang, Cheng-Fu and Sun, Rui and Wu, Di and Peng, Sibo and Zhang, Mingyang and Yang, Zhen and Zhang, Ruiyi and Peng, Nanyun and Gan, Zhe and Chang, Kai-Wei},
+  journal = {arXiv preprint arXiv:XXXX.XXXXX},
+  year    = {2026}
+}</pre>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    OpenVLHarness · project page template inspired by academic project pages.<br>
+    Questions? Open an issue on <a href="#" data-placeholder>GitHub</a>.
+  </div>
+</footer>
+
+<div class="tip" id="tip"></div>
+<script src="static/js/data.js?v=7"></script>
+<script src="static/js/main.js?v=7"></script>
+</body>
+</html>
