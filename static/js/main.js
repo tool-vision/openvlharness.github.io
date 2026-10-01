@@ -218,15 +218,6 @@
     S('text', { x: ax + 10, y: ay + 22, class: 'val-label', style: 'font-size:11px', text: 'medium effort already beats' }, ann);
     S('text', { x: ax + 10, y: ay + 36, class: 'val-label', style: 'font-size:11px', text: 'every baseline at max' }, ann);
   });
-  /* ================================================================ IDEA: meters */
-  $$('#compareFig .meter').forEach(mt => {
-    const lo = +mt.dataset.lo, hi = +mt.dataset.hi;
-    $('.meter-fill.lo', mt).style.width = lo + '%';
-    $('.meter-fill.hi', mt).style.width = hi + '%';
-  });
-  $$('#compareFig .meter-fill.hi').forEach((e, i) => e.style.transitionDelay = (350 + i * 120) + 'ms');
-  $$('#compareFig .meter-fill.lo').forEach((e, i) => e.style.transitionDelay = (i * 120) + 'ms');
-
   /* ================================================================ INSIGHT 1: dumbbell explorer */
   let dbGroup = 'sol';
   let dbPrev = null;
@@ -504,8 +495,8 @@
       in2: { h: 'input_image_2', src: IM + 'method/input_image_2.png' },
       in3: { h: 'input_image_3', src: IM + 'method/input_image_3.png' },
       traj: { h: 'tool_image_1', src: IM + 'method/trajectory.png', sq: true },
-      d1: { h: 'tool_image_2', src: IM + 'examples/a_depth1.png' },
-      d2: { h: 'tool_image_3', src: IM + 'examples/a_depth2.png' },
+      d1: { h: 'tool_image_2', src: IM + 'method/depth_1.png' },
+      d2: { h: 'tool_image_3', src: IM + 'method/depth_2.png' },
       d3: { h: 'tool_image_4', src: IM + 'method/depth.png' },
       win: { h: 'tool_image_5', src: IM + 'method/window_overlay.png' },
       cab: { h: 'tool_image_6', src: IM + 'method/cabinet_overlay.png' },
@@ -714,69 +705,154 @@
     }), { threshold: 0.35 }).observe(fig);
   })();
 
-  /* ================================================================ EXAMPLES */
-  (function examples() {
-    const E = 'static/images/examples/';
-    const check = '<svg><use href="#i-check"/></svg>';
-    const EX = [
-      { src: 'SparBench · Qwen3-VL-32B', q: 'How far apart are the window (red) and cabinet (blue) centers, in meters?',
-        cap: 'Camera poses, depth, and grounding masks become bindings that code combines into an exact 3D distance.',
-        steps: [
-          { h: 'Input images', imgs: [[E + 'a_in1.png'], [E + 'a_in2.png'], [E + 'a_in3.png']], cls: 'col sm' },
-          { h: 'Camera Trajectory', imgs: [[E + 'a_traj.png']], cls: 'lg', note: 'Intrinsics <span class="mono">K</span> · Extrinsics <span class="mono">[R | t]</span><br>shared coordinate frame' },
-          { h: 'Depth Estimation', imgs: [[E + 'a_depth1.png'], [E + 'a_depth2.png'], [E + 'a_depth3.png']], cls: 'col sm' },
-          { h: 'Grounding', imgs: [[E + 'a_window.png', '"window": 1 mask'], [E + 'a_cabinet.png', '"cabinet": 5 masks']], cls: 'col' },
-          { h: 'Code Generation', code: '<span class="c">...\n# Pixel + metric depth</span>\nX = (u - cx) * z / fx\nY = (v - cy) * z / fy\nP_cam = np.array([X, Y, z])\n<span class="c">...\n# Camera to world</span>\nP_world = R.T @ (P_cam - t)\n<span class="c">...\n# Window-to-cabinet distance</span>\nd = np.linalg.norm(P_w - P_c)' },
-          { h: 'Final output', final: '1.1957 m' },
-        ] },
-      { src: 'FVQA (test) · Qwen3-VL-32B', q: 'What awards has this product won?',
-        cap: 'Grounded crops are passed by handle to zoom-in, OCR and image search, and the answer is verified on the web.',
-        steps: [
-          { h: 'Input image', imgs: [[E + 'b_input.png']], cls: 'lg' },
-          { h: 'Grounding', imgs: [[E + 'b_ground.png', '"backpack": 2 masks']], cls: 'lg' },
-          { h: 'Zoom-in + OCR', imgs: [[E + 'b_crop1.png'], [E + 'b_crop2.png']], cls: '', note: 'No readable text' },
-          { h: 'Image Search', imgs: [[E + 'b_match1.png', 'Deuter Speed Lite Pro'], [E + 'b_match2.png', 'Patagonia Terravia Pack']], cls: '' },
-          { h: 'Text Search', note: '<span class="mono">"awards won by Deuter Speed Lite Pro"</span><br><br>→ <b>ISPO Award 2024</b>' },
-          { h: 'Webpage Visit', note: 'Press release confirms the award.' },
-          { h: 'Final output', final: 'ISPO Award 2024' },
-        ] },
-      { src: 'FSC-147 (val) · GPT-6 Sol', q: 'How many pills are in the image?',
-        cap: 'Masks from two grounding queries are reconciled in code to correct an undercount and reach the exact count.',
-        steps: [
-          { h: 'Input image', imgs: [[E + 'c_input.png']], cls: 'lg' },
-          { h: 'Grounding', imgs: [[E + 'c_pill.png', '"pill": 134 masks'], [E + 'c_round.png', '"round pill": 72 masks']], cls: 'lg' },
-          { h: 'Code Generation (simplified)', code: '<span class="c"># Match boxes in pixel coordinates</span>\ndef same_pill(a, b):\n    return (iou(a, b) >= 0.45 or\n            center_dist(a, b) <= 10)\n<span class="c"># Add only round pills missed by "pill"</span>\nnew = [r for r in round_boxes\n       if not any(same_pill(r, p)\n                  for p in pill_boxes)]\n<span class="c"># 72 round pills: 67 seen + 5 new</span>\ncount = len(pill_boxes) + len(new)\n<span class="c"># 134 + 5 = 139</span>' },
-          { h: 'Final output', final: '139' },
-        ] },
-    ];
-    const tabs = $('#exTabs'), panel = $('#exPanel');
-    function show(i) {
-      $$('.ex-tab', tabs).forEach((t, k) => t.classList.toggle('on', k === i));
-      const ex = EX[i];
-      let html = `<div class="ex-q"><span class="qq">${ex.q}</span><span class="src">${ex.src}</span></div><div class="ex-flow">`;
-      ex.steps.forEach((s, k) => {
-        html += `<div class="ex-step"><div class="sh"><span class="n">${k + 1}</span>${s.h}</div>`;
-        if (s.imgs) {
-          html += `<div class="ex-imgs ${s.cls || ''}">` + s.imgs.map(([src, c]) => `<figure><img src="${src}" alt="${c || s.h}" loading="lazy">${c ? `<figcaption>${c}</figcaption>` : ''}</figure>`).join('') + '</div>';
-        }
-        if (s.code) html += `<pre class="ex-code">${s.code}</pre>`;
-        if (s.note) html += `<div class="ex-note">${s.note}</div>`;
-        if (s.final) html += `<span class="ex-final">${s.final} ${check}</span>`;
-        html += '</div>';
-      });
-      html += `</div><p class="ex-cap">${ex.cap}</p>`;
-      panel.innerHTML = html;
-      $$('.ex-step', panel).forEach((st, k) => setTimeout(() => st.classList.add('show'), REDUCED ? 0 : 80 + k * 170));
-    }
-    EX.forEach((ex, i) => {
-      const b = H('button', { class: 'ex-tab', type: 'button' }, `<div class="src">${ex.src}</div><div class="q">${ex.q}</div>`);
-      b.addEventListener('click', () => show(i));
-      tabs.appendChild(b);
+  /* ================================================================ EXAMPLES GALLERY */
+  (function gallery() {
+    const EX = window.OVH_EXAMPLES || [];
+    if (!EX.length) return;
+    const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    const CAPS = {
+      grounding: ['Grounding', 'i-ground'], zoom: ['Zoom-in', 'i-zoom'], ocr: ['OCR', 'i-ocr'], depth: ['Depth', 'i-depth'],
+      camera: ['Camera trajectory', 'i-camera'], tsearch: ['Text search', 'i-tsearch'], isearch: ['Image search', 'i-isearch'],
+      web: ['Webpage visit', 'i-web'], code: ['Coding agent', 'i-code'],
+    };
+    const TAG2CAP = { grounding: 'grounding', zoom: 'zoom', ocr: 'ocr', depth: 'depth', 'camera-trajectory': 'camera', 'text-search': 'tsearch', 'image-search': 'isearch', 'webpage-visit': 'web', code: 'code' };
+    const DOMS = [['all', 'All tasks'], ['count', 'Counting & Grounding'], ['search', 'Search'], ['vqa', 'General VQA'], ['spatial', 'Spatial']];
+    const DOMNAME = Object.fromEntries(DOMS);
+    const icon = (k, cls = '') => `<svg class="${cls}" aria-hidden="true"><use href="#${CAPS[k][1]}"/></svg>`;
+    EX.forEach(e => { e.caps = e.tags.map(t => TAG2CAP[t]).filter(Boolean); });
+
+    const st = { domain: 'all', model: 'all', caps: new Set() };
+    let shown = EX;
+
+    // filters
+    segmented($('#exgDomain'), DOMS.map(([k, l]) => [k, `${l} <span class="n">${k === 'all' ? EX.length : EX.filter(e => e.domain === k).length}</span>`]), 'all', v => { st.domain = v; render(); });
+    const sel = $('#exgModel');
+    sel.innerHTML = '<option value="all">All backbones</option>' + [...new Set(EX.map(e => e.model))].map(m => `<option value="${esc(m)}">${esc(m)}</option>`).join('');
+    sel.addEventListener('change', () => { st.model = sel.value; render(); });
+    const tagsEl = $('#exgTags');
+    tagsEl.innerHTML = '<span class="exg-tags-l">Uses</span>' + Object.keys(CAPS).map(k => `<button type="button" class="tagchip" data-cap="${k}" aria-pressed="false">${icon(k)}${CAPS[k][0]}</button>`).join('') +
+      '<button type="button" class="tagclear" id="exgClear" hidden>Clear</button>';
+    tagsEl.addEventListener('click', e => {
+      const b = e.target.closest('.tagchip');
+      if (b) {
+        const k = b.dataset.cap;
+        st.caps.has(k) ? st.caps.delete(k) : st.caps.add(k);
+        b.setAttribute('aria-pressed', st.caps.has(k));
+        render();
+      } else if (e.target.id === 'exgClear') {
+        st.caps.clear(); $$('.tagchip', tagsEl).forEach(x => x.setAttribute('aria-pressed', 'false')); render();
+      }
     });
-    let shown = false;
-    new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting && !shown) { shown = true; show(0); } }), { threshold: 0.15 }).observe(panel);
-    // ensure something is present even before scroll (e.g. anchor links)
-    setTimeout(() => { if (!shown) { shown = true; show(0); } }, 4000);
+
+    function scoreMark(e) {
+      if (e.score === 1 || e.correct === true) return '<span class="ok">✓</span>';
+      if (typeof e.score === 'number' && e.score > 0) return `<span class="ok part" title="partial credit">≈</span>`;
+      return '';
+    }
+
+    function render() {
+      shown = EX.filter(e => (st.domain === 'all' || e.domain === st.domain) && (st.model === 'all' || e.model === st.model) && [...st.caps].every(c => e.caps.includes(c)));
+      $('#exgClear').hidden = !st.caps.size;
+      $('#exgCount').textContent = shown.length === EX.length ? `${EX.length} examples` : `Showing ${shown.length} of ${EX.length} examples`;
+      const grid = $('#exgGrid');
+      if (!shown.length) { grid.innerHTML = '<p class="exg-empty">No example uses all of the selected capabilities. Try removing a filter.</p>'; return; }
+      grid.innerHTML = shown.map((e, i) => {
+        const inp = e.inputs[0];
+        const alt = (e.steps.find(s => s.imgs.length) || {}).imgs?.[0];
+        return `<button type="button" class="exg-card" data-i="${i}" style="animation-delay:${Math.min(i, 12) * 40}ms">
+          <div class="thumb">
+            <img src="${inp.src}" alt="" loading="lazy">
+            ${alt ? `<img class="alt" src="${alt.src}" alt="" loading="lazy">` : ''}
+            <span class="badge-n">${e.inPaper ? 'Ex. ' + e.num : 'Extra'}</span>
+            ${e.inputs.length > 1 ? `<span class="badge-k">${e.inputs.length} images</span>` : ''}
+          </div>
+          <div class="body">
+            <div class="meta">${esc(e.dataset)} · ${esc(e.model)}</div>
+            <div class="q">${esc(e.question.split('\n')[0])}</div>
+            <div class="foot"><span class="tools">${e.caps.map(c => `<span title="${CAPS[c][0]}">${icon(c)}</span>`).join('')}</span><span class="calls">${e.steps.length} calls</span></div>
+          </div></button>`;
+      }).join('');
+    }
+    render();
+    $('#exgGrid').addEventListener('click', e => { const c = e.target.closest('.exg-card'); if (c) open(+c.dataset.i); });
+
+    // viewer
+    const exv = $('#exv');
+    let cur = 0, lastFocus = null;
+    function fmtArgs(a) {
+      if (!a || typeof a !== 'object') return esc(a);
+      return Object.entries(a).map(([k, v]) => `<span class="k">${esc(k)}</span>: ${esc(typeof v === 'string' ? JSON.stringify(v) : JSON.stringify(v))}`).join('\n');
+    }
+    function imgFig(im, cls = '') { return `<figure class="${cls}"><img src="${im.src}" alt="${esc(im.h)}" loading="lazy" data-zoom><figcaption>${esc(im.h)}</figcaption></figure>`; }
+    function textBlock(t, n = 360) {
+      if (!t) return '';
+      if (t.length <= n) return `<pre class="st-out">${esc(t)}</pre>`;
+      return `<pre class="st-out">${esc(t.slice(0, n).replace(/\s+\S*$/, ''))} …</pre><details class="st-more"><summary>Full tool output</summary><pre class="st-out">${esc(t)}</pre></details>`;
+    }
+    function open(i) {
+      cur = (i + shown.length) % shown.length;
+      const e = shown[cur];
+      $('#exvMeta').innerHTML = `<span class="pill">${e.inPaper ? 'Example ' + e.num + ' · in paper' : 'Extra example'}</span><span>${esc(e.dataset)}</span><span>${esc(e.model)}</span><span>${esc(DOMNAME[e.domain])}</span>`;
+      const ov = e.overview || {};
+      const ovRows = [['task', 'Task'], ['why it is hard', 'Why it is hard'], ['how the agent solves it', 'How the agent solves it'], ['how the agent approaches it', 'How the agent approaches it'], ['caveat', 'Caveat']]
+        .filter(([k]) => ov[k]).map(([k, l]) => `<div class="ov-row"><dt>${l}</dt><dd>${ov[k]}</dd></div>`).join('');
+      const ans = [];
+      if (e.notool) ans.push(`<div class="ans notool"><div class="al">${esc(e.model)} without tools</div><div class="av">${e.notool /* pre-escaped by build_examples.py */}</div></div>`);
+      ans.push(`<div class="ans ours"><div class="al">+ OpenVLHarness ${scoreMark(e)}</div><div class="av">${esc(e.pred)}</div></div>`);
+      if (e.gt) ans.push(`<div class="ans gt"><div class="al">Ground truth</div><div class="av">${esc(e.gt)}</div></div>`);
+      const steps = e.steps.map((s, k) => {
+        const name = CAPS[s.cap] ? CAPS[s.cap][0] : s.tool;
+        return `<li class="st">
+          <div class="st-rail"><span class="st-n">${k + 1}</span></div>
+          <div class="st-main">
+            <div class="st-h">${s.cap ? icon(s.cap) : ''}<span class="nm">${esc(name)}</span><code>${esc(s.tool)}</code></div>
+            ${s.say ? `<p class="st-say">${esc(s.say)}</p>` : ''}
+            <pre class="st-args">${fmtArgs(s.args)}</pre>
+            ${s.imgs.length ? `<div class="st-imgs">${s.imgs.map(im => imgFig(im)).join('')}</div>` : ''}
+            ${s.code ? `<details class="st-code"><summary>Generated program · ${s.code.split('\n').length} lines</summary><pre>${esc(s.code)}</pre></details>` : ''}
+            ${s.code ? (s.out ? `<div class="st-ol">Execution output</div>${textBlock(s.out, 500)}` : '') : textBlock(s.out)}
+          </div></li>`;
+      }).join('');
+      $('#exvBody').innerHTML = `
+        <h3 id="exvTitle" class="exv-q">${esc(e.question)}</h3>
+        <div class="exv-inputs ${e.inputs.length > 3 ? 'many' : ''}">${e.inputs.map(im => imgFig(im)).join('')}</div>
+        ${ovRows ? `<dl class="exv-ov">${ovRows}</dl>` : ''}
+        <div class="exv-ans">${ans.join('')}</div>
+        <div class="exv-sub">Trajectory · ${e.steps.length} tool calls</div>
+        <ol class="steps-tl">${steps}</ol>
+        <div class="exv-final"><svg><use href="#i-check"/></svg>Final answer: <b>${esc(e.pred)}</b></div>`;
+      $('.exv-body', exv).scrollTop = 0;
+      if (exv.hidden) {
+        lastFocus = document.activeElement;
+        exv.hidden = false;
+        document.documentElement.classList.add('modal-open');
+        requestAnimationFrame(() => exv.classList.add('show'));
+        $('[data-close].ctl', exv).focus();
+      }
+    }
+    function close() {
+      exv.classList.remove('show');
+      document.documentElement.classList.remove('modal-open');
+      setTimeout(() => { exv.hidden = true; }, 200);
+      if (lastFocus) lastFocus.focus();
+    }
+    exv.addEventListener('click', e => {
+      if (e.target.closest('[data-close]')) close();
+      const z = e.target.closest('[data-zoom]');
+      if (z) lightbox(z.src, z.alt);
+    });
+    $('#exvPrev').addEventListener('click', () => open(cur - 1));
+    $('#exvNext').addEventListener('click', () => open(cur + 1));
+    const lb = $('#lightbox');
+    function lightbox(src, cap) { $('img', lb).src = src; $('.lb-cap', lb).textContent = cap; lb.hidden = false; }
+    lb.addEventListener('click', () => { lb.hidden = true; });
+    document.addEventListener('keydown', e => {
+      if (!lb.hidden && e.key === 'Escape') { lb.hidden = true; return; }
+      if (exv.hidden) return;
+      if (e.key === 'Escape') close();
+      else if (e.key === 'ArrowRight') open(cur + 1);
+      else if (e.key === 'ArrowLeft') open(cur - 1);
+    });
   })();
 
   /* ================================================================ RESULTS TABLE */
@@ -833,7 +909,6 @@
   /* ================================================================ reveal + nav highlight */
   $$('.reveal').forEach(e => io.observe(e));
   charts.forEach(c => io.observe(c.el));
-  $$('#compareFig').forEach(e => io.observe(e));
   const navLinks = $$('.nav-links a');
   const navObs = new IntersectionObserver(es => es.forEach(e => {
     if (!e.isIntersecting) return;

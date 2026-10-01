@@ -12,7 +12,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="static/css/style.css?v=8">
+  <link rel="stylesheet" href="static/css/style.css?v=9">
   <script>
     try { var t = localStorage.getItem('ovh-theme'); if (t) document.documentElement.setAttribute('data-theme', t); } catch (e) {}
   </script>
@@ -60,9 +60,8 @@
       OpenVLHarness
     </a>
     <div class="nav-links">
-      <a href="#demo">Demo</a>
-      <a href="#idea">Idea</a>
       <a href="#method">Method</a>
+      <a href="#playground">Playground</a>
       <a href="#insights">Insights</a>
       <a href="#examples">Examples</a>
       <a href="#results">Results</a>
@@ -90,10 +89,10 @@
     <p class="subtitle">Real-World Visual Agentic Tool-Use with Multimodal Memory</p>
 
     <p class="authors">
-      <span>Yu Zhou<sup>1</sup></span>,
-      <span>Cheng-Fu Yang<sup>1</sup></span>,
-      <span>Rui Sun<sup>1</sup></span>,
-      <span>Di Wu<sup>1</sup></span>,
+      <span>Yu Zhou<sup>1*</sup></span>,
+      <span>Cheng-Fu Yang<sup>1*</sup></span>,
+      <span>Rui Sun<sup>1*</sup></span>,
+      <span>Di Wu<sup>1*</sup></span>,
       <span>Sibo Peng<sup>1</sup></span>,
       <span>Mingyang Zhang<sup>1</sup></span>,
       <span>Zhen Yang<sup>2</sup></span>,
@@ -102,22 +101,19 @@
       <span>Zhe Gan<sup>2</sup></span>,
       <span>Kai-Wei Chang<sup>1</sup></span>
     </p>
-    <p class="affils"><sup>1</sup>University of California, Los Angeles &nbsp;·&nbsp; <sup>2</sup>Apple</p>
+    <p class="affils"><sup>1</sup>University of California, Los Angeles &nbsp;·&nbsp; <sup>2</sup>Apple<br><span class="eq">*Equal contribution</span></p>
 
     <!-- TODO(links): replace href="#" with real URLs, then remove the "soon" spans -->
     <div class="btn-row">
       <a class="btn primary" href="#" data-placeholder><svg><use href="#i-paper"/></svg>Paper<span class="soon">soon</span></a>
       <a class="btn" href="#" data-placeholder><svg><use href="#i-arxiv"/></svg>arXiv<span class="soon">soon</span></a>
       <a class="btn" href="#" data-placeholder><svg><use href="#i-github"/></svg>Code<span class="soon">soon</span></a>
-      <a class="btn" href="#demo"><svg><use href="#i-play"/></svg>Demo</a>
+      <a class="btn" href="#method"><svg><use href="#i-play"/></svg>Demo</a>
     </div>
-
-    <p class="tagline">Thinking longer gives diminishing returns. <span class="hl">Gathering evidence doesn't.</span></p>
 
     <div class="hero-charts">
       <div class="card chart-card reveal">
-        <div class="chart-kicker">Average over 23 benchmarks</div>
-        <div class="chart-title">Gains across six backbones</div>
+        <div class="chart-title">Average Performance across 23 benchmarks</div>
         <div class="legend">
           <span><i style="background:var(--s-base)"></i>Base MLLM</span>
           <span><i style="background:var(--s-ours)"></i>+ OpenVLHarness</span>
@@ -126,7 +122,7 @@
       </div>
       <div class="card chart-card reveal">
         <div class="chart-kicker">GPT-6 Luna · 12 benchmarks · reasoning effort medium → max</div>
-        <div class="chart-title">Score vs. cost: the harness sets the frontier</div>
+        <div class="chart-title">Score vs. cost: OpenVLHarness sets the frontier</div>
         <div class="legend" id="paretoLegend"></div>
         <div class="chart" id="heroPareto" role="img" aria-label="Line chart of average score versus model-token cost for four methods across four reasoning-effort settings"></div>
       </div>
@@ -134,136 +130,11 @@
   </div>
 </header>
 
-<!-- ============ demo + playground ============ -->
-<section class="block" id="demo">
-  <div class="wrap">
-    <div class="sec-head reveal">
-      <span class="sec-tag">DEMO</span>
-      <h2>See it in action</h2>
-      <p class="lead">Watch the orchestrator ground objects, measure depth, search the web, and write code over what it found, then try it on your own image.</p>
-    </div>
-    <div class="demo-grid">
-      <!-- TODO(video): replace this block with <video> or a YouTube <iframe> -->
-      <div class="video-ph reveal" id="video">
-        <div class="frame-corners"><i></i><i></i><i></i><i></i></div>
-        <div class="rec">REC · demo.mp4</div>
-        <div>
-          <div class="play"><svg><use href="#i-play"/></svg></div>
-          <h3>Demo video coming soon</h3>
-          <p>A walkthrough of OpenVLHarness solving real-world visual tasks.</p>
-        </div>
-      </div>
-
-      <!-- TODO(playground): placeholder UI, not wired to a backend -->
-      <div class="card playground reveal" id="playground">
-        <div class="pg-bar">
-          <div class="dots"><i></i><i></i><i></i></div>
-          <span class="title">playground · openvlharness</span>
-          <span class="badge">COMING SOON</span>
-        </div>
-        <div class="pg-body">
-          <div class="pg-left">
-            <div class="drop">
-              <div><svg><use href="#i-upload"/></svg>Drop an image here<br><span style="font-size:12.5px">or pick an example below</span></div>
-            </div>
-            <div class="ask">
-              <input type="text" placeholder="Ask a question about the image…" disabled aria-label="Question (disabled)">
-              <button disabled>Run</button>
-            </div>
-            <div class="chips">
-              <span class="chip">How many pills?</span>
-              <span class="chip">What awards has this won?</span>
-              <span class="chip">How far apart are…?</span>
-            </div>
-          </div>
-          <div class="pg-right">
-            <h4>Tool trace</h4>
-            <div class="ghost-step"><span class="gi"></span><span class="gl" style="width:55%"></span></div>
-            <div class="ghost-step"><span class="gi"></span><span class="gl" style="width:72%"></span></div>
-            <div class="ghost-step"><span class="gi"></span><span class="gl" style="width:40%"></span></div>
-            <div class="ghost-step"><span class="gi"></span><span class="gl" style="width:64%"></span></div>
-            <div class="ghost-step"><span class="gi"></span><span class="gl" style="width:30%"></span></div>
-            <div class="pg-overlay">
-              <div><strong>Interactive playground</strong><span>Upload an image, ask a question, and watch every tool call and memory artifact as the harness works.</span></div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ============ idea / takeaway ============ -->
-<section class="block" id="idea">
-  <div class="wrap">
-    <div class="sec-head reveal">
-      <span class="sec-tag">THE IDEA</span>
-      <h2>Don't just think harder. Look closer.</h2>
-    </div>
-    <div class="idea-grid">
-      <div class="idea-text reveal">
-        <p>Many real-world visual questions can't be answered by reasoning over the input alone. You may need to <strong>localize dozens of tiny objects</strong>, <strong>look up a long-tail entity</strong> on the web, or <strong>compute a 3D distance</strong> from depth and camera poses. Spending more reasoning tokens helps only a little: moving GPT-6 Luna from <em>xhigh</em> to <em>max</em> effort more than doubles its spend for <strong>+3.0 points</strong>.</p>
-        <p><strong>OpenVLHarness</strong> wraps any MLLM with two mechanisms. A <strong style="color:var(--teal)">capability layer</strong> puts perception, search, and code tools behind task-level interfaces and renders their outputs as evidence the model can read. A <strong style="color:var(--violet)">persistent multimodal memory</strong> keeps every image, mask, depth array, and web page addressable by handle, so later steps can inspect it again and <em>compute</em> over it.</p>
-        <div class="kpis">
-          <div class="kpi"><div class="n teal">+9.2–12.6</div><div class="l">avg. points over the base model, across six open &amp; proprietary backbones</div></div>
-          <div class="kpi"><div class="n">23</div><div class="l">benchmarks covering perception, search, VQA, and spatial reasoning</div></div>
-          <div class="kpi"><div class="n">9</div><div class="l">capabilities with swappable backends (SAM 3, Depth Anything 3, …)</div></div>
-          <div class="kpi"><div class="n">0</div><div class="l">weight updates. Training-free, yet it beats fine-tuned tool-use agents</div></div>
-        </div>
-        <details class="abstract">
-          <summary>Read the full abstract</summary>
-          <p>Multimodal large language models (MLLMs) have made rapid progress on visual reasoning, yet many tasks require evidence that is difficult to obtain through internal reasoning alone: a controlled study on 12 benchmarks shows that simply increasing the inference budget yields only modest gains. Such tasks demand grounded perception, external knowledge, and numerical measurements obtained through heterogeneous tools, whose outputs must be made interpretable to the model and retained across reasoning steps. We introduce OpenVLHarness, a multimodal reasoning harness organized around a capability layer and persistent multimodal memory. The capability layer combines task-level tool interfaces with evidence rendering, providing consistent access to heterogeneous backends and converting their outputs into model-readable observations. Persistent multimodal memory retains the corresponding images, structured data, and web references as addressable artifacts throughout each query. A coding interface executes generated programs over stored data, enabling computations that combine results from multiple tools. Together, these mechanisms support an iterative process of acquiring, inspecting, and composing multimodal evidence. Evaluated on 23 benchmarks across perception, spatial reasoning, visual search, and multimodal question answering, OpenVLHarness consistently surpasses strong MLLM backbones and outperforms existing visual tool-use baselines across six open and proprietary backbones of different scales, improving average performance by 9.2–12.6 points, including +11.2 with Qwen3-VL-8B, +9.2 with Kimi K3, and +11.2 with GPT-6 Sol. In that study, even though OpenVLHarness incurs additional cost from multi-step tool use, giving the base GPT-6 Luna an even larger reasoning budget (1.27× the cost of OpenVLHarness) improves the average only from 49.6 to 51.5, compared with 62.9 for OpenVLHarness.</p>
-        </details>
-      </div>
-
-      <div class="card compare reveal" id="compareFig">
-        <div class="chart-kicker" style="margin-bottom:12px">Three ways to spend a budget · GPT-6 Luna, 12 benchmarks</div>
-        <div class="cmp-row">
-          <div class="cmp">
-            <div>
-              <h4>Think longer</h4>
-              <div class="sub">Base model, more reasoning effort</div>
-              <div class="pipe"><span class="node">image</span><span class="arr">→</span><span class="node">MLLM ⟳</span><span class="arr">→</span><span class="node">answer</span></div>
-            </div>
-            <div class="meter" data-lo="49.65" data-hi="58.31">
-              <div class="meter-track"><div class="meter-fill hi"></div><div class="meter-fill lo"></div></div>
-              <div class="meter-txt"><span>medium <b>49.7</b> · $0.62</span><span>max <b>58.3</b> · $2.92</span></div>
-            </div>
-          </div>
-          <div class="cmp">
-            <div>
-              <h4>Generic coding agent</h4>
-              <div class="sub">Codex in code mode, no visual tools</div>
-              <div class="pipe"><span class="node">image</span><span class="arr">→</span><span class="node">MLLM</span><span class="arr">⇄</span><span class="node">python</span></div>
-            </div>
-            <div class="meter" data-lo="48.06" data-hi="57.43">
-              <div class="meter-track"><div class="meter-fill hi"></div><div class="meter-fill lo"></div></div>
-              <div class="meter-txt"><span>medium <b>48.1</b> · $1.33</span><span>max <b>57.4</b> · $2.48</span></div>
-            </div>
-          </div>
-          <div class="cmp ours">
-            <div>
-              <h4>OpenVLHarness</h4>
-              <div class="sub">Acquire, inspect &amp; compose evidence</div>
-              <div class="pipe"><span class="node">image</span><span class="arr">→</span><span class="node t">MLLM</span><span class="arr">⇄</span><span class="node a">tools</span><span class="arr">⇄</span><span class="node v">memory</span></div>
-            </div>
-            <div class="meter" data-lo="62.89" data-hi="68.63">
-              <div class="meter-track"><div class="meter-fill hi"></div><div class="meter-fill lo"></div></div>
-              <div class="meter-txt"><span>medium <b>62.9</b> · $0.94</span><span>max <b>68.6</b> · $2.45</span></div>
-            </div>
-          </div>
-        </div>
-        <p class="compare-cap">Solid bar = medium effort, dashed extension = max effort (average score, 0–100 scale). OpenVLHarness at <em>medium</em> effort beats every other method at <em>any</em> effort, at roughly a third of their max-effort cost. Costs are model tokens per 1k questions, excluding tool execution.</p>
-      </div>
-    </div>
-  </div>
-</section>
-
 <!-- ============ method ============ -->
 <section class="block" id="method">
   <div class="wrap">
     <div class="sec-head reveal">
-      <span class="sec-tag">METHOD</span>
+      <span class="sec-tag">METHOD · LIVE EXAMPLE</span>
       <h2>A capability layer and a memory that remembers pixels</h2>
       <p class="lead">Step through one real trajectory: <em>"How far apart are the window and cabinet centers?"</em> Watch each tool call pass through the capability layer, come back as rendered evidence, and land in persistent memory, where the coding agent can compute over it.</p>
     </div>
@@ -390,7 +261,8 @@
       </div>
     </div>
 
-    <div class="card cap-table reveal">
+    <details class="card cap-table reveal">
+      <summary>All nine capabilities, their interfaces and swappable backends</summary>
       <table>
         <thead><tr><th>Capability</th><th>Interface</th><th>Backends (default in bold)</th></tr></thead>
         <tbody>
@@ -405,9 +277,59 @@
           <tr><td><span class="grp">compute</span>Python Coding Agent</td><td>objective → program output, new bindings</td><td><b>single-shot code generator</b>; full coding agent</td></tr>
         </tbody>
       </table>
-    </div>
+    </details>
   </div>
 </section>
+
+<!-- ============ playground ============ -->
+<section class="block" id="playground">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="sec-tag">PLAYGROUND</span>
+      <h2>Try yours!</h2>
+      <p class="lead">Upload an image, ask a question, and watch every tool call and memory artifact as the harness works.</p>
+    </div>
+      <!-- TODO(playground): placeholder UI, not wired to a backend -->
+      <div class="card playground reveal">
+        <div class="pg-bar">
+          <div class="dots"><i></i><i></i><i></i></div>
+          <span class="title">playground · openvlharness</span>
+          <span class="badge">COMING SOON</span>
+        </div>
+        <div class="pg-body">
+          <div class="pg-left">
+            <div class="drop">
+              <div><svg><use href="#i-upload"/></svg>Drop an image here<br><span style="font-size:12.5px">or pick one of our examples</span></div>
+            </div>
+            <div class="ask">
+              <input type="text" placeholder="Ask a question about the image…" disabled aria-label="Question (disabled)">
+              <button disabled>Run</button>
+            </div>
+            <div class="chips">
+              <span class="chip">How many pills?</span>
+              <span class="chip">What awards has this won?</span>
+              <span class="chip">How far apart are…?</span>
+            </div>
+          </div>
+          <div class="pg-right">
+            <h4>Tool trace</h4>
+            <div class="ghost-step"><span class="gi"></span><span class="gl" style="width:55%"></span></div>
+            <div class="ghost-step"><span class="gi"></span><span class="gl" style="width:72%"></span></div>
+            <div class="ghost-step"><span class="gi"></span><span class="gl" style="width:40%"></span></div>
+            <div class="ghost-step"><span class="gi"></span><span class="gl" style="width:64%"></span></div>
+            <div class="ghost-step"><span class="gi"></span><span class="gl" style="width:30%"></span></div>
+            <div class="pg-overlay">
+              <div><strong>Interactive playground</strong><span>Upload an image, ask a question, and watch every tool call and memory artifact as the harness works.</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+  </div>
+</section>
+
+
+
+
 
 <!-- ============ insights ============ -->
 <section class="block" id="insights">
@@ -426,7 +348,7 @@
         <p>OpenVLHarness improves the average of every backbone we tried, from an 8B open model to frontier APIs. With <strong>GPT-6 Sol it improves all 23 of 23 benchmarks</strong>. The biggest jumps come where the model needs evidence it cannot produce itself: exhaustive counting, box-level grounding, and multimodal search.</p>
         <div class="ins-stat">
           <div><div class="n">23 / 23</div><div class="l">benchmarks improved with GPT-6 Sol</div></div>
-          <div><div class="n">+30.1</div><div class="l">on FSCD-LVIS grounding with GPT-6 Sol (5.2 → 35.2)</div></div>
+          <div><div class="n">+11.2</div><div class="l">average gain with GPT-6 Sol over 23 benchmarks (54.3 → 65.5)</div></div>
         </div>
       </div>
       <div class="card ins-fig reveal">
@@ -523,13 +445,37 @@
   <div class="wrap">
     <div class="sec-head reveal">
       <span class="sec-tag">EXAMPLES</span>
-      <h2>Trajectories that chain tools through memory</h2>
-      <p class="lead">Each answer comes from several capabilities whose outputs are reused by handle, not paraphrased from earlier turns.</p>
+      <h2>Real trajectories, every tool call included</h2>
+      <p class="lead">Nineteen full rollouts from the paper's appendix and beyond. Filter by task or capability, then open one to step through the model's reasoning, each tool call, and the evidence it got back.</p>
     </div>
-    <div class="ex-tabs" id="exTabs"></div>
-    <div class="card ex-panel reveal" id="exPanel"></div>
+    <div class="exg-filters reveal">
+      <div class="seg" id="exgDomain"></div>
+      <label class="exg-select"><span class="sr-only">Model</span>
+        <select id="exgModel"></select>
+      </label>
+    </div>
+    <div class="exg-tags reveal" id="exgTags"></div>
+    <div class="exg-count" id="exgCount"></div>
+    <div class="exg-grid" id="exgGrid"></div>
   </div>
 </section>
+
+<!-- example viewer -->
+<div class="exv" id="exv" hidden>
+  <div class="exv-backdrop" data-close></div>
+  <div class="exv-dialog" role="dialog" aria-modal="true" aria-labelledby="exvTitle">
+    <div class="exv-top">
+      <div class="exv-meta" id="exvMeta"></div>
+      <div class="exv-nav">
+        <button class="ctl" id="exvPrev" aria-label="Previous example"><svg><use href="#i-prev"/></svg></button>
+        <button class="ctl" id="exvNext" aria-label="Next example"><svg><use href="#i-next"/></svg></button>
+        <button class="ctl" data-close aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+      </div>
+    </div>
+    <div class="exv-body" id="exvBody"></div>
+  </div>
+</div>
+<div class="lightbox" id="lightbox" hidden><img alt=""><span class="lb-cap"></span></div>
 
 <!-- ============ full results ============ -->
 <section class="block" id="results">
@@ -578,7 +524,8 @@
 </footer>
 
 <div class="tip" id="tip"></div>
-<script src="static/js/data.js?v=8"></script>
-<script src="static/js/main.js?v=8"></script>
+<script src="static/js/data.js?v=9"></script>
+<script src="static/js/examples.js?v=9"></script>
+<script src="static/js/main.js?v=9"></script>
 </body>
 </html>
