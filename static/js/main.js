@@ -100,11 +100,14 @@
   }
 
   /* ---------------------------------------------------------------- theme */
-  $('#themeBtn').addEventListener('click', () => {
+  const themeBtn = $('#themeBtn');
+  const syncSwitch = () => themeBtn.setAttribute('aria-checked', document.documentElement.getAttribute('data-theme') === 'dark');
+  syncSwitch();
+  themeBtn.addEventListener('click', () => {
     const root = document.documentElement;
-    const cur = root.getAttribute('data-theme') || 'light';
-    const next = cur === 'dark' ? 'light' : 'dark';
+    const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
     root.setAttribute('data-theme', next);
+    syncSwitch();
     try { localStorage.setItem('ovh-theme', next); } catch (e) {}
   });
 
