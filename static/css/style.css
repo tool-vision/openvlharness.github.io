@@ -1299,6 +1299,9 @@ table.abl th.cfg { width: 17%; }
 
 /* analysis: title, text, full-width figure */
 #insights .insight.wide { display: block; padding: 30px 0; }
-#insights .insight.wide .ins-text { max-width: 900px; margin-bottom: 14px; }
+#insights .insight.wide .ins-text { max-width: none; margin-bottom: 14px; }
 #insights .insight.wide .ins-text h3 { margin-top: 0; }
 #insights .insight.wide .ins-fig, #insights .insight.wide .abl-card { width: 100%; }
+#insights .insight.wide .ins-text p, #insights .sec-head p.lead, #optimization .sec-head p.lead, #results .sec-head p.lead { max-width: none; }
+.sec-head, .insight.wide .ins-text, #insights .insight.wide .ins-text { max-width: none; }
+.sec-head p.lead, .ins-text p { max-width: none; }
