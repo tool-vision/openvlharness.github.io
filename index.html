@@ -12,7 +12,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="static/css/style.css?v=54">
+  <link rel="stylesheet" href="static/css/style.css?v=55">
   <script>
     try { var t = localStorage.getItem('ovh-theme'); if (t) document.documentElement.setAttribute('data-theme', t); } catch (e) {}
   </script>
@@ -354,10 +354,10 @@
     </div>
 
     <!-- 1 -->
-    <div class="insight">
+    <div class="insight wide">
       <div class="ins-text reveal">
         <h3>Per-benchmark gains</h3>
-        <p>Average gains of +9.2 to +12.6 points over the base model across six backbones; with GPT-6 Sol, all 23 benchmarks improve. Gains are largest on counting, grounding, and multimodal search.</p>
+        <p>Base and OpenVLHarness scores on each of the 23 benchmarks, per backbone. Average improvement over the base model ranges from +9.2 to +12.6 points across six backbones; with GPT-6 Sol, all 23 benchmarks improve.</p>
       </div>
       <div class="card ins-fig reveal">
         <div class="fig-controls">
@@ -372,10 +372,10 @@
     </div>
 
     <!-- 2 -->
-    <div class="insight flip">
+    <div class="insight wide">
       <div class="ins-text reveal">
         <h3>Comparison with tool-use harnesses</h3>
-        <p>With GPT-6 Luna, Codex (41.5) and Visual Sketchpad (42.8) average below the no-tool baseline (43.2); OpenVLHarness reaches 55.8. On Qwen2.5-VL-7B, OpenVLHarness (35.6) exceeds the training-based baselines without updating model weights.</p>
+        <p>Average over 23 benchmarks with the same backbone. GPT-6 Luna: Base 43.2, Visual Sketchpad 42.8, Codex 41.5, OpenVLHarness 55.8. Qwen2.5-VL-7B: AdaReasoner 27.5, PixelReasoner 29.3, DeepEyesV2 26.7 (fine-tuned for tool use); OpenVLHarness 35.6 (original weights).</p>
       </div>
       <div class="card ins-fig reveal">
         <div class="fig-controls"><div class="seg" id="hcSeg"></div></div>
@@ -387,7 +387,7 @@
     <div class="insight wide">
       <div class="ins-text reveal">
         <h3>Ablation</h3>
-        <p>Components are added cumulatively to the no-tool baseline. Each cell shows the score and its change from the row above (Qwen3-VL-8B / 32B). Multimodal memory contributes most on search and deep research.</p>
+        <p>Components added cumulatively to the no-tool baseline, Qwen3-VL-8B and 32B. Each cell shows the score and its change from the row above.</p>
       </div>
       <div class="card abl-card reveal">
         <div class="abl-wrap"><table class="abl" id="ablTable" aria-label="Ablation results by domain and model scale"></table></div>
