@@ -28,6 +28,8 @@ const SAMPLES = (window.OVH_EXAMPLES || []).filter(e => e.inputs.length <= MAX_I
   web: e.tags.some(t => SEARCH_TAGS.includes(t)), n: e.inputs.length,
 }));
 
+const COMPAT_BASE = 'https://identifier-distinction-professor-juice.trycloudflare.com/v1';
+const COMPAT_MODEL = 'Qwen3-VL-8B-Instruct', OPENAI_MODEL = 'gpt-6-luna';
 const S = { client: null, base: null, files: [], provider: 'OpenAI', job: null, running: false };
 const R = {
   status: $('#dmStatus'), form: $('#dmForm'), drop: $('#dmDrop'), input: $('#dmFiles'), thumbs: $('#dmThumbs'), samples: $('#dmSamples'),
@@ -103,10 +105,14 @@ R.prov.addEventListener('click', e => {
   R.prov.querySelectorAll('button').forEach(x => x.setAttribute('aria-checked', x === b));
   const compat = S.provider === COMPAT;
   R.baseW.hidden = !compat;
-  if (compat && R.model.value === 'gpt-6-luna') R.model.value = '';
-  if (!compat && !R.model.value) R.model.value = 'gpt-6-luna';
+  // swap in each provider's default model unless the user typed their own
+  if (compat && (!R.model.value || R.model.value === OPENAI_MODEL)) R.model.value = COMPAT_MODEL;
+  if (!compat && (!R.model.value || R.model.value === COMPAT_MODEL)) R.model.value = OPENAI_MODEL;
+  if (compat && !R.baseIn.value) R.baseIn.value = COMPAT_BASE;
   R.key.placeholder = compat ? 'leave empty if none' : 'sk-…';
 });
+// default orchestrator: the self-hosted Qwen3-VL-8B endpoint
+R.prov.querySelector(`button[data-v="${COMPAT}"]`).click();
 function settings() {
   return { provider: S.provider, base_url: S.provider === COMPAT ? R.baseIn.value.trim() : '', api_key: R.key.value.trim(), model: R.model.value.trim() };
 }

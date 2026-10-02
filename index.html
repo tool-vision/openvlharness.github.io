@@ -12,7 +12,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="static/css/style.css?v=62">
+  <link rel="stylesheet" href="static/css/style.css?v=63">
   <script>
     try { var t = localStorage.getItem('ovh-theme'); if (t) document.documentElement.setAttribute('data-theme', t); } catch (e) {}
   </script>
@@ -267,7 +267,7 @@
   <div class="wrap">
     <div class="sec-head reveal">
       <h2>Interactive demo</h2>
-      <p class="lead">The agent loop and tools run on our server; the orchestrator is a user-supplied model (OpenAI, or an OpenAI-compatible endpoint with tool calling). Keys are used for the request only and are not stored.</p>
+      <p class="lead">The agent loop and tools run on our server; the orchestrator is a user-supplied model (OpenAI, or an OpenAI-compatible endpoint with tool calling).</p>
     </div>
     <div class="dm reveal" id="dm">
       <div class="dm-status" id="dmStatus"><span class="dot"></span><span class="txt">Connecting to the demo server…</span></div>
@@ -297,6 +297,7 @@
               <label class="dm-in"><span>Model API key</span><input id="dmKey" type="password" placeholder="sk-…" spellcheck="false"></label>
               <label class="dm-in"><span>Serper key <em>optional · web search</em></span><input id="dmSerper" type="password" spellcheck="false"></label>
             </div>
+            <p class="dm-keynote">Keys are used for the request only and are not stored.</p>
             <div class="dm-row dm-test"><button type="button" class="dm-btn ghost" id="dmTest">Test connection</button><span id="dmTestOut" class="dm-note"></span></div>
           </fieldset>
           <div class="dm-actions">
@@ -454,6 +455,6 @@
 <script src="static/js/examples.js?v=9"></script>
 <script src="static/js/main.js?v=36"></script>
 <script src="static/js/player.js?v=14"></script>
-<script type="module" src="static/js/demo.js?v=8"></script>
+<script type="module" src="static/js/demo.js?v=9"></script>
 </body>
 </html>
