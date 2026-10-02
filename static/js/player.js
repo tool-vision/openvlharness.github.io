@@ -137,7 +137,8 @@
 
   /* ------------------------------------------------------------ picker */
   let ex = null, P = null, cur = -1, playing = !REDUCED, visible = false, userPicked = false, domain = 'all';
-  const thumbOf = e => e.inputs[0].src;
+  // small WebP made by build_examples.py; full inputs load only when an example is opened
+  const thumbOf = e => e.inputs[0].src.replace(/[^/]+$/, 'thumb.webp');
   function renderStrip() {
     const list = EX.filter(e => domain === 'all' || e.domain === domain);
     R.strip.innerHTML = list.map(e => {
@@ -510,10 +511,10 @@
     }
     XT.textContent = title; XB.innerHTML = body; XB.scrollTop = 0;
     xLast = document.activeElement;
-    X.hidden = false; requestAnimationFrame(() => X.classList.add('show'));
+    X.hidden = false; document.documentElement.classList.add('modal-open'); requestAnimationFrame(() => X.classList.add('show'));
     $('[data-close].ctl', X).focus({ preventScroll: true });
   }
-  function closeX() { X.classList.remove('show'); setTimeout(() => { X.hidden = true; }, 180); if (xLast) xLast.focus({ preventScroll: true }); }
+  function closeX() { X.classList.remove('show'); document.documentElement.classList.remove('modal-open'); setTimeout(() => { X.hidden = true; }, 180); if (xLast) xLast.focus({ preventScroll: true }); }
   fig.addEventListener('click', ev => {
     const z = ev.target.closest('[data-zoom]');
     if (z && !ev.target.closest('.xp')) { const lb = $('#lightbox'); if (lb) { $('img', lb).src = z.src; $('.lb-cap', lb).textContent = z.alt; lb.hidden = false; } return; }
@@ -524,7 +525,20 @@
     const z = ev.target.closest('[data-zoom]');
     if (z) { const lb = $('#lightbox'); $('img', lb).src = z.src; $('.lb-cap', lb).textContent = z.alt; lb.hidden = false; }
   });
-  document.addEventListener('keydown', ev => { if (ev.key === 'Escape' && !X.hidden && $('#lightbox').hidden) closeX(); });
+  // keep Tab / Shift+Tab inside an open modal
+  function trapTab(ev, root) {
+    if (ev.key !== 'Tab') return;
+    const f = [...root.querySelectorAll('a[href], button:not([disabled]), input:not([type=hidden]), select, textarea, summary, [tabindex]:not([tabindex="-1"])')].filter(e => e.offsetParent !== null);
+    if (!f.length) return;
+    const a = f[0], z = f[f.length - 1], cur = document.activeElement;
+    if (!root.contains(cur)) { ev.preventDefault(); a.focus(); }
+    else if (ev.shiftKey && cur === a) { ev.preventDefault(); z.focus(); }
+    else if (!ev.shiftKey && cur === z) { ev.preventDefault(); a.focus(); }
+  }
+  document.addEventListener('keydown', ev => {
+    if (X.hidden || ev.defaultPrevented || !$('#lightbox').hidden) return;
+    if (ev.key === 'Escape') closeX(); else trapTab(ev, X);
+  });
 
   /* ------------------------------------------------------------ connectors (paper Fig. 2) */
   const grid = $('.mf-grid', fig);

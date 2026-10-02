@@ -24,7 +24,8 @@
     return e;
   }
   const lin = (d0, d1, r0, r1) => v => r0 + (v - d0) / (d1 - d0) * (r1 - r0);
-  const fmt1 = v => v.toFixed(1);
+  // round half-up on the 2-decimal source value (toFixed alone turns 57.15 into "57.1")
+  const fmt1 = v => (Math.round(v * 10 + (v >= 0 ? 1e-7 : -1e-7)) / 10).toFixed(1);
   const sign = v => (v >= 0 ? '+' : '−') + Math.abs(v).toFixed(1);
 
   // tooltip
@@ -463,19 +464,31 @@
         ['C', 'C · tool composition', 'color-mix(in srgb, var(--cap) 45%, var(--surface))', 'var(--ink)'],
         ['Y', 'Y · harness text', 'var(--ev)', '#fff'], ['Z', 'Z · no remedy', 'var(--s-base)', 'var(--ink)']] },
     ];
-    const rows = D.FAILURE, labW = 152, barH = 24, rowH = 36, legH = 44;
+    // tiny (phones): row names sit above the bars instead of in a 152px column
+    const tiny = W < 480;
+    const rows = D.FAILURE, labW = tiny ? 0 : 152, barH = 24, rowH = tiny ? 50 : 36, top = tiny ? 16 : 0;
     const pw = narrow ? W : (W - 36) / 2;
-    const ph = 26 + rows.length * rowH + legH;
-    const Hh = narrow ? ph * 2 + 16 : ph;
+    const lwOf = pi => (pi === 0 || narrow ? labW : 0);
+    const itemW = lab => lab.length * 6.1 + 22;
+    // lines each legend needs at its panel width, so the panel reserves exactly that height
+    const legLines = PANELS.map((P, pi) => {
+      let lx = lwOf(pi), n = 1;
+      P.keys.forEach(([, lab]) => { if (lx + itemW(lab) > pw && lx > lwOf(pi)) { lx = lwOf(pi); n++; } lx += itemW(lab); });
+      return n;
+    });
+    const phOf = pi => 26 + rows.length * rowH + 14 + legLines[pi] * 17;
+    const ph = Math.max(phOf(0), phOf(1));
+    const Hh = narrow ? phOf(0) + 16 + phOf(1) : ph;
     const svg = S('svg', { viewBox: `0 0 ${W} ${Hh}`, height: Hh }, el);
     PANELS.forEach((P, pi) => {
-      const ox = narrow ? 0 : pi * (pw + 36), oy = narrow ? pi * (ph + 16) : 0;
-      const lw = pi === 0 || narrow ? labW : 0;
+      const ox = narrow ? 0 : pi * (pw + 36), oy = narrow && pi ? phOf(0) + 16 : 0;
+      const lw = lwOf(pi);
       const sx = lin(0, 100, ox + lw, ox + pw - 4);
-      S('text', { x: ox + lw, y: oy + 13, class: 'ax-title', style: 'font-weight:600;fill:var(--ink-2)', text: P.title }, svg);
+      S('text', { x: ox + lw, y: oy + 13, class: 'ax-title', style: `font-weight:600;fill:var(--ink-2)${tiny ? ';font-size:11.5px' : ''}`, text: P.title }, svg);
       rows.forEach((r, i) => {
-        const y = oy + 26 + i * rowH;
+        const y = oy + 26 + i * rowH + top;
         if (lw) S('text', { x: ox, y: y + barH / 2 + 4, class: 'cat-label', style: 'font-weight:600;fill:var(--ink)', text: r.name }, svg);
+        else if (tiny) S('text', { x: ox, y: y - 5, class: 'cat-label', style: 'font-weight:600;fill:var(--ink)', text: r.name }, svg);
         let acc = 0;
         P.keys.forEach(([k, lab, col, tc], j) => {
           const v = r[k]; if (!v) { return; }
@@ -489,8 +502,8 @@
       // legend
       let lx = ox + lw, ly = oy + 26 + rows.length * rowH + 14;
       P.keys.forEach(([k, lab, col]) => {
-        const tw = lab.length * 6.1 + 22;
-        if (lx + tw > ox + pw) { lx = ox + lw; ly += 17; }
+        const tw = itemW(lab);
+        if (lx + tw > ox + pw && lx > ox + lw) { lx = ox + lw; ly += 17; }
         S('rect', { x: lx, y: ly - 8, width: 10, height: 10, rx: 2, style: `fill:${col}` }, svg);
         S('text', { x: lx + 14, y: ly + 1, class: 'ax-label', style: 'font-size:11px', text: lab }, svg);
         lx += tw;
@@ -717,12 +730,24 @@
     });
     $('#exvPrev').addEventListener('click', () => open(cur - 1));
     $('#exvNext').addEventListener('click', () => open(cur + 1));
+    // keep Tab / Shift+Tab inside an open modal
+    function trapTab(ev, root) {
+      if (ev.key !== 'Tab') return;
+      const f = [...root.querySelectorAll('a[href], button:not([disabled]), input:not([type=hidden]), select, textarea, summary, [tabindex]:not([tabindex="-1"])')].filter(e => e.offsetParent !== null);
+      if (!f.length) return;
+      const a = f[0], z = f[f.length - 1], cur = document.activeElement;
+      if (!root.contains(cur)) { ev.preventDefault(); a.focus(); }
+      else if (ev.shiftKey && cur === a) { ev.preventDefault(); z.focus(); }
+      else if (!ev.shiftKey && cur === z) { ev.preventDefault(); a.focus(); }
+    }
     const lb = $('#lightbox');
     function lightbox(src, cap) { $('img', lb).src = src; $('.lb-cap', lb).textContent = cap; lb.hidden = false; }
     lb.addEventListener('click', () => { lb.hidden = true; });
     document.addEventListener('keydown', e => {
-      if (!lb.hidden && e.key === 'Escape') { lb.hidden = true; return; }
-      if (exv.hidden) return;
+      // closing the image viewer consumes this Escape, so dialogs underneath stay open
+      if (!lb.hidden && e.key === 'Escape') { lb.hidden = true; e.preventDefault(); return; }
+      if (exv.hidden || e.defaultPrevented) return;
+      if (lb.hidden) trapTab(e, exv);
       if (e.key === 'Escape') close();
       else if (e.key === 'ArrowRight') open(cur + 1);
       else if (e.key === 'ArrowLeft') open(cur - 1);

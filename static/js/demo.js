@@ -87,7 +87,7 @@ R.thumbs.addEventListener('click', e => {
   const b = e.target.closest('button[data-i]'); if (!b) return;
   const [f] = S.files.splice(+b.dataset.i, 1); URL.revokeObjectURL(f.url); renderThumbs();
 });
-R.samples.innerHTML = SAMPLES.map((s, i) => `<button type="button" class="dm-sample" data-i="${i}" title="${esc(s.q.split('\n')[0])}"><img src="${s.imgs[0]}" alt="" loading="lazy"><span>${esc(s.label)}${s.n > 1 ? ` <em class="x">×${s.n}</em>` : ''}${s.web ? ' <em>web</em>' : ''}</span></button>`).join('');
+R.samples.innerHTML = SAMPLES.map((s, i) => `<button type="button" class="dm-sample" data-i="${i}" title="${esc(s.q.split('\n')[0])}"><img src="${s.imgs[0].replace(/[^/]+$/, 'thumb.webp')}" alt="" loading="lazy"><span>${esc(s.label)}${s.n > 1 ? ` <em class="x">×${s.n}</em>` : ''}${s.web ? ' <em>web</em>' : ''}</span></button>`).join('');
 R.samples.addEventListener('click', async e => {
   const b = e.target.closest('.dm-sample'); if (!b) return;
   const s = SAMPLES[+b.dataset.i];
@@ -109,10 +109,11 @@ R.prov.addEventListener('click', e => {
   if (compat && (!R.model.value || R.model.value === OPENAI_MODEL)) R.model.value = COMPAT_MODEL;
   if (!compat && (!R.model.value || R.model.value === COMPAT_MODEL)) R.model.value = OPENAI_MODEL;
   if (compat && !R.baseIn.value) R.baseIn.value = COMPAT_BASE;
-  R.key.placeholder = compat ? 'leave empty if none' : 'sk-…';
+  R.key.placeholder = compat ? (R.baseIn.value === COMPAT_BASE ? 'required for this endpoint' : 'leave empty if none') : 'sk-…';
 });
 // default orchestrator: the self-hosted Qwen3-VL-8B endpoint
 R.prov.querySelector(`button[data-v="${COMPAT}"]`).click();
+R.baseIn.addEventListener('input', () => { R.key.placeholder = R.baseIn.value.trim() === COMPAT_BASE ? 'required for this endpoint' : 'leave empty if none'; });
 function settings() {
   return { provider: S.provider, base_url: S.provider === COMPAT ? R.baseIn.value.trim() : '', api_key: R.key.value.trim(), model: R.model.value.trim() };
 }
@@ -236,4 +237,6 @@ R.form.addEventListener('submit', async e => {
 });
 R.stop.addEventListener('click', () => { if (S.job) { S.job.stop = true; setRunning(false); S.job = null; R.runNote.textContent = 'Stopped watching this run.'; R.steps.querySelectorAll('.dm-st.wait').forEach(li => li.remove()); } });
 
-connect();
+// connect only when the demo is about to be seen, so ordinary page views don't touch the backend
+const near = new IntersectionObserver(es => { if (es.some(e => e.isIntersecting)) { near.disconnect(); connect(); } }, { rootMargin: '600px 0px' });
+near.observe($('#playground'));

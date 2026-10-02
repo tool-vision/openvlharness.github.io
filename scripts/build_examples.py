@@ -25,6 +25,13 @@ TOOL = {
 }
 
 
+def save_thumb(src, dst, size=(112, 84)):
+    """Small center-cropped WebP for the example strip and demo sample chips (shown at ~44x34)."""
+    from PIL import ImageOps
+    im = Image.open(src).convert('RGB')
+    ImageOps.fit(im, size, Image.LANCZOS).save(dst, 'WEBP', quality=72, method=6)
+
+
 def save_img(src, dst):
     im = Image.open(src)
     if im.mode in ('RGBA', 'LA', 'P'):
@@ -189,6 +196,8 @@ def main():
             return {'h': handle, 'src': f'static/examples/{eid}/{fn}'}
 
         inputs = [img(h) for h in idmap if h.startswith('input_image')]
+        if inputs:
+            save_thumb(os.path.join(SITE, inputs[0]['src']), os.path.join(out_dir, 'thumb.webp'))
         says, final = model_says(traj)
         steps = []
         call_dirs = sorted(glob.glob(os.path.join(base, 'calls', '*', '')))
