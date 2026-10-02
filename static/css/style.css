@@ -1315,3 +1315,13 @@ table.abl tbody tr:hover td, table.abl tbody tr:hover th.cfg { box-shadow: inset
   .dm-trace { contain: size; min-height: 420px; max-height: none; }
 }
 @media (max-width: 900px) { .dm-trace { height: 560px; max-height: none; } }
+/* larger table headers */
+table.res thead tr.grp th { font-size: 15px; }
+table.res thead tr.sub th { font-size: 12.5px; }
+table.res thead th.first { font-size: 14px; }
+#resTable th .ver { font-size: 11px; }
+table.abl thead th.dom { font-size: 14.5px; }
+table.abl thead th.sc { font-size: 12.5px; }
+table.abl thead th.cfg { font-size: 14px; }
+table.res th, table.res td { padding-left: 5px; padding-right: 5px; }
+table.res thead tr.sub th { font-size: 12px; letter-spacing: -0.01em; }
