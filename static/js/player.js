@@ -206,9 +206,9 @@
   function renderMem(i, prevI) {
     const st = memAt(i), pv = prevI == null ? st : memAt(prevI);
     const isNew = (arr, key, v) => !arr.some(x => (key ? x[key] : x[0]) === (key ? v[key] : v[0]));
-    const showImgs = st.imgs.slice(-6);
+    const showImgs = st.imgs.slice(-8);
     R.memImgs.innerHTML = showImgs.map(im => `<figure class="${isNew(pv.imgs, 'h', im) ? 'new' : ''}"><img src="${im.src}" alt="${esc(im.h)}" data-zoom loading="lazy"><figcaption>${esc(im.h.replace('tool_generated_image', 'tool_image'))}</figcaption></figure>`).join('');
-    R.memCount.textContent = st.imgs.length > 6 ? `6 of ${st.imgs.length}` : `${st.imgs.length} image${st.imgs.length === 1 ? '' : 's'}`;
+    R.memCount.textContent = st.imgs.length > 8 ? `8 of ${st.imgs.length}` : `${st.imgs.length} image${st.imgs.length === 1 ? '' : 's'}`;
     R.memData.innerHTML = st.binds.length ? st.binds.map(b => `<div class="${isNew(pv.binds, null, b) ? 'new' : ''}" data-b="${b[0]}">${b[0]}: <span class="ty">dict</span></div>`).join('') : '<span class="ev-empty">no bindings yet</span>';
     R.memWeb.innerHTML = st.web.length ? st.web.slice(-4).map(w => `<span class="${pv.web.includes(w) ? '' : 'new'}">${w}</span>`).join('') + (st.web.length > 4 ? `<span class="more">+${st.web.length - 4} more</span>` : '') : '<span class="ev-empty">registered when search is used</span>';
     // environment update, paper format (compact)
