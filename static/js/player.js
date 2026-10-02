@@ -88,7 +88,9 @@
   }
 
   /* ------------------------------------------------------------ timing + typing */
-  let speed = 1, run = 0;
+  // speeds are relative: the menu's 1x is BASE_SPEED of the underlying timings
+  const BASE_SPEED = 0.5;
+  let speed = BASE_SPEED, run = 0;
   const alive = r => r === run;
   const sleep = (ms, r) => new Promise(res => setTimeout(res, REDUCED ? 0 : ms / speed)).then(() => alive(r));
   function typeText(el, text, { r, maxMs = 1600, cps = 220, render = t => esc(t), caret = true, scroll = null } = {}) {
@@ -442,10 +444,10 @@
   R.play.addEventListener('click', () => setPlaying(!playing));
   $('#mfPrev').addEventListener('click', () => { setPlaying(false); go(cur - 1); });
   $('#mfNext').addEventListener('click', () => { setPlaying(false); go(cur + 1); });
-  const SPEEDS = [0.25, 0.5, 0.75, 1, 1.25, 1.5, 2];
+  const SPEEDS = [0.25, 0.5, 0.75, 1, 1.5, 2, 3, 4]; // as shown; actual = shown x BASE_SPEED
   const sBtn = $('#mfSpeedBtn'), sVal = $('#mfSpeedV');
   function setSpeed(v) {
-    speed = v; fig.style.setProperty('--spd', v);
+    speed = v * BASE_SPEED; fig.style.setProperty('--spd', speed);
     sVal.textContent = v + '×';
     $$('li', R.speed).forEach(li => li.setAttribute('aria-selected', +li.dataset.v === v));
   }
@@ -465,6 +467,7 @@
     });
     document.addEventListener('click', ev => { if (!R.speed.hidden && !ev.target.closest('#mfSpeedDd')) openMenu(false); });
   }
+  if (sVal) setSpeed(1);
 
   function load(id, opt = {}) {
     const e = EX.find(x => x.id === id) || EX[0];

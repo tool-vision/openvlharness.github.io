@@ -1412,3 +1412,9 @@ table.res thead tr.sub th { font-size: 12px; letter-spacing: -0.01em; }
 #methodFig .mf-dock .mf-caption { margin: 0; flex: 1 1 320px; min-width: 0; background: none; border-radius: 0; border-left: 3px solid var(--cap); padding: 4px 0 4px 12px; }
 #methodFig .mf-dock .mf-controls { margin: 0; flex: 0 0 auto; padding: 0; background: none; border: 0; border-radius: 0; }
 @media (max-width: 760px) { #methodFig .mf-dock .mf-controls { flex: 1 1 100%; } }
+/* keep the playback buttons centered in the panel: equal side columns, caption in the left one */
+@media (min-width: 761px) {
+  #methodFig .mf-dock { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); }
+  #methodFig .mf-dock .mf-caption { grid-column: 1; }
+  #methodFig .mf-dock .mf-controls { grid-column: 2; justify-content: center; }
+}
