@@ -12,7 +12,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="static/css/style.css?v=15">
+  <link rel="stylesheet" href="static/css/style.css?v=16">
   <script>
     try { var t = localStorage.getItem('ovh-theme'); if (t) document.documentElement.setAttribute('data-theme', t); } catch (e) {}
   </script>
@@ -121,7 +121,7 @@
         <div class="chart" id="heroBars" role="img" aria-label="Grouped bar chart: average score of six backbones with and without OpenVLHarness"></div>
       </div>
       <div class="card chart-card reveal">
-        <div class="chart-title">GPT-6 Luna: score vs. cost <span class="chart-sub">12 benchmarks · labels: reasoning effort</span></div>
+        <div class="chart-title">GPT-6: performance vs. cost <span class="chart-sub">12 benchmarks · labels: reasoning effort</span></div>
         <div class="legend" id="paretoLegend"></div>
         <div class="chart" id="heroPareto" role="img" aria-label="Line chart of average score versus model-token cost for four methods across four reasoning-effort settings"></div>
       </div>
@@ -238,12 +238,12 @@
         </aside>
       </div>
 
+      <div class="steps mf-steps" id="mfSteps"></div>
       <div class="mf-controls">
         <button class="ctl" id="mfPrev" aria-label="Previous step"><svg><use href="#i-prev"/></svg></button>
         <button class="ctl play-btn" id="mfPlay" aria-label="Pause"><svg><use href="#i-pause"/></svg></button>
         <button class="ctl" id="mfNext" aria-label="Next step"><svg><use href="#i-next"/></svg></button>
-        <button class="ctl speed" id="mfSpeed" aria-pressed="false" aria-label="Playback speed">1×</button>
-        <div class="steps" id="mfSteps"></div>
+        <div class="speed-ctl"><span class="speed-l" id="mfSpeedL">Speed</span><div class="seg speed-seg" id="mfSpeed" role="radiogroup" aria-labelledby="mfSpeedL"></div></div>
       </div>
       <div class="mf-caption" id="mfCaption"><div class="s"></div><div class="t"></div><p class="d"></p></div>
     </div>
@@ -540,6 +540,6 @@
 <script src="static/js/data.js?v=10"></script>
 <script src="static/js/examples.js?v=9"></script>
 <script src="static/js/main.js?v=12"></script>
-<script src="static/js/player.js?v=2"></script>
+<script src="static/js/player.js?v=3"></script>
 </body>
 </html>

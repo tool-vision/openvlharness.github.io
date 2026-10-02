@@ -959,3 +959,20 @@ footer a { color: var(--ink-2); }
 @media (max-width: 520px) { .svc-items { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 .svc-items .be { white-space: normal; overflow: visible; line-height: 1.2; text-align: left; padding: 5px 6px; min-height: 36px; }
 .svc-items .be svg { flex: none; }
+
+/* playback: steps row, then controls row; speed selector; CSS animations follow --spd */
+.mf-steps { display: flex; gap: 6px; margin-top: 16px; }
+.mf-controls { margin-top: 10px; gap: 10px; }
+.speed-ctl { display: flex; align-items: center; gap: 8px; margin-left: auto; flex-wrap: wrap; }
+.speed-l { font: 11.5px var(--f-mono); color: var(--ink-3); letter-spacing: .04em; text-transform: uppercase; }
+.speed-seg button { font-family: var(--f-mono); font-size: 12px; padding: 5px 9px; }
+.speed-seg button[aria-checked="true"] { background: var(--surface); color: var(--ink); box-shadow: 0 1px 2px rgba(0,0,0,.08), 0 0 0 1px var(--line); font-weight: 600; }
+.speed-seg button:focus-visible { outline: 2px solid var(--cap); outline-offset: 1px; }
+#methodFig .stage .after { transition-duration: calc(.45s / var(--spd, 1)); }
+#methodFig .stage .after.wipe { transition-duration: calc(.95s / var(--spd, 1)); }
+#methodFig .stage.go .scan { animation-duration: calc(.95s / var(--spd, 1)); }
+#methodFig .stage.drawn .bx rect { animation-duration: calc(.35s / var(--spd, 1)); }
+#methodFig .stage .after.zoomed { transition-duration: calc(.55s / var(--spd, 1)); }
+#methodFig .stage .cam-in img { transition-duration: calc(.8s / var(--spd, 1)), calc(.5s / var(--spd, 1)); transition-delay: 0s, calc(.5s / var(--spd, 1)); }
+#methodFig .stage .zr { transition-duration: calc(.3s / var(--spd, 1)), calc(.5s / var(--spd, 1)); }
+@media (max-width: 640px) { .speed-ctl { margin-left: 0; } }

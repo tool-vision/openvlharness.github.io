@@ -437,7 +437,20 @@
   R.play.addEventListener('click', () => setPlaying(!playing));
   $('#mfPrev').addEventListener('click', () => { setPlaying(false); go(cur - 1); });
   $('#mfNext').addEventListener('click', () => { setPlaying(false); go(cur + 1); });
-  if (R.speed) R.speed.addEventListener('click', () => { speed = speed === 1 ? 2 : 1; R.speed.textContent = speed + '×'; R.speed.setAttribute('aria-pressed', speed === 2); });
+  const SPEEDS = [0.25, 0.5, 0.75, 1, 1.25, 1.5, 2];
+  function setSpeed(v) {
+    speed = v; fig.style.setProperty('--spd', v);
+    $$('button', R.speed).forEach(b => b.setAttribute('aria-checked', +b.dataset.v === v));
+  }
+  if (R.speed) {
+    R.speed.innerHTML = SPEEDS.map(v => `<button type="button" role="radio" data-v="${v}" aria-checked="${v === 1}">${v}×</button>`).join('');
+    R.speed.addEventListener('click', ev => { const b = ev.target.closest('button'); if (b) setSpeed(+b.dataset.v); });
+    R.speed.addEventListener('keydown', ev => {
+      if (ev.key !== 'ArrowRight' && ev.key !== 'ArrowLeft') return;
+      const k = Math.max(0, Math.min(SPEEDS.length - 1, SPEEDS.indexOf(speed) + (ev.key === 'ArrowRight' ? 1 : -1)));
+      setSpeed(SPEEDS[k]); $(`button[data-v="${SPEEDS[k]}"]`, R.speed).focus(); ev.preventDefault();
+    });
+  }
 
   function load(id, opt = {}) {
     const e = EX.find(x => x.id === id) || EX[0];
