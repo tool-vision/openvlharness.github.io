@@ -934,15 +934,12 @@ footer a { color: var(--ink-2); }
 .det-box.relock i:nth-of-type(1) { transform-origin: 0 0; } .det-box.relock i:nth-of-type(2) { transform-origin: 100% 0; }
 .det-box.relock i:nth-of-type(3) { transform-origin: 0 100%; } .det-box.relock i:nth-of-type(4) { transform-origin: 100% 100%; }
 
-/* brand mark: { depth tile } — braces close, then depth bands fill far→near (once, on load) */
+/* brand mark: viewfinder brackets lock onto a four-band depth tile (inferno), bands fill far→near (once, on load) */
 .brand-mark { color: var(--cap); }
-.brand-mark .bm-l { animation: bmL .7s cubic-bezier(.2,.8,.2,1) .2s both; }
-.brand-mark .bm-r { animation: bmR .7s cubic-bezier(.2,.8,.2,1) .2s both; }
+.brand-mark .bm-br { transform-origin: 16px 16px; animation: bmLock .7s cubic-bezier(.2,.8,.2,1) .15s both; }
 .brand-mark .bm-b { animation: bmB .35s ease both; }
 .brand-mark .bm-b:nth-of-type(1) { animation-delay: .6s; } .brand-mark .bm-b:nth-of-type(2) { animation-delay: .72s; }
 .brand-mark .bm-b:nth-of-type(3) { animation-delay: .84s; } .brand-mark .bm-b:nth-of-type(4) { animation-delay: .96s; }
-.brand:hover .brand-mark .bm-b { animation: bmB .35s ease both; }
-@keyframes bmL { from { transform: translateX(-3px); } to { transform: none; } }
-@keyframes bmR { from { transform: translateX(3px); } to { transform: none; } }
+@keyframes bmLock { from { transform: scale(1.18); opacity: 0; } to { transform: none; opacity: 1; } }
 @keyframes bmB { from { opacity: 0; } to { opacity: 1; } }
 @media (prefers-reduced-motion: reduce) { .brand-mark * { animation: none !important; } }

@@ -120,13 +120,14 @@
 
   /* ---------------------------------------------------------------- hero detection box */
   setTimeout(() => $('#detBox').classList.add('on'), REDUCED ? 0 : 350);
-  // Title label: real tool readouts from recorded trajectories (examples.js: ex01, ex17, ex09).
+  // Title label: real tool readouts from recorded trajectories (examples.js: ex01, ex17, ex08, ex09).
   (function detLabel() {
     const lab = $('#detBox .det-label'), box = $('#detBox');
     const R = [
       ['Visual_Grounding_Tool', '"pill" → 134 objects'],
       ['Depth_Estimation_Tool', 'depth_meters [966, 1302]'],
       ['Camera_Trajectory_Tool', 'yaw +40.7°'],
+      ['Image_Search_Tool', '→ "DEUTER Speed Lite Pro 25"'],
       ['Python_Coding_Agent_Tool', 'd = 1.1957 m'],
       ['Text_Search_Tool', 'webpage_url_4'],
     ];
