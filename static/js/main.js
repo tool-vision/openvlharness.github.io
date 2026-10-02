@@ -227,22 +227,21 @@
   const ELAB = {
     base: [[0, -10, 'middle'], [0, 16, 'middle'], [-8, -8, 'end'], [8, 4, 'start']],
     codex: [[9, 4, 'start'], [-9, 4, 'end'], [-7, -7, 'end'], [0, -10, 'middle']],
-    vs: [[-3, 16, 'end'], [3, 16, 'start'], [8, 14, 'start'], [0, -10, 'middle']],
+    vs: [[4, 15, 'start'], [0, -8, 'middle'], [8, 14, 'start'], [0, -10, 'middle']],
     ours: [[0, 18, 'middle'], [-6, -10, 'end'], [0, 18, 'middle'], [9, 4, 'start']],
   };
   chart($('#heroPareto'), (el, W) => {
     const Hh = W < 480 ? 270 : 300;
     const m = { l: 34, r: 40, t: 14, b: 40 };
     const svg = S('svg', { viewBox: `0 0 ${W} ${Hh}`, height: Hh }, el);
-    const lx = lin(Math.log10(0.5), Math.log10(5), m.l, W - m.r);
-    const x = v => lx(Math.log10(v));
+    const x = lin(0, 4.5, m.l, W - m.r);
     const y = lin(45, 71, Hh - m.b, m.t);
     [45, 50, 55, 60, 65, 70].forEach(v => {
       S('line', { x1: m.l, x2: W - m.r, y1: y(v), y2: y(v), class: v === 45 ? 'base-line' : 'grid-line' }, svg);
       S('text', { x: m.l - 7, y: y(v) + 4, 'text-anchor': 'end', class: 'ax-label', text: v }, svg);
     });
-    [0.5, 1, 2, 4].forEach(v => S('text', { x: x(v), y: Hh - m.b + 16, 'text-anchor': 'middle', class: 'ax-label', text: v }, svg));
-    S('text', { x: (m.l + W - m.r) / 2, y: Hh - 6, 'text-anchor': 'middle', class: 'ax-title', text: 'Cost ($ / 1k questions, log scale)' }, svg);
+    [0, 1, 2, 3, 4].forEach(v => S('text', { x: x(v), y: Hh - m.b + 16, 'text-anchor': 'middle', class: 'ax-label', text: v }, svg));
+    S('text', { x: (m.l + W - m.r) / 2, y: Hh - 6, 'text-anchor': 'middle', class: 'ax-title', text: 'Cost ($ / 1k questions)' }, svg);
     D.EFFORT.forEach((s, si) => {
       const isOurs = s.key === 'ours';
       const d = s.cost.map((c, i) => (i ? 'L' : 'M') + x(c) + ',' + y(s.score[i])).join(' ');

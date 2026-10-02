@@ -1240,3 +1240,23 @@ table.res th.first, table.res td.first { padding-left: 10px; padding-right: 10px
 @media (prefers-reduced-motion: reduce) { .mf-arrows .ar.go line { animation: none; stroke-dasharray: none; } }
 @media (max-width: 1040px) { .mf-arrows { display: none; } #methodFig .mf-grid { column-gap: 14px; } #methodFig .mf-main { row-gap: 12px; } #methodFig .mf-row.top { column-gap: 12px; } }
 #methodFig .flow:not(.svc) { height: 0; }
+
+/* memory column: narrower, two images per row growing downward; left panels wider and shorter */
+#methodFig .mf-grid { grid-template-columns: minmax(0, 3.6fr) minmax(0, 1fr); column-gap: 42px; }
+#methodFig .mem-imgs { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+#methodFig .mem-imgs figure { min-width: 0; }
+#methodFig .mem-imgs figcaption { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+#methodFig .mf-row.top > .box { height: 212px; }
+#methodFig .mf-row.mid > .box { height: 222px; }
+#methodFig .mf-row.top > .box { height: 222px; }
+#methodFig .b-user .thumbs img { height: 46px; }
+#methodFig .mem-sec .h { flex-wrap: nowrap; white-space: nowrap; }
+#methodFig .b-user:has(.mk-legend:not(:empty)) .q { -webkit-line-clamp: 2; }
+#methodFig .b-user .final { flex-wrap: nowrap; }
+#methodFig .final .gt abbr { text-decoration: none; }
+#methodFig .b-user .final { min-width: 0; }
+#methodFig .b-user .final .ans { min-width: 0; flex: 0 1 auto; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+#methodFig .b-user .final .gt { min-width: 0; flex: 0 1 auto; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+#methodFig .b-orch .brain { width: 22px; height: 22px; }
+#methodFig .mf-grid { column-gap: 32px; }
+#methodFig .b-orch .brain { width: 30px; height: 30px; margin: -5px 0 -5px -3px; }

@@ -186,7 +186,7 @@
   function renderSteps() {
     const items = [{ c: 'query', t: 'Query' }, ...P.steps.map(s => ({ c: s.cap, t: (CAP[s.cap] || { n: s.tool }).n })), { c: 'answer', t: 'Answer' }];
     R.steps.innerHTML = items.map((it, i) => {
-      const ic = it.c === 'query' ? 'i-eye' : it.c === 'answer' ? 'i-check' : (CAP[it.c] || {}).i;
+      const ic = it.c === 'query' ? 'i-user' : it.c === 'answer' ? 'i-check' : (CAP[it.c] || {}).i;
       return `<button type="button" data-i="${i}" title="${i + 1} · ${esc(it.t)}" aria-label="Step ${i + 1}: ${esc(it.t)}"><span class="bar"></span>${ic ? `<svg><use href="#${ic}"/></svg>` : ''}<span class="nn">${i + 1}</span></button>`;
     }).join('');
   }
@@ -206,9 +206,9 @@
   function renderMem(i, prevI) {
     const st = memAt(i), pv = prevI == null ? st : memAt(prevI);
     const isNew = (arr, key, v) => !arr.some(x => (key ? x[key] : x[0]) === (key ? v[key] : v[0]));
-    const showImgs = st.imgs.slice(-9);
+    const showImgs = st.imgs.slice(-6);
     R.memImgs.innerHTML = showImgs.map(im => `<figure class="${isNew(pv.imgs, 'h', im) ? 'new' : ''}"><img src="${im.src}" alt="${esc(im.h)}" data-zoom loading="lazy"><figcaption>${esc(im.h.replace('tool_generated_image', 'tool_image'))}</figcaption></figure>`).join('');
-    R.memCount.textContent = st.imgs.length > 9 ? `${st.imgs.length} images · showing latest 9` : `${st.imgs.length} image${st.imgs.length === 1 ? '' : 's'}`;
+    R.memCount.textContent = st.imgs.length > 6 ? `6 of ${st.imgs.length}` : `${st.imgs.length} image${st.imgs.length === 1 ? '' : 's'}`;
     R.memData.innerHTML = st.binds.length ? st.binds.map(b => `<div class="${isNew(pv.binds, null, b) ? 'new' : ''}" data-b="${b[0]}">${b[0]}: <span class="ty">dict</span></div>`).join('') : '<span class="ev-empty">no bindings yet</span>';
     R.memWeb.innerHTML = st.web.length ? st.web.slice(-4).map(w => `<span class="${pv.web.includes(w) ? '' : 'new'}">${w}</span>`).join('') + (st.web.length > 4 ? `<span class="more">+${st.web.length - 4} more</span>` : '') : '<span class="ev-empty">registered when search is used</span>';
     // environment update, paper format (compact)
@@ -372,8 +372,8 @@
       await typeText(R.thought, clip(txt, 360), { r, maxMs: 1600, cps: 160 });
       if (!alive(r)) return;
       R.orch.classList.remove('thinking'); R.user.classList.add('lit');
-      R.ans.textContent = ex.pred; R.final.classList.add('done');
-      R.gt.innerHTML = ex.gt ? `ground truth <b>${esc(ex.gt)}</b> ${ex.correct ? '<span class="okm">✓</span>' : ''}` : '';
+      R.ans.textContent = ex.pred; R.ans.title = ex.pred; R.final.classList.add('done');
+      R.gt.innerHTML = ex.gt ? `<abbr title="ground truth">GT</abbr> <b>${esc(ex.gt)}</b> ${ex.correct ? '<span class="okm">✓</span>' : ''}` : '';
       return;
     }
     const s = P.steps[i - 1], c = CAP[s.cap] || {};
