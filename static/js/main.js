@@ -384,52 +384,28 @@
   });
   segmented($('#hcSeg'), D.HARNESS.map(h => [h.id, h.label]), hcSel, v => { hcSel = v; hcChart.draw(true); });
 
-  /* ================================================================ INSIGHT 4: ablation staircase */
-  let abM = '8B', abD = 'Overall';
-  const abChart = chart($('#ablation'), (el, W) => {
-    const vals = D.ABLATION[abM][abD];
-    const Hh = 290;
-    const m = { l: 30, r: 6, t: 26, b: 46 };
-    const svg = S('svg', { viewBox: `0 0 ${W} ${Hh}`, height: Hh }, el);
-    const top = Math.ceil((Math.max(...vals) + 6) / 10) * 10;
-    const y = lin(0, top, Hh - m.b, m.t);
-    for (let v = 0; v <= top; v += top > 60 ? 20 : 10) {
-      S('line', { x1: m.l, x2: W - m.r, y1: y(v), y2: y(v), class: v ? 'grid-line' : 'base-line' }, svg);
-      S('text', { x: m.l - 7, y: y(v) + 4, 'text-anchor': 'end', class: 'ax-label', text: v }, svg);
-    }
-    const gw = (W - m.l - m.r) / vals.length;
-    const bw = Math.min(64, gw * 0.62);
-    vals.forEach((v, i) => {
-      const cx = m.l + gw * (i + 0.5), x0 = cx - bw / 2;
-      const prev = i ? vals[i - 1] : 0;
-      const d = v - prev;
-      const last = i === vals.length - 1;
-      const delay = i * 220;
-      // body (carry-over)
-      const body = Math.min(v, prev || v);
-      if (i) S('rect', { x: x0, y: y(body), width: bw, height: y(0) - y(body), class: 'anim-bar', style: `fill:color-mix(in srgb, var(--ink-3) 18%, transparent);transition-delay:${delay}ms` }, svg);
-      else S('rect', { x: x0, y: y(v), width: bw, height: y(0) - y(v), rx: 4, class: 'anim-bar', style: `fill:var(--s-base);transition-delay:${delay}ms` }, svg);
-      if (i) {
-        const yTop = y(Math.max(v, prev)), hgt = Math.max(2, Math.abs(y(v) - y(prev)));
-        const col = d >= 0 ? (last ? 'var(--mem)' : 'var(--cap)') : 'var(--neg)';
-        S('rect', { x: x0, y: yTop, width: bw, height: hgt, rx: 3, class: 'anim-bar', style: `fill:${col};transition-delay:${delay + 200}ms;transform-origin:50% ${d >= 0 ? '100%' : '0'}` }, svg);
-        // connector from previous bar top
-        S('line', { x1: x0 - (gw - bw), x2: x0, y1: y(prev), y2: y(prev), class: 'anim-fade', style: `stroke:var(--ink-3);stroke-width:1;stroke-dasharray:2 3;transition-delay:${delay}ms` }, svg);
-        S('text', { x: cx, y: yTop - 18, 'text-anchor': 'middle', class: 'val-label anim-fade', style: `fill:${col};font-weight:700;font-family:var(--f-mono);font-size:11px;transition-delay:${delay + 450}ms`, text: sign(d) }, svg);
-      }
-      S('text', { x: cx, y: y(Math.max(v, prev)) - 5, 'text-anchor': 'middle', class: 'val-label anim-fade' + (last ? ' strong' : ''), style: `transition-delay:${delay + 450}ms`, text: v.toFixed(1) }, svg);
-      const lbl = D.ABL_STEPS[i].split(' ');
-      const t = S('text', { x: cx, y: Hh - m.b + 16, 'text-anchor': 'middle', class: 'cat-label', style: 'font-size:11px' }, svg);
-      if (lbl.length > 2) {
-        S('tspan', { x: cx, dy: 0, text: lbl[0] + ' ' + lbl[1] }, t);
-        S('tspan', { x: cx, dy: 13, text: lbl.slice(2).join(' ') }, t);
-      } else S('tspan', { x: cx, dy: 0, text: D.ABL_STEPS[i] }, t);
-      const hit = S('rect', { x: cx - gw / 2, y: m.t, width: gw, height: Hh - m.t - m.b, fill: 'transparent' }, svg);
-      hover(hit, `<b>${D.ABL_STEPS[i]}</b><br>${abD} · Qwen3-VL-${abM}: <b>${v.toFixed(2)}</b>${i ? ` (${sign(d)})` : ''}`);
+  /* ================================================================ ABLATION TABLE (paper Table 2) */
+  (function ablationTable() {
+    const el = $('#ablTable'); if (!el) return;
+    const COLS = [['Count & Ground', 'Counting & Grounding'], ['Search', 'Search & Deep Research'], ['General VQA', 'General VQA'], ['Spatial', 'Spatial'], ['Overall', 'Overall']];
+    const SC = ['8B', '32B'];
+    const shade = d => {
+      const a = Math.min(1, Math.abs(d) / 8) * 42;            // % of the accent mixed into the cell
+      return d >= 0 ? `color-mix(in srgb, var(--cap) ${a}%, transparent)` : `color-mix(in srgb, var(--ev) ${a}%, transparent)`;
+    };
+    let t = '<thead><tr><th rowspan="2" class="cfg">Configuration</th>' + COLS.map(([k, n]) => `<th colspan="2" class="dom${k === 'Overall' ? ' ov' : ''}">${n}</th>`).join('') + '</tr><tr>' +
+      COLS.map(([k]) => SC.map((s, i) => `<th class="sc${i === 0 ? ' gs' : ''}${k === 'Overall' ? ' ov' : ''}">${s}</th>`).join('')).join('') + '</tr></thead><tbody>';
+    D.ABL_STEPS.forEach((step, r) => {
+      t += `<tr${r === D.ABL_STEPS.length - 1 ? ' class="full"' : ''}><th class="cfg">${step}</th>`;
+      COLS.forEach(([k]) => SC.forEach((s, i) => {
+        const v = D.ABLATION[s][k][r], prev = r ? D.ABLATION[s][k][r - 1] : null, d = prev == null ? null : v - prev;
+        const ds = d == null ? '' : `<span class="d ${d >= 0 ? 'up' : 'dn'}">${d >= 0 ? '+' : '−'}${Math.abs(d).toFixed(1)}</span>`;
+        t += `<td class="${i === 0 ? 'gs' : ''}${k === 'Overall' ? ' ov' : ''}" style="${d == null ? '' : 'background:' + shade(d)}" title="${s} · ${k} · ${step}: ${v.toFixed(2)}${d == null ? '' : ` (${d >= 0 ? '+' : '−'}${Math.abs(d).toFixed(2)})`}"><b>${v.toFixed(1)}</b>${ds}</td>`;
+      }));
+      t += '</tr>';
     });
-  });
-  segmented($('#abModel'), [['8B', 'Qwen3-VL-8B'], ['32B', '32B']], abM, v => { abM = v; abChart.draw(true); });
-  segmented($('#abDomain'), ['Overall', 'Count & Ground', 'Search', 'General VQA', 'Spatial'].map(d => [d, d]), abD, v => { abD = v; abChart.draw(true); });
+    el.innerHTML = t + '</tbody>';
+  })();
 
   /* ================================================================ HARNESS OPTIMIZATION: failure causes + remedy channels by domain (Fig. 4a/b) */
   chart($('#failDomain'), (el, W) => {

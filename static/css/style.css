@@ -1269,3 +1269,30 @@ table.res th.first, table.res td.first { padding-left: 10px; padding-right: 10px
 .sec-head p.lead { font-size: 16px; }
 #methodFig .b-orch .brain { width: 22px; height: 22px; margin: -2px 0 -2px -1px; }
 #methodFig .stage.drawn .bx rect { animation-duration: calc(.22s / var(--spd, 1)); }
+
+/* ablation table (paper Table 2) */
+.insight.wide { grid-template-columns: 1fr; gap: 14px; align-items: start; }
+.insight.wide .ins-text { max-width: 900px; }
+.abl-card { padding: 14px 16px 10px; }
+.abl-wrap { overflow-x: auto; }
+table.abl { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 13px; font-variant-numeric: tabular-nums; }
+table.abl th, table.abl td { padding: 7px 8px; text-align: right; white-space: nowrap; border-bottom: 1px solid var(--line); }
+table.abl thead th { font-size: 12px; font-weight: 600; color: var(--ink-2); background: var(--surface-2); }
+table.abl thead th.dom { text-align: center; font-family: var(--f-display); color: var(--ink); border-left: 1px solid var(--line); }
+table.abl thead th.sc { font: 500 11px var(--f-mono); color: var(--ink-3); }
+table.abl th.cfg { text-align: left; font-weight: 600; color: var(--ink); background: var(--surface); position: sticky; left: 0; z-index: 1; border-right: 1px solid var(--line); }
+table.abl thead th.cfg { background: var(--surface-2); vertical-align: bottom; }
+table.abl .gs { border-left: 1px solid var(--line); }
+table.abl .ov { font-weight: 600; }
+table.abl thead th.ov { background: color-mix(in srgb, var(--cap) 8%, var(--surface-2)); }
+table.abl td b { font-weight: 500; color: var(--ink); }
+table.abl td .d { display: block; font: 600 10.5px var(--f-mono); margin-top: 1px; }
+table.abl td .d.up { color: var(--cap); } table.abl td .d.dn { color: var(--ev); }
+table.abl tr.full th.cfg, table.abl tr.full td b { font-weight: 700; }
+table.abl tbody tr:last-child td, table.abl tbody tr:last-child th { border-bottom: 0; }
+.abl-cap { margin: 8px 0 0; font-size: 12px; color: var(--ink-3); }
+.abl-cap .sw { display: inline-block; width: 10px; height: 10px; border-radius: 2px; vertical-align: -1px; }
+.abl-cap .sw.pos { background: color-mix(in srgb, var(--cap) 40%, transparent); } .abl-cap .sw.neg { background: color-mix(in srgb, var(--ev) 40%, transparent); }
+table.abl { table-layout: fixed; min-width: 760px; }
+table.abl th.cfg { width: 17%; }
+.insight.wide > * { min-width: 0; }
