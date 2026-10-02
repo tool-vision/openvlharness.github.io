@@ -169,6 +169,15 @@ def answer_text(s):
     return s.strip().strip('`').strip()
 
 
+BOX_RE = re.compile(r'\[\s*(-?[\d.]+)\s*,\s*(-?[\d.]+)\s*,\s*(-?[\d.]+)\s*,\s*(-?[\d.]+)\s*\]')
+
+
+def full_boxes(text):
+    """All [x1, y1, x2, y2] boxes (0-1000 scale) listed after 'are:' in a grounding output."""
+    i = text.find('are:')
+    return [[round(float(v)) for v in m.groups()] for m in BOX_RE.finditer(text[i:] if i >= 0 else text)]
+
+
 def clip(s, n):
     return s if len(s) <= n else s[:n].rstrip() + ' …'
 
@@ -227,6 +236,8 @@ def main():
                 step['out'] = clip(rest, 1500)
             else:
                 step['out'] = clip(text, 2500)
+            if tool == 'Visual_Grounding_Tool':
+                step['boxes'] = full_boxes(text)  # every box; 'out' is clipped for display
             steps.append(step)
 
         hdr = parse_header(base)

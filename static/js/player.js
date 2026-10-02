@@ -68,7 +68,7 @@
       if (s.cap === 'grounding') {
         let b = 'segment_' + snake(a.query); while (bindNames.has(b)) b += '_2';
         st.binds.push([b, 'pred_boxes, pred_scores, pred_masks, num_masks']);
-        st.boxes = parseBoxes(s.out);
+        st.boxes = Array.isArray(s.boxes) ? s.boxes : parseBoxes(s.out); // full list from the build; 'out' is clipped for display
         const mN = s.out.match(/grounded (\d+) object/); st.nObj = mN ? +mN[1] : st.boxes.length;
       } else if (s.cap === 'depth') {
         seen.depth++; st.binds.push([seen.depth === 1 ? 'depth_result' : 'depth_result_' + seen.depth, 'depth_meters, depth_shape, colormap']);
@@ -302,7 +302,7 @@
       return;
     }
     if (s.cap === 'grounding' && s.srcSrc && img) {
-      const boxes = s.boxes.slice(0, 160);
+      const boxes = s.boxes; // exactly the boxes the tool returned
       // draw every box within ~0.6 s, then hold the full set briefly before showing the rendered masks
       const step = Math.min(40, 600 / Math.max(boxes.length, 1));
       const svg = `<svg class="bx" viewBox="0 0 1000 1000" preserveAspectRatio="none">${boxes.map((q, k) => `<rect x="${q[0]}" y="${q[1]}" width="${Math.max(q[2] - q[0], 4)}" height="${Math.max(q[3] - q[1], 4)}" style="animation-delay:${fast ? 0 : Math.round(k * step / speed)}ms"/>`).join('')}</svg>`;

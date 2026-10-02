@@ -22,6 +22,8 @@
   --cap-soft: rgba(38, 83, 193, 0.10);
   --ev: #c9520e;
   --ev-soft: rgba(201, 82, 14, 0.10);
+  --obs: #0e7f74;
+  --obs-soft: rgba(14, 127, 116, 0.10);
   --mem: #a83a6d;
   --mem-soft: rgba(168, 58, 109, 0.10);
   --on-accent: #ffffff;
@@ -65,6 +67,8 @@
   --cap-soft: rgba(124, 159, 240, 0.13);
   --ev: #f28a4c;
   --ev-soft: rgba(242, 138, 76, 0.13);
+  --obs: #45c4b4;
+  --obs-soft: rgba(69, 196, 180, 0.13);
   --mem: #e0709f;
   --mem-soft: rgba(224, 112, 159, 0.14);
   --on-accent: #0f1115;
@@ -1373,3 +1377,30 @@ table.res thead tr.sub th { font-size: 12px; letter-spacing: -0.01em; }
 /* hero banner: cap to the title box, not the viewport (it starts at the box's left edge) */
 .det-box .det-label { max-width: min(760px, calc(100% + 40px)); }
 @media (max-width: 640px) { .det-box .det-label { max-width: calc(100% + 2px); } }
+
+/* === architecture figure, desktop: one gap everywhere so every connector arrow has the same
+   length; memory column a little wider; overall height unchanged (left column fills to the
+   memory column's 799px: 2 x 232 box rows + capability layer + services + 3 gaps). */
+@media (min-width: 1041px) {
+  #methodFig { --ag: 36px; }
+  #methodFig .mf-grid { grid-template-columns: minmax(0, 3fr) minmax(0, 1fr); column-gap: var(--ag); }
+  #methodFig .mf-main { row-gap: var(--ag); grid-template-rows: auto auto auto; } /* 3 children; a 4th declared row added a stray trailing gap */
+  #methodFig .mf-row.top { column-gap: var(--ag); }
+  #methodFig .flow.svc { height: var(--ag); }
+  #methodFig .mf-row.top > .box, #methodFig .mf-row.mid > .box { height: 232px; }
+  #methodFig .mem-imgs img { aspect-ratio: 3 / 2; }
+}
+
+/* === architecture figure colors: orchestrator = orange (reasoning), tool call + capability
+   layer = blue (actions), rendered evidence = teal (observations), memory = magenta. */
+#methodFig .b-orch .brain { color: var(--ev); }
+#methodFig .b-orch.lit { box-shadow: 0 0 0 3px var(--ev-soft); border-color: var(--ev); }
+#methodFig .b-orch .caret { background: var(--ev); }
+#methodFig .box.lit-a { box-shadow: 0 0 0 3px var(--obs-soft); border-color: var(--obs); }
+#methodFig .flow .pipe-v.up::after { background: var(--obs); }
+.mf-arrows .ar.c-ev { color: var(--obs); }
+/* grounding boxes: thin outlines so dense results (e.g. 134 pills) stay readable */
+.stage .bx rect { fill: rgba(124, 159, 240, .07); stroke-width: 1.6; }
+/* models & services: keep each name on one line */
+@media (min-width: 1101px) { #methodFig .svc-items .be { white-space: nowrap; padding-inline: 4px; gap: 5px; font-size: 11.5px; } }
+#methodFig .b-orch h5 { color: var(--ev); }
