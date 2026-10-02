@@ -33,7 +33,7 @@
     web: { n: 'Webpage Visit', i: 'i-web', ui: 'web', be: 'serper' },
     code: { n: 'Python Coding Agent', i: 'i-code', ui: 'code', be: 'coder' },
   };
-  const DOMS = [['all', 'All'], ['count', 'Counting & Grounding'], ['search', 'Search'], ['vqa', 'General VQA'], ['spatial', 'Spatial']];
+  const DOMS = [['all', 'All'], ['count', 'Perception'], ['search', 'Search'], ['vqa', 'General VQA'], ['spatial', 'Spatial']];
 
   /* ------------------------------------------------------------ data prep */
   const snake = s => String(s || '').toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '').slice(0, 28) || 'query';
