@@ -541,72 +541,75 @@
     const st = { domain: 'all', model: 'all', caps: new Set() };
     let shown = EX;
 
-    // filters
-    segmented($('#exgDomain'), DOMS.map(([k, l]) => [k, `${l} <span class="n">${k === 'all' ? EX.length : EX.filter(e => e.domain === k).length}</span>`]), 'all', v => { st.domain = v; render(); });
-    const sel = $('#exgModel');
-    sel.innerHTML = '<option value="all">All backbones</option>' + [...new Set(EX.map(e => e.model))].map(m => `<option value="${esc(m)}">${esc(m)}</option>`).join('');
-    sel.addEventListener('change', () => { st.model = sel.value; render(); });
-    const tagsEl = $('#exgTags');
-    tagsEl.innerHTML = '<span class="exg-tags-l">Uses</span>' + Object.keys(CAPS).map(k => `<button type="button" class="tagchip" data-cap="${k}" aria-pressed="false">${icon(k)}${CAPS[k][0]}</button>`).join('') +
-      '<button type="button" class="tagclear" id="exgClear" hidden>Clear</button>';
-    tagsEl.addEventListener('click', e => {
-      const b = e.target.closest('.tagchip');
-      if (b) {
-        const k = b.dataset.cap;
-        st.caps.has(k) ? st.caps.delete(k) : st.caps.add(k);
-        b.setAttribute('aria-pressed', st.caps.has(k));
-        render();
-      } else if (e.target.id === 'exgClear') {
-        st.caps.clear(); $$('.tagchip', tagsEl).forEach(x => x.setAttribute('aria-pressed', 'false')); render();
-      }
-    });
-
     function scoreMark(e) {
       if (e.score === 1 || e.correct === true) return '<span class="ok">✓</span>';
       if (typeof e.score === 'number' && e.score > 0) return `<span class="ok part" title="partial credit">≈</span>`;
       return '';
     }
+    // gallery grid and filters (only when the gallery section is on the page)
+    if ($('#exgGrid')) {
+    // filters
+      segmented($('#exgDomain'), DOMS.map(([k, l]) => [k, `${l} <span class="n">${k === 'all' ? EX.length : EX.filter(e => e.domain === k).length}</span>`]), 'all', v => { st.domain = v; render(); });
+      const sel = $('#exgModel');
+      sel.innerHTML = '<option value="all">All backbones</option>' + [...new Set(EX.map(e => e.model))].map(m => `<option value="${esc(m)}">${esc(m)}</option>`).join('');
+      sel.addEventListener('change', () => { st.model = sel.value; render(); });
+      const tagsEl = $('#exgTags');
+      tagsEl.innerHTML = '<span class="exg-tags-l">Uses</span>' + Object.keys(CAPS).map(k => `<button type="button" class="tagchip" data-cap="${k}" aria-pressed="false">${icon(k)}${CAPS[k][0]}</button>`).join('') +
+        '<button type="button" class="tagclear" id="exgClear" hidden>Clear</button>';
+      tagsEl.addEventListener('click', e => {
+        const b = e.target.closest('.tagchip');
+        if (b) {
+          const k = b.dataset.cap;
+          st.caps.has(k) ? st.caps.delete(k) : st.caps.add(k);
+          b.setAttribute('aria-pressed', st.caps.has(k));
+          render();
+        } else if (e.target.id === 'exgClear') {
+          st.caps.clear(); $$('.tagchip', tagsEl).forEach(x => x.setAttribute('aria-pressed', 'false')); render();
+        }
+      });
 
-    function render() {
-      shown = EX.filter(e => (st.domain === 'all' || e.domain === st.domain) && (st.model === 'all' || e.model === st.model) && [...st.caps].every(c => e.caps.includes(c)));
-      $('#exgClear').hidden = !st.caps.size;
-      $('#exgCount').textContent = shown.length === EX.length ? `${EX.length} examples` : `Showing ${shown.length} of ${EX.length} examples`;
-      const grid = $('#exgGrid');
-      if (!shown.length) { grid.innerHTML = '<p class="exg-empty">No example uses all of the selected capabilities. Try removing a filter.</p>'; return; }
-      grid.innerHTML = shown.map((e, i) => {
-        const inp = e.inputs[0];
-        const alt = (e.steps.find(s => s.imgs.length) || {}).imgs?.[0];
-        return `<button type="button" class="exg-card" data-i="${i}" style="animation-delay:${Math.min(i, 12) * 40}ms">
-          <div class="thumb">
-            <img src="${inp.src}" alt="" loading="lazy">
-            ${alt ? `<img class="alt" src="${alt.src}" alt="" loading="lazy">` : ''}
-            <span class="badge-n">${e.inPaper ? 'Ex. ' + e.num : 'Extra'}</span>
-            ${e.inputs.length > 1 ? `<span class="badge-k">${e.inputs.length} images</span>` : ''}
-          </div>
-          <div class="body">
-            <div class="meta">${esc(e.dataset)} · ${esc(e.model)}</div>
-            <div class="q">${esc(e.question.split('\n')[0])}</div>
-            <div class="foot"><span class="tools">${e.caps.map(c => `<span title="${CAPS[c][0]}">${icon(c)}</span>`).join('')}</span><span class="calls">${e.steps.length} calls</span></div>
-          </div></button>`;
-      }).join('');
-    }
-    render();
-    $('#exgGrid').addEventListener('click', e => {
-      const c = e.target.closest('.exg-card'); if (!c) return;
-      const ex = shown[+c.dataset.i];
-      if (window.OVHPlayer) {
-        // keep the clicked card where it is on screen, even if the figure above changes height
-        const before = c.getBoundingClientRect().top;
-        window.OVHPlayer.load(ex.id);
-        const fix = () => { const d = c.getBoundingClientRect().top - before; if (Math.abs(d) > 1) window.scrollBy(0, d); };
-        fix(); requestAnimationFrame(fix);
+
+      function render() {
+        shown = EX.filter(e => (st.domain === 'all' || e.domain === st.domain) && (st.model === 'all' || e.model === st.model) && [...st.caps].every(c => e.caps.includes(c)));
+        $('#exgClear').hidden = !st.caps.size;
+        $('#exgCount').textContent = shown.length === EX.length ? `${EX.length} examples` : `Showing ${shown.length} of ${EX.length} examples`;
+        const grid = $('#exgGrid');
+        if (!shown.length) { grid.innerHTML = '<p class="exg-empty">No example uses all of the selected capabilities. Try removing a filter.</p>'; return; }
+        grid.innerHTML = shown.map((e, i) => {
+          const inp = e.inputs[0];
+          const alt = (e.steps.find(s => s.imgs.length) || {}).imgs?.[0];
+          return `<button type="button" class="exg-card" data-i="${i}" style="animation-delay:${Math.min(i, 12) * 40}ms">
+            <div class="thumb">
+              <img src="${inp.src}" alt="" loading="lazy">
+              ${alt ? `<img class="alt" src="${alt.src}" alt="" loading="lazy">` : ''}
+              <span class="badge-n">${e.inPaper ? 'Ex. ' + e.num : 'Extra'}</span>
+              ${e.inputs.length > 1 ? `<span class="badge-k">${e.inputs.length} images</span>` : ''}
+            </div>
+            <div class="body">
+              <div class="meta">${esc(e.dataset)} · ${esc(e.model)}</div>
+              <div class="q">${esc(e.question.split('\n')[0])}</div>
+              <div class="foot"><span class="tools">${e.caps.map(c => `<span title="${CAPS[c][0]}">${icon(c)}</span>`).join('')}</span><span class="calls">${e.steps.length} calls</span></div>
+            </div></button>`;
+        }).join('');
       }
-      else open(+c.dataset.i);
-    });
-    const markPlaying = id => $$('.exg-card', $('#exgGrid')).forEach(c => c.classList.toggle('playing', shown[+c.dataset.i] && shown[+c.dataset.i].id === id));
-    window.addEventListener('ovh:load', e => markPlaying(e.detail));
-    const _render = render;
-    render = function () { _render(); if (window.OVHPlayer) markPlaying(window.OVHPlayer.current()); };
+      render();
+      $('#exgGrid').addEventListener('click', e => {
+        const c = e.target.closest('.exg-card'); if (!c) return;
+        const ex = shown[+c.dataset.i];
+        if (window.OVHPlayer) {
+          // keep the clicked card where it is on screen, even if the figure above changes height
+          const before = c.getBoundingClientRect().top;
+          window.OVHPlayer.load(ex.id);
+          const fix = () => { const d = c.getBoundingClientRect().top - before; if (Math.abs(d) > 1) window.scrollBy(0, d); };
+          fix(); requestAnimationFrame(fix);
+        }
+        else open(+c.dataset.i);
+      });
+      const markPlaying = id => $$('.exg-card', $('#exgGrid')).forEach(c => c.classList.toggle('playing', shown[+c.dataset.i] && shown[+c.dataset.i].id === id));
+      window.addEventListener('ovh:load', e => markPlaying(e.detail));
+      const _render = render;
+      render = function () { _render(); if (window.OVHPlayer) markPlaying(window.OVHPlayer.current()); };
+    }
     window.OVHGallery = { openById: id => { let k = shown.findIndex(x => x.id === id); if (k < 0) { shown = EX; k = EX.findIndex(x => x.id === id); } open(k); } };
 
     // viewer
