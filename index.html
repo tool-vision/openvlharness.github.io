@@ -12,7 +12,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="static/css/style.css?v=27">
+  <link rel="stylesheet" href="static/css/style.css?v=29">
   <script>
     try { var t = localStorage.getItem('ovh-theme'); if (t) document.documentElement.setAttribute('data-theme', t); } catch (e) {}
   </script>
@@ -61,7 +61,7 @@
     </a>
     <div class="nav-links">
       <a href="#method">Method</a>
-      <a href="#playground">Playground</a>
+      <a href="#playground">Demo</a>
       <a href="#insights">Insights</a>
       <a href="#examples">Examples</a>
       <a href="#results">Results</a>
@@ -108,7 +108,7 @@
       <a class="btn primary" href="#" data-placeholder><svg><use href="#i-paper"/></svg>Paper<span class="soon">soon</span></a>
       <a class="btn" href="#" data-placeholder><svg><use href="#i-arxiv"/></svg>arXiv<span class="soon">soon</span></a>
       <a class="btn" href="#" data-placeholder><svg><use href="#i-github"/></svg>Code<span class="soon">soon</span></a>
-      <a class="btn" href="#method"><svg><use href="#i-play"/></svg>Demo</a>
+      <a class="btn" href="#playground"><svg><use href="#i-play"/></svg>Demo</a>
     </div>
 
     <div class="hero-charts">
@@ -297,49 +297,56 @@
   </div>
 </section>
 
-<!-- ============ playground ============ -->
+<!-- ============ demo ============ -->
 <section class="block" id="playground">
   <div class="wrap">
     <div class="sec-head reveal">
-      <span class="sec-tag">PLAYGROUND</span>
-      <h2>Playground</h2>
-      <p class="lead">Interactive demo with user-provided images. Coming soon.</p>
+      <span class="sec-tag">DEMO</span>
+      <h2>Run the harness on your own images</h2>
+      <p class="lead">The agent loop and GPU tools run on our server; the orchestrator is your model, an OpenAI key or an OpenAI-compatible endpoint with native tool calls. Keys are sent only with your request and are not stored.</p>
     </div>
-      <!-- TODO(playground): placeholder UI, not wired to a backend -->
-      <div class="card playground reveal">
-        <div class="pg-bar">
-          <div class="dots"><i></i><i></i><i></i></div>
-          <span class="title">playground · openvlharness</span>
-          <span class="badge">COMING SOON</span>
-        </div>
-        <div class="pg-body">
-          <div class="pg-left">
-            <div class="drop">
-              <div><svg><use href="#i-upload"/></svg>Drop an image here<br><span style="font-size:12.5px">or pick one of our examples</span></div>
-            </div>
-            <div class="ask">
-              <input type="text" placeholder="Ask a question about the image…" disabled aria-label="Question (disabled)">
-              <button disabled>Run</button>
-            </div>
-            <div class="chips">
-              <span class="chip">How many pills?</span>
-              <span class="chip">What awards has this won?</span>
-              <span class="chip">How far apart are…?</span>
-            </div>
+    <div class="dm reveal" id="dm">
+      <div class="dm-status" id="dmStatus"><span class="dot"></span><span class="txt">Connecting to the demo server…</span></div>
+      <div class="dm-grid">
+        <form class="card dm-setup" id="dmForm" autocomplete="off">
+          <div class="dm-f">
+            <label class="dm-l" for="dmFiles">Images <span>up to 4 · 10 MB each</span></label>
+            <label class="dm-drop" id="dmDrop" for="dmFiles"><input type="file" id="dmFiles" accept="image/*" multiple hidden><span>Drop images here or click to choose</span></label>
+            <div class="dm-thumbs" id="dmThumbs"></div>
+            <div class="dm-samples"><span class="dm-l2">Samples</span><div id="dmSamples"></div></div>
           </div>
-          <div class="pg-right">
-            <h4>Tool trace</h4>
-            <div class="ghost-step"><span class="gi"></span><span class="gl" style="width:55%"></span></div>
-            <div class="ghost-step"><span class="gi"></span><span class="gl" style="width:72%"></span></div>
-            <div class="ghost-step"><span class="gi"></span><span class="gl" style="width:40%"></span></div>
-            <div class="ghost-step"><span class="gi"></span><span class="gl" style="width:64%"></span></div>
-            <div class="ghost-step"><span class="gi"></span><span class="gl" style="width:30%"></span></div>
-            <div class="pg-overlay">
-              <div><strong>Coming soon</strong></div>
-            </div>
+          <div class="dm-f">
+            <label class="dm-l" for="dmQ">Question</label>
+            <textarea id="dmQ" rows="3" placeholder="Ask a question about the images"></textarea>
           </div>
+          <fieldset class="dm-f dm-model">
+            <legend class="dm-l">Orchestrator model</legend>
+            <div class="seg dm-prov" id="dmProv" role="radiogroup" aria-label="Provider">
+              <button type="button" role="radio" data-v="OpenAI" aria-checked="true">OpenAI</button>
+              <button type="button" role="radio" data-v="OpenAI-compatible (vLLM / SGLang)" aria-checked="false">OpenAI-compatible</button>
+            </div>
+            <div class="dm-row">
+              <label class="dm-in" id="dmBaseW" hidden><span>Base URL</span><input id="dmBase" type="url" placeholder="https://your-server.example.com/v1" spellcheck="false"></label>
+              <label class="dm-in"><span>Model</span><input id="dmModel" type="text" value="gpt-6-luna" spellcheck="false"></label>
+            </div>
+            <div class="dm-row">
+              <label class="dm-in"><span>Model API key</span><input id="dmKey" type="password" placeholder="sk-…" spellcheck="false"></label>
+              <label class="dm-in"><span>Serper key <em>optional · web search</em></span><input id="dmSerper" type="password" spellcheck="false"></label>
+            </div>
+            <div class="dm-row dm-test"><button type="button" class="dm-btn ghost" id="dmTest">Test connection</button><span id="dmTestOut" class="dm-note"></span></div>
+          </fieldset>
+          <div class="dm-actions">
+            <button type="submit" class="dm-btn primary" id="dmRun">Run</button>
+            <button type="button" class="dm-btn ghost" id="dmStop" hidden>Stop</button>
+            <span class="dm-note" id="dmRunNote"></span>
+          </div>
+        </form>
+        <div class="card dm-trace" id="dmTrace" aria-live="polite">
+          <div class="dm-trace-h"><span>Trajectory</span><span class="dm-meta" id="dmMeta"></span></div>
+          <ol class="dm-steps" id="dmSteps"><li class="dm-empty">Choose images, enter a question and your model settings, then run. Each tool call, its rendered evidence, and the final answer appear here as the agent works.</li></ol>
         </div>
       </div>
+    </div>
   </div>
 </section>
 
@@ -544,5 +551,6 @@
 <script src="static/js/examples.js?v=9"></script>
 <script src="static/js/main.js?v=18"></script>
 <script src="static/js/player.js?v=6"></script>
+<script type="module" src="static/js/demo.js?v=4"></script>
 </body>
 </html>
