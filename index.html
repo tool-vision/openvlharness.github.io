@@ -12,7 +12,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="static/css/style.css?v=29">
+  <link rel="stylesheet" href="static/css/style.css?v=32">
   <script>
     try { var t = localStorage.getItem('ovh-theme'); if (t) document.documentElement.setAttribute('data-theme', t); } catch (e) {}
   </script>
@@ -82,7 +82,7 @@
   <div class="wrap">
     <div>
       <div class="title-box">
-        <div class="det-box" id="detBox"><span class="det-label" aria-hidden="true"><b>Visual_Grounding_Tool</b><span class="ag">(query="pill")</span> <span class="ar">→</span> <span class="rs">grounded 134 objects</span></span><i></i><i></i><i></i><i></i></div>
+        <div class="det-box" id="detBox"><span class="det-label" aria-hidden="true"><b>Visual_Grounding_Tool</b><span class="ag">(…)</span> <span class="ar">→</span> <span class="rs">grounded 23 objects</span> <span class="hd">[RLE masks]</span> <span class="hd">[bboxes]</span> <span class="hd">[tool_image_1]</span></span><i></i><i></i><i></i><i></i></div>
         <h1>Open<span class="vl">VL</span>Harness</h1>
       </div>
     </div>
@@ -313,7 +313,7 @@
             <label class="dm-l" for="dmFiles">Images <span>up to 4 · 10 MB each</span></label>
             <label class="dm-drop" id="dmDrop" for="dmFiles"><input type="file" id="dmFiles" accept="image/*" multiple hidden><span>Drop images here or click to choose</span></label>
             <div class="dm-thumbs" id="dmThumbs"></div>
-            <div class="dm-samples"><span class="dm-l2">Samples</span><div id="dmSamples"></div></div>
+            <div class="dm-samples"><span class="dm-l2">Samples from the paper's examples <em>web = needs a Serper key</em></span><div id="dmSamples"></div></div>
           </div>
           <div class="dm-f">
             <label class="dm-l" for="dmQ">Question</label>
@@ -549,8 +549,8 @@
 <div class="tip" id="tip"></div>
 <script src="static/js/data.js?v=10"></script>
 <script src="static/js/examples.js?v=9"></script>
-<script src="static/js/main.js?v=18"></script>
+<script src="static/js/main.js?v=19"></script>
 <script src="static/js/player.js?v=6"></script>
-<script type="module" src="static/js/demo.js?v=4"></script>
+<script type="module" src="static/js/demo.js?v=6"></script>
 </body>
 </html>

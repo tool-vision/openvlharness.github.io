@@ -120,49 +120,54 @@
 
   /* ---------------------------------------------------------------- hero detection box */
   setTimeout(() => $('#detBox').classList.add('on'), REDUCED ? 0 : 350);
-  // Title label: tool calls and their outputs, verbatim from recorded trajectories
-  // (examples.js: ex01 #0,#1,#3 · ex06 #0,#1 · ex08 #5,#7 · ex17 #1,#0,#7). Long lines are truncated with an ellipsis.
+  // Title label: illustrative tool calls (arguments elided) with an output and the memory
+  // artifacts it registers, shown as gray handles.
   (function detLabel() {
     const lab = $('#detBox .det-label'), box = $('#detBox');
     const R = [
-      ['Visual_Grounding_Tool', 'query="pill"', 'grounded 134 objects'],
-      ['Visual_Grounding_Tool', 'query="round pill"', 'grounded 72 objects'],
-      ['Python_Coding_Agent_Tool', 'objective="Use ONLY the pred_boxes …"', 'Round detections missing from original: [23, 25, 26, 40, 41]'],
-      ['Zoom_In_Tool', 'coords=[812, 0, 872, 178]', 'tool_generated_image_1'],
-      ['OCR_Tool', 'image_id="tool_generated_image_1"', '1982年10月1日'],
-      ['Image_Search_Tool', 'image_id="tool_generated_image_3"', 'DEUTER Speed Lite Pro 25 Hiking Backpack [webpage_url_1]'],
-      ['Text_Search_Tool', 'query="awards won by Deuter Speed Lite Pro backpack"', 'The New deuter Speed Lite Pro Wins ISPO Award … [webpage_url_4]'],
-      ['Depth_Estimation_Tool', 'image_id="input_image_1"', 'depth_meters float32 [966, 1302]'],
-      ['Camera_Trajectory_Tool', 'image_ids=[input_image_1, 2, 3]', 'input_image_2: right (yaw +40.7°)'],
-      ['Python_Coding_Agent_Tool', 'objective="Compute the 3D coordinates of …"', 'Euclidean distance between them: 1.1957 meters'],
+      ['Visual_Grounding_Tool', 'grounded 23 objects', ['RLE masks', 'bboxes', 'tool_image_1']],
+      ['Depth_Estimation_Tool', 'nearest 1.84 m · median 3.27 m', ['2D-depth-map', 'depth_meters']],
+      ['Camera_Trajectory_Tool', '3 poses · baseline 0.62 m · yaw +38.4°', ['K', 'R|t', 'trajectory-plot']],
+      ['Image_Search_Tool', '"Deuter Speed Lite 25, Mineral Grove"', ['image-1', 'image-2', 'image-3', 'webpage_url_1']],
+      ['OCR_Tool', '"EXP 03/2027 · LOT 4471B"', ['text-boxes']],
+      ['Zoom_In_Tool', '4.2× crop of input_image_1', ['tool_image_4']],
+      ['Text_Search_Tool', '"ISPO Award 2024, Gold Winner"', ['webpage_url_3', 'webpage_url_4']],
+      ['Webpage_Visit_Tool', '2 relevant passages', ['webpage_url_3']],
+      ['Python_Coding_Agent_Tool', 'distance = 1.196 m', ['segment_window', 'depth_result', 'camera_trajectory_result']],
     ];
     const esc = t => t.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-    const html = (t, a, r, nCall, nRes, running) => {
-      const call = `${t}(${a})`, cut = call.slice(0, nCall);
+    const html = (t, nCall, r, nRes, hs, nH, running) => {
+      const call = `${t}(…)`, cut = call.slice(0, nCall);
       let h = cut.length <= t.length ? `<b>${esc(cut)}</b>` : `<b>${esc(t)}</b><span class="ag">${esc(cut.slice(t.length))}</span>`;
       if (running) h += ' <span class="run">running</span>';
       if (nRes > 0) h += ` <span class="ar">→</span> <span class="rs">${esc(r.slice(0, nRes))}</span>`;
+      if (nH > 0) h += hs.slice(0, nH).map(x => ` <span class="hd">[${esc(x)}]</span>`).join('');
       return h;
     };
-    if (REDUCED) { const [t, a, r] = R[0]; lab.innerHTML = html(t, a, r, 1e9, 1e9); return; }
+    if (REDUCED) { const [t, r, hs] = R[0]; lab.innerHTML = html(t, 1e9, r, 1e9, hs, hs.length); return; }
     let k = 0;
     function next() {
-      const [t, a, r] = R[k], call = `${t}(${a})`;
+      const [t, r, hs] = R[k], call = `${t}(…)`;
       box.classList.remove('relock'); void box.offsetWidth; box.classList.add('relock');
       lab.classList.remove('out');
       let n = 0;
       (function typeCall() {
-        n = Math.min(call.length, n + 2); lab.innerHTML = html(t, a, r, n, 0);
+        n = Math.min(call.length, n + 2); lab.innerHTML = html(t, n, r, 0, hs, 0);
         if (n < call.length) return setTimeout(typeCall, 26);
-        lab.innerHTML = html(t, a, r, n, 0, true);
+        lab.innerHTML = html(t, n, r, 0, hs, 0, true);
         setTimeout(() => {
           let m = 0;
           (function typeRes() {
-            m = Math.min(r.length, m + 3); lab.innerHTML = html(t, a, r, n, m);
-            if (m < r.length) return setTimeout(typeRes, 18);
-            setTimeout(() => { lab.classList.add('out'); setTimeout(() => { k = (k + 1) % R.length; next(); }, 260); }, 3400);
+            m = Math.min(r.length, m + 2); lab.innerHTML = html(t, n, r, m, hs, 0);
+            if (m < r.length) return setTimeout(typeRes, 22);
+            let h = 0;
+            (function addHandle() {
+              h++; lab.innerHTML = html(t, n, r, m, hs, h);
+              if (h < hs.length) return setTimeout(addHandle, 170);
+              setTimeout(() => { lab.classList.add('out'); setTimeout(() => { k = (k + 1) % R.length; next(); }, 260); }, 3300);
+            })();
           })();
-        }, 700);
+        }, 650);
       })();
     }
     setTimeout(next, 1100);

@@ -21,12 +21,12 @@ const TOOL_ICON = {
   Python_Coding_Agent_Tool: ['i-code', 'Python Coding Agent'], Text_Search_Tool: ['i-tsearch', 'Text Search'],
   Image_Search_Tool: ['i-isearch', 'Image Search'], Webpage_Visit_Tool: ['i-web', 'Webpage Visit'],
 };
-const SAMPLES = [
-  { label: 'Pills', imgs: ['static/examples/ex01/input_1.jpg'], q: 'How many pills are there in the image? Answer with a single integer.' },
-  { label: 'Office, 3 views', imgs: ['static/examples/ex17/input_1.jpg', 'static/examples/ex17/input_2.jpg', 'static/examples/ex17/input_3.jpg'], q: 'In meters, how far is the center of the window (red point) from the center of the cabinet (blue point)?' },
-  { label: 'Street', imgs: ['static/examples/ex10/input_1.jpg'], q: 'Are there any cars closer to us than the nearest crosswalk?' },
-  { label: 'Fruit cups', imgs: ['static/examples/ex03/input_1.jpg'], q: 'How many packages of fresh cut fruit are in this image?' },
-];
+// Samples: the recorded examples whose inputs fit the demo's limit, with their original questions.
+const SEARCH_TAGS = ['text-search', 'image-search', 'webpage-visit'];
+const SAMPLES = (window.OVH_EXAMPLES || []).filter(e => e.inputs.length <= MAX_IMAGES).map(e => ({
+  label: e.dataset, imgs: e.inputs.map(x => x.src), q: e.question.trim(),
+  web: e.tags.some(t => SEARCH_TAGS.includes(t)), n: e.inputs.length,
+}));
 
 const S = { client: null, base: null, files: [], provider: 'OpenAI', job: null, running: false };
 const R = {
@@ -85,7 +85,7 @@ R.thumbs.addEventListener('click', e => {
   const b = e.target.closest('button[data-i]'); if (!b) return;
   const [f] = S.files.splice(+b.dataset.i, 1); URL.revokeObjectURL(f.url); renderThumbs();
 });
-R.samples.innerHTML = SAMPLES.map((s, i) => `<button type="button" class="dm-sample" data-i="${i}"><img src="${s.imgs[0]}" alt="">${esc(s.label)}</button>`).join('');
+R.samples.innerHTML = SAMPLES.map((s, i) => `<button type="button" class="dm-sample" data-i="${i}" title="${esc(s.q.split('\n')[0])}"><img src="${s.imgs[0]}" alt="" loading="lazy"><span>${esc(s.label)}${s.n > 1 ? ` <em class="x">×${s.n}</em>` : ''}${s.web ? ' <em>web</em>' : ''}</span></button>`).join('');
 R.samples.addEventListener('click', async e => {
   const b = e.target.closest('.dm-sample'); if (!b) return;
   const s = SAMPLES[+b.dataset.i];
