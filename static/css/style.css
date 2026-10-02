@@ -1309,3 +1309,9 @@ table.abl th.cfg { width: 17%; }
 /* ablation row highlight (matches the results table) */
 table.abl tbody tr td, table.abl tbody tr th.cfg { transition: box-shadow .12s; }
 table.abl tbody tr:hover td, table.abl tbody tr:hover th.cfg { box-shadow: inset 0 0 0 999px color-mix(in srgb, var(--ink) 6%, transparent); }
+/* demo: trajectory panel matches the setup panel's height and scrolls inside */
+@media (min-width: 901px) {
+  .dm-grid { align-items: stretch; }
+  .dm-trace { contain: size; min-height: 420px; max-height: none; }
+}
+@media (max-width: 900px) { .dm-trace { height: 560px; max-height: none; } }
