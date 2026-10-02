@@ -171,96 +171,54 @@
     setTimeout(next, 1100);
   })();
 
-  /* ================================================================ HERO (a): gains across model families (paper Fig. 1a) */
+  /* ================================================================ HERO: grouped bars */
   chart($('#heroBars'), (el, W) => {
-    const data = D.TEASER_BARS;
-    const Hh = W < 420 ? 300 : 320;
-    const m = { l: 30, r: 6, t: 26, b: 76 };
+    const data = D.BACKBONES;
+    const Hh = W < 480 ? 250 : 280;
+    const m = { l: 30, r: 6, t: 34, b: 58 };
     const svg = S('svg', { viewBox: `0 0 ${W} ${Hh}`, height: Hh }, el);
-    const Y0 = 30;
+    const Y0 = 30; // axis starts at 30, as in the paper's Fig. 1a
     const y = lin(Y0, 72, Hh - m.b, m.t);
     [30, 40, 50, 60, 70].forEach(v => {
       S('line', { x1: m.l, x2: W - m.r, y1: y(v), y2: y(v), class: v === Y0 ? 'base-line' : 'grid-line' }, svg);
       S('text', { x: m.l - 7, y: y(v) + 4, 'text-anchor': 'end', class: 'ax-label', text: v }, svg);
     });
     S('path', { d: `M${m.l - 5},${y(Y0) - 3} l6,-5 M${m.l - 5},${y(Y0) + 2} l6,-5`, style: 'stroke:var(--ink-3);stroke-width:1.2;fill:none' }, svg);
-    // families get a little extra space between them, as in the paper
-    const fams = [...new Set(data.map(d => d.family))];
-    const slots = data.length + (fams.length - 1) * 0.45;
-    const gw = (W - m.l - m.r) / slots;
-    const bw = Math.min(30, gw * 0.36);
-    let pos = 0, prevFam = null;
-    const centers = data.map(d => { if (prevFam && d.family !== prevFam) pos += 0.45; prevFam = d.family; const c = m.l + gw * (pos + 0.5); pos += 1; return c; });
+    const gw = (W - m.l - m.r) / data.length;
+    const bw = Math.min(30, gw * 0.3);
     data.forEach((d, i) => {
-      const cx = centers[i], xb = cx - bw - 2, xo = cx + 2, delay = i * 90;
-      const rb = S('rect', { x: xb + 0.75, y: y(d.base), width: bw - 1.5, height: y(Y0) - y(d.base), rx: 3, class: 'anim-bar', style: `fill:color-mix(in srgb, var(--s-base) 16%, var(--surface));stroke:var(--s-base);stroke-width:1.5;transition-delay:${delay}ms` }, svg);
-      const ro = S('rect', { x: xo, y: y(d.ours), width: bw, height: y(Y0) - y(d.ours), rx: 3, class: 'anim-bar', style: `fill:var(--s-ours);transition-delay:${delay + 120}ms` }, svg);
-      S('text', { x: xb + bw / 2, y: y(d.base) - 5, 'text-anchor': 'middle', class: 'val-label anim-fade', style: `transition-delay:${delay + 700}ms;font-size:10px`, text: d.baseS }, svg).setAttribute('style', `transition-delay:${delay + 700}ms;font-size:9.5px`);
-      S('text', { x: xo + bw / 2, y: y(d.ours) - 5, 'text-anchor': 'middle', class: 'val-label strong anim-fade', style: `transition-delay:${delay + 800}ms;font-size:10.5px`, text: d.oursS }, svg);
-      S('text', { x: cx, y: Hh - m.b + 18, 'text-anchor': 'middle', class: 'cat-label', style: 'font-weight:600;fill:var(--ink)', text: d.label }, svg);
-      if (d.effort) S('text', { x: cx, y: Hh - m.b + 32, 'text-anchor': 'middle', class: 'ax-label', style: 'font-size:10px', text: `(${d.effort})` }, svg);
+      const cx = m.l + gw * (i + 0.5);
+      const xb = cx - bw - 1.5, xo = cx + 1.5;
+      const delay = i * 90;
+      const rb = S('rect', { x: xb, y: y(d.base), width: bw, height: y(Y0) - y(d.base), rx: 4, class: 'anim-bar', style: `fill:var(--s-base);transition-delay:${delay}ms` }, svg);
+      const ro = S('rect', { x: xo, y: y(d.ours), width: bw, height: y(Y0) - y(d.ours), rx: 4, class: 'anim-bar', style: `fill:var(--s-ours);transition-delay:${delay + 120}ms` }, svg);
+      // square off the bottom corners
+      S('rect', { x: xb, y: y(Y0) - 4, width: bw, height: 4, class: 'anim-bar', style: `fill:var(--s-base);transition-delay:${delay}ms` }, svg);
+      S('rect', { x: xo, y: y(Y0) - 4, width: bw, height: 4, class: 'anim-bar', style: `fill:var(--s-ours);transition-delay:${delay + 120}ms` }, svg);
+      if (bw >= 22) {
+        S('text', { x: xb + bw / 2, y: y(d.base) - 5, 'text-anchor': 'middle', class: 'val-label anim-fade', style: `transition-delay:${delay + 700}ms;font-size:10.5px`, text: fmt1(d.base) }, svg);
+      }
+      S('text', { x: xo + bw / 2, y: y(d.ours) - 5, 'text-anchor': 'middle', class: 'val-label strong anim-fade', style: `transition-delay:${delay + 800}ms;font-size:10.5px`, text: fmt1(d.ours) }, svg);
+      // delta chip row
+      const g = S('g', { class: 'delta-chip anim-fade', style: `transition-delay:${delay + 900}ms` }, svg);
+      const txt = '+' + (Math.round((d.ours - d.base) * 10 + 1e-6) / 10).toFixed(1);
+      S('rect', { x: cx - 21, y: 2, width: 42, height: 19, rx: 6 }, g);
+      S('text', { x: cx, y: 15.5, 'text-anchor': 'middle', text: txt }, g);
+      // category label (two lines)
+      const LBL = gw < 78
+        ? { q8: ['Qwen3', '8B'], q32: ['Qwen3', '32B'], kimi: ['Kimi', 'K3'], gpt5: ['GPT-5', ''], luna: ['GPT-6', 'Luna'], sol: ['GPT-6', 'Sol'] }
+        : { q8: ['Qwen3-VL', '8B'], q32: ['Qwen3-VL', '32B'], kimi: ['Kimi', 'K3'], gpt5: ['GPT-5', ''], luna: ['GPT-6', 'Luna'], sol: ['GPT-6', 'Sol'] };
+      const parts = [null, ...(LBL[d.id] || [d.name, ''])];
+      const t = S('text', { x: cx, y: Hh - m.b + 17, 'text-anchor': 'middle', class: 'cat-label' }, svg);
+      S('tspan', { x: cx, dy: 0, text: parts ? parts[1] : d.name }, t);
+      if (parts[2]) S('tspan', { x: cx, dy: 14, text: parts[2], style: 'fill:var(--ink-3)' }, t);
+      const EFF = { kimi: 'max', luna: 'medium', sol: 'medium' };
+      if (EFF[d.id]) S('text', { x: cx, y: Hh - m.b + 47, 'text-anchor': 'middle', class: 'ax-label', style: 'font-size:10.5px', text: `(${EFF[d.id]})` }, svg);
       const hit = S('rect', { x: cx - gw / 2, y: m.t, width: gw, height: Hh - m.t - m.b, fill: 'transparent' }, svg);
-      hover(hit, `<b>${d.name}</b><br><span class="k">Base</span> ${d.baseS}<br><span class="k">+ OpenVLHarness</span> <b>${d.oursS}</b> (+${(d.ours - d.base).toFixed(2)})`);
+      hover(hit, `<b>${d.name}</b><br><span class="k">Base</span> ${d.base.toFixed(2)}<br><span class="k">+ OpenVLHarness</span> <b>${d.ours.toFixed(2)}</b> (${txt})`);
       [rb, ro].forEach(r => r.setAttribute('pointer-events', 'none'));
     });
-    // family brackets
-    fams.forEach(f => {
-      const cs = centers.filter((c, i) => data[i].family === f);
-      const x1 = cs[0] - gw * 0.42, x2 = cs[cs.length - 1] + gw * 0.42, yy = Hh - m.b + 44;
-      S('line', { x1, x2, y1: yy, y2: yy, style: 'stroke:var(--line-2);stroke-width:1.2' }, svg);
-      S('text', { x: (x1 + x2) / 2, y: yy + 16, 'text-anchor': 'middle', class: 'cat-label', style: 'font-weight:700;fill:var(--ink-2)', text: f }, svg);
-    });
   });
-
-  /* ================================================================ HERO (b): GPT-6 Luna performance breakdown (paper Fig. 1b) */
-  (function radar() {
-    const SER = [
-      ['base', 'GPT-6 Luna (medium)', 'var(--s-base)'], ['vs', '+ Visual Sketchpad', 'var(--s-vs)'],
-      ['codex', '+ Codex', 'var(--s-codex)'], ['ours', '+ OpenVLHarness', 'var(--s-ours)'],
-    ];
-    const lg = $('#radarLegend');
-    SER.forEach(([k, n, c]) => lg.appendChild(H('span', {}, `<i style="background:${c}"></i>${n}`)));
-    chart($('#heroRadar'), (el, W) => {
-      const rows = D.TEASER_RADAR, n = rows.length;
-      const Hh = Math.min(W, 390);
-      const cx = W / 2, cy = Hh / 2, Rr = Math.min(W, Hh) / 2 - 24, R = Rr - 76;
-      const svg = S('svg', { viewBox: `0 0 ${W} ${Hh}`, height: Hh }, el);
-      const ang = i => (-90 + 15 + 30 * i) * Math.PI / 180;     // clockwise from the top
-      const pt = (i, r) => [cx + Math.cos(ang(i)) * r * R, cy + Math.sin(ang(i)) * r * R];
-      const rad = (d, s) => d.rO * Math.pow(+s / +d.ours, 1.2);   // r = (O/L)(s/O)^1.2
-      // domain ring
-      D.RADAR_RING.forEach(([name, a, b], k) => {
-        const a0 = (-90 + 30 * a) * Math.PI / 180, a1 = (-90 + 30 * b) * Math.PI / 180;
-        const p0 = [cx + Math.cos(a0) * Rr, cy + Math.sin(a0) * Rr], p1 = [cx + Math.cos(a1) * Rr, cy + Math.sin(a1) * Rr];
-        S('path', { d: `M${p0[0]},${p0[1]} A${Rr},${Rr} 0 0 1 ${p1[0]},${p1[1]}`, style: `fill:none;stroke:var(--cap);stroke-width:3;opacity:${[0.35, 0.6, 0.85, 0.5][k]}` }, svg);
-        const am = (a0 + a1) / 2, lr = Rr + 12;
-        S('text', { x: Math.cos(am) > 0 ? W - 2 : 2, y: cy + Math.sin(am) * lr + 4, 'text-anchor': Math.cos(am) > 0 ? 'end' : 'start', class: 'cat-label', style: 'font-weight:700;font-size:9px;letter-spacing:.06em;fill:var(--ink-2)', text: name.toUpperCase() }, svg);
-      });
-      // grid rings at quarters of the displayed radius, spokes, dataset labels
-      [0.25, 0.5, 0.75, 1].forEach(q => S('circle', { cx, cy, r: q * R, class: 'grid-line', style: 'fill:none' }, svg));
-      rows.forEach((d, i) => {
-        const [x, y] = pt(i, 1);
-        S('line', { x1: cx, y1: cy, x2: x, y2: y, class: 'grid-line' }, svg);
-        const [lx, ly] = pt(i, 1 + 10 / R), c = Math.cos(ang(i));
-        S('text', { x: lx, y: ly + 4, 'text-anchor': c > 0.25 ? 'start' : c < -0.25 ? 'end' : 'middle', class: 'ax-label', style: 'font-size:10px;fill:var(--ink-2)', text: d.name }, svg);
-      });
-      // series polygons (OpenVLHarness drawn last)
-      SER.forEach(([k, name, col], si) => {
-        const pts = rows.map((d, i) => pt(i, rad(d, d[k])));
-        const isO = k === 'ours';
-        S('polygon', { points: pts.map(p => p.join(',')).join(' '), class: 'anim-fade', style: `fill:${col};fill-opacity:${isO ? 0.1 : 0.06};stroke:${col};stroke-width:${isO ? 2.4 : 1.4};stroke-linejoin:round;transition-delay:${200 + si * 150}ms` }, svg);
-        pts.forEach(([x, y]) => S('circle', { cx: x, cy: y, r: isO ? 2.6 : 2, class: 'anim-fade', style: `fill:var(--surface);stroke:${col};stroke-width:1.4;transition-delay:${300 + si * 150}ms` }, svg));
-      });
-      // OpenVLHarness raw scores, just outside its vertices
-      rows.forEach((d, i) => {
-        const [x, y] = pt(i, rad(d, d.ours) - 0.15), c = -Math.cos(ang(i));
-        S('text', { x, y: y + 4, 'text-anchor': c > 0.3 ? 'start' : c < -0.3 ? 'end' : 'middle', class: 'val-label anim-fade', style: 'font-size:9.5px;font-weight:600;fill:var(--s-ours);paint-order:stroke;stroke:var(--surface);stroke-width:3px;stroke-linejoin:round;transition-delay:900ms', text: d.ours }, svg);
-        const [hx, hy] = pt(i, 0.62);
-        const hit = S('circle', { cx: hx, cy: hy, r: Math.max(16, R * 0.28), fill: 'transparent' }, svg);
-        hover(hit, `<b>${d.name}</b><br>${SER.map(([k, n]) => `<span class="k">${n}</span> ${k === 'ours' ? '<b>' + d[k] + '</b>' : d[k]}`).join('<br>')}`);
-      });
-    });
-  })();
 
   /* ================================================================ HERO: score vs. cost (paper Fig. 1c) */
   const lg = $('#paretoLegend');

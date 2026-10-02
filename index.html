@@ -12,7 +12,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="static/css/style.css?v=47">
+  <link rel="stylesheet" href="static/css/style.css?v=48">
   <script>
     try { var t = localStorage.getItem('ovh-theme'); if (t) document.documentElement.setAttribute('data-theme', t); } catch (e) {}
   </script>
@@ -112,22 +112,17 @@
       <a class="btn" href="#playground"><svg><use href="#i-play"/></svg>Demo</a>
     </div>
 
-    <div class="hero-charts three">
+    <div class="hero-charts">
       <div class="card chart-card reveal">
-        <div class="chart-title">(a) Gains across model families <span class="chart-sub">Average over 23 benchmarks</span></div>
+        <div class="chart-title">Gains across model families <span class="chart-sub">Average over 23 benchmarks · Base vs. + OpenVLHarness</span></div>
         <div class="legend">
-          <span><i class="outline"></i>Base</span>
+          <span><i style="background:var(--s-base)"></i>Base MLLM</span>
           <span><i style="background:var(--s-ours)"></i>+ OpenVLHarness</span>
         </div>
-        <div class="chart" id="heroBars" role="img" aria-label="Bar chart: average score over 23 benchmarks for five backbones with and without OpenVLHarness"></div>
+        <div class="chart" id="heroBars" role="img" aria-label="Grouped bar chart: average score of six backbones with and without OpenVLHarness"></div>
       </div>
       <div class="card chart-card reveal">
-        <div class="chart-title">(b) GPT-6 Luna performance breakdown <span class="chart-sub">medium effort · 12 benchmarks</span></div>
-        <div class="legend" id="radarLegend"></div>
-        <div class="chart" id="heroRadar" role="img" aria-label="Radar chart of GPT-6 Luna scores on 12 benchmarks without a harness and with Visual Sketchpad, Codex, or OpenVLHarness"></div>
-      </div>
-      <div class="card chart-card reveal">
-        <div class="chart-title">(c) GPT-6 Luna: performance vs. cost <span class="chart-sub">12 benchmarks · labels: reasoning effort</span></div>
+        <div class="chart-title">GPT-6: performance vs. cost <span class="chart-sub">12 benchmarks · labels: reasoning effort</span></div>
         <div class="legend" id="paretoLegend"></div>
         <div class="chart" id="heroPareto" role="img" aria-label="Line chart of average score versus model-token cost for four methods across four reasoning-effort settings"></div>
       </div>
@@ -580,9 +575,9 @@
 </footer>
 
 <div class="tip" id="tip"></div>
-<script src="static/js/data.js?v=12"></script>
+<script src="static/js/data.js?v=13"></script>
 <script src="static/js/examples.js?v=9"></script>
-<script src="static/js/main.js?v=32"></script>
+<script src="static/js/main.js?v=33"></script>
 <script src="static/js/player.js?v=12"></script>
 <script type="module" src="static/js/demo.js?v=8"></script>
 </body>
