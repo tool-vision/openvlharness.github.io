@@ -396,10 +396,9 @@
     let model = '8B', mode = 'micro';
     const fmt = n => n.toLocaleString('en-US');
     function render() {
-      box.innerHTML = '';
-      DOMS.forEach(([dk, dn]) => {
+      DOMS.forEach(([dk, dn], di) => {
         const c = D.TOOL_MIX[model][dk], v = c[mode], tot = v.reduce((a, b) => a + b, 0);
-        const fig = H('figure', { class: 'tm-pie' });
+        const fig = H('figure', { class: 'tm-pie', style: `--d:${di * 110}ms` });
         fig.appendChild(H('figcaption', { class: 'tm-t' }, dn));
         const R = 70, C = 80, svg = S('svg', { viewBox: '0 0 160 160', width: 160, height: 160 }, fig);
         let a0 = -Math.PI / 2;
@@ -420,10 +419,11 @@
         box.appendChild(fig);
       });
     }
-    segmented($('#tmModel'), MODELS, model, v => { model = v; render(); });
-    segmented($('#tmMode'), [['micro', 'Micro — every call'], ['inst', 'Per-instance — once per question']], mode, v => { mode = v; render(); });
+    // registered as a chart: sweeps in when scrolled into view and replays on every switch
+    const tmChart = chart(box, render);
+    segmented($('#tmModel'), MODELS, model, v => { model = v; tmChart.draw(true); });
+    segmented($('#tmMode'), [['micro', 'Micro — every call'], ['inst', 'Per-instance — once per question']], mode, v => { mode = v; tmChart.draw(true); });
     $('#tmLegend').innerHTML = T.map(t => `<span><i style="background:${COL[t]}"></i>${LBL[t]}</span>`).join('');
-    render();
   })();
 
   /* ================================================================ ABLATION TABLE (paper Table 2) */

@@ -1342,3 +1342,12 @@ table.res thead tr.sub th { font-size: 12px; letter-spacing: -0.01em; }
 .tm-legend span { display: inline-flex; align-items: center; gap: 6px; }
 .tm-legend i { width: 11px; height: 11px; border-radius: 2px; display: inline-block; }
 @media (max-width: 720px) { .tm-pies { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+/* pie sweep-in: clockwise from 12 o'clock, staggered per domain */
+@property --sweep { syntax: '<angle>'; inherits: false; initial-value: 360deg; }
+.tm-pies.chart:not(.in) .tm-pie svg { --sweep: 0deg; }
+.tm-pie svg { -webkit-mask: conic-gradient(#000 var(--sweep), transparent 0); mask: conic-gradient(#000 var(--sweep), transparent 0); }
+.tm-pies.chart.in .tm-pie svg { transition: --sweep 1.1s cubic-bezier(.4, 0, .2, 1) var(--d, 0ms); }
+.tm-pies.chart .tm-n { opacity: 0; transition: opacity .4s ease calc(var(--d, 0ms) + .8s); }
+.tm-pies.chart.in .tm-n { opacity: 1; }
+.chart.tm-pies svg { width: 100%; overflow: hidden; }
+@media (prefers-reduced-motion: reduce) { .tm-pie svg { -webkit-mask: none; mask: none; } .tm-pies.chart .tm-n { opacity: 1; transition: none; } }
