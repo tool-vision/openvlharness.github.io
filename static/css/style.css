@@ -1404,3 +1404,5 @@ table.res thead tr.sub th { font-size: 12px; letter-spacing: -0.01em; }
 /* models & services: keep each name on one line */
 @media (min-width: 1101px) { #methodFig .svc-items .be { white-space: nowrap; padding-inline: 4px; gap: 5px; font-size: 11.5px; } }
 #methodFig .b-orch h5 { color: var(--ev); }
+.tm-pie.na svg circle { fill: none; stroke: var(--line-2); stroke-width: 1.5; stroke-dasharray: 5 5; }
+.tm-pie.na .tm-n { opacity: 1; }

@@ -393,14 +393,20 @@
     // paper colors: perception blues, web oranges, coding purple
     const COL = { Visual_Grounding: '#1F6F8B', Zoom_In: '#3E8AA3', OCR: '#66A7BB', Depth_Estimation: '#93C3D1', Camera_Trajectory: '#BFDCE5', Text_Search: '#B4530A', Image_Search: '#CE7327', Webpage_Visit: '#E19A5C', Python_Coding_Agent: '#6A2E7A' };
     const DOMS = [['Counting and Grounding', 'Counting & Grounding'], ['Visual Search and Deep Research', 'Search & Deep Research'], ['General VQA and Hallucination', 'General VQA'], ['Spatial Understanding', 'Spatial']];
-    const MODELS = [['8B', 'Qwen3-VL-8B'], ['32B', 'Qwen3-VL-32B'], ['luna', 'GPT-6 Luna'], ['sol', 'GPT-6 Sol']];
+    const MODELS = [['8B', 'Qwen3-VL-8B'], ['32B', 'Qwen3-VL-32B'], ['kimi', 'Kimi K3'], ['luna', 'GPT-6 Luna'], ['sol', 'GPT-6 Sol']];
     let model = '8B', mode = 'micro';
     const fmt = n => n.toLocaleString('en-US');
     function render() {
       DOMS.forEach(([dk, dn], di) => {
-        const c = D.TOOL_MIX[model][dk], v = c[mode], tot = v.reduce((a, b) => a + b, 0);
+        const c = D.TOOL_MIX[model][dk];
         const fig = H('figure', { class: 'tm-pie', style: `--d:${di * 110}ms` });
         fig.appendChild(H('figcaption', { class: 'tm-t' }, dn));
+        if (!c) { // no saved trajectories for this backbone/domain
+          fig.classList.add('na');
+          fig.insertAdjacentHTML('beforeend', '<svg viewBox="0 0 160 160" width="160" height="160"><circle cx="80" cy="80" r="69" /></svg><div class="tm-n">no trajectories</div>');
+          box.appendChild(fig); return;
+        }
+        const v = c[mode], tot = v.reduce((a, b) => a + b, 0);
         const R = 70, C = 80, svg = S('svg', { viewBox: '0 0 160 160', width: 160, height: 160 }, fig);
         let a0 = -Math.PI / 2;
         T.forEach((t, i) => {
