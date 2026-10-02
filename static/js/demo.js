@@ -148,7 +148,7 @@ function toSteps(chat) {
       const t = text.replace('**Answer:**', '').trim();
       out.push(t.startsWith('⚠️') ? { kind: 'error', text: t.replace('⚠️', '').trim() } : { kind: 'answer', text: t });
     }
-    else if (text.trim()) out.push({ kind: 'thought', text });
+    else if (text.trim()) { const t = text.replace(/<\/?(thinking|think|answer)>/g, '').trim(); if (t) out.push({ kind: 'thought', text: t }); }
   }
   return out;
 }
@@ -172,7 +172,10 @@ function renderTrace(chat, done) {
     if (s.kind === 'status' && !done) return `<li class="dm-st wait"><span class="dm-spin"></span>${esc(s.text)}</li>`;
     return '';
   }).join('');
-  R.steps.innerHTML = html || '<li class="dm-empty">Waiting for the first model response…</li>';
+  // follow new steps inside the trace panel only while the reader is at its bottom
+  const box = R.steps, atBottom = box.scrollTop + box.clientHeight >= box.scrollHeight - 40;
+  box.innerHTML = html || '<li class="dm-empty">Waiting for the first model response…</li>';
+  if (atBottom) box.scrollTop = box.scrollHeight;
   R.meta.textContent = `${n} tool call${n === 1 ? '' : 's'}`;
 }
 R.steps.addEventListener('click', e => {
@@ -208,22 +211,23 @@ R.form.addEventListener('submit', async e => {
   try {
     const root = (S.client.config && S.client.config.root) || S.base;
     const files = await upload.call(S.client, await prepare_files(S.files.map(f => f.blob)), root);
-    const job = S.client.submit('/run_agent', { message: { text: q, files }, ...st, serper_key: R.serper.value.trim() });
-    S.job = job;
-    for await (const ev of job) {
-      if (ev.type === 'data') renderTrace(ev.data[0], false);
-      else if (ev.type === 'status') {
-        if (ev.stage === 'pending' && ev.queue && ev.position != null) R.runNote.textContent = `Queued: position ${ev.position + 1}`;
-        else if (ev.stage === 'generating') R.runNote.textContent = '';
-        else if (ev.stage === 'error') { finish(ev.message || 'The run failed.'); break; }
-        else if (ev.stage === 'complete') { finish(); break; }
-      }
+    // Start the run, then poll for the trajectory. The server's tunnel holds back streamed
+    // responses until they finish, so short polling requests keep the view up to date.
+    const jobId = (await S.client.predict('/start_run', { message: { text: q, files }, ...st, serper_key: R.serper.value.trim() })).data[0];
+    S.job = { id: jobId, stop: false };
+    const job = S.job;
+    while (!job.stop) {
+      const r = (await S.client.predict('/poll', { job_id: jobId })).data[0];
+      if (job.stop) break;
+      renderTrace(r.chat, r.done);
+      if (r.done) break;
+      await new Promise(res => setTimeout(res, 1000));
     }
     finish();
   } catch (err) {
     finish(errText(err));
   }
 });
-R.stop.addEventListener('click', () => { if (S.job) { const j = S.job; setRunning(false); S.job = null; R.runNote.textContent = 'Stopped.'; R.steps.querySelectorAll('.dm-st.wait').forEach(li => li.remove()); try { j.cancel(); } catch (e) { /* ignore */ } } });
+R.stop.addEventListener('click', () => { if (S.job) { S.job.stop = true; setRunning(false); S.job = null; R.runNote.textContent = 'Stopped watching this run.'; R.steps.querySelectorAll('.dm-st.wait').forEach(li => li.remove()); } });
 
 connect();
