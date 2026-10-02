@@ -1305,3 +1305,4 @@ table.abl th.cfg { width: 17%; }
 #insights .insight.wide .ins-text p, #insights .sec-head p.lead, #optimization .sec-head p.lead, #results .sec-head p.lead { max-width: none; }
 .sec-head, .insight.wide .ins-text, #insights .insight.wide .ins-text { max-width: none; }
 .sec-head p.lead, .ins-text p { max-width: none; }
+#resTable th .ver { font: 500 10px var(--f-mono); color: var(--ink-3); letter-spacing: 0; }

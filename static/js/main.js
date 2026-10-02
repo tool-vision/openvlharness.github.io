@@ -689,7 +689,7 @@
 
   /* ================================================================ RESULTS TABLE */
   (function table() {
-    const NAMES = { Base: 'Base', OT: 'OctoTools', VS: 'Visual<br>Sketchpad', CX: 'Codex', Ours: 'Ours' };
+    const NAMES = { Base: 'Base', OT: 'OctoTools', VS: 'Visual<br>Sketchpad', CX: 'Codex<br><span class="ver">v0.155.1</span>', Ours: 'Ours' };
     const ORDER = ['q8', 'q32', 'gpt5', 'kimi', 'luna', 'sol'];
     function render() {
       const groups = ORDER.map(id => D.GROUPS.find(g => g.id === id));
