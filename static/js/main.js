@@ -158,22 +158,24 @@
     const Hh = W < 480 ? 250 : 280;
     const m = { l: 30, r: 6, t: 34, b: 58 };
     const svg = S('svg', { viewBox: `0 0 ${W} ${Hh}`, height: Hh }, el);
-    const y = lin(0, 75, Hh - m.b, m.t);
-    [0, 20, 40, 60].forEach(v => {
-      S('line', { x1: m.l, x2: W - m.r, y1: y(v), y2: y(v), class: v ? 'grid-line' : 'base-line' }, svg);
+    const Y0 = 30; // axis starts at 30, as in the paper's Fig. 1a
+    const y = lin(Y0, 72, Hh - m.b, m.t);
+    [30, 40, 50, 60, 70].forEach(v => {
+      S('line', { x1: m.l, x2: W - m.r, y1: y(v), y2: y(v), class: v === Y0 ? 'base-line' : 'grid-line' }, svg);
       S('text', { x: m.l - 7, y: y(v) + 4, 'text-anchor': 'end', class: 'ax-label', text: v }, svg);
     });
+    S('path', { d: `M${m.l - 5},${y(Y0) - 3} l6,-5 M${m.l - 5},${y(Y0) + 2} l6,-5`, style: 'stroke:var(--ink-3);stroke-width:1.2;fill:none' }, svg);
     const gw = (W - m.l - m.r) / data.length;
     const bw = Math.min(30, gw * 0.3);
     data.forEach((d, i) => {
       const cx = m.l + gw * (i + 0.5);
       const xb = cx - bw - 1.5, xo = cx + 1.5;
       const delay = i * 90;
-      const rb = S('rect', { x: xb, y: y(d.base), width: bw, height: y(0) - y(d.base), rx: 4, class: 'anim-bar', style: `fill:var(--s-base);transition-delay:${delay}ms` }, svg);
-      const ro = S('rect', { x: xo, y: y(d.ours), width: bw, height: y(0) - y(d.ours), rx: 4, class: 'anim-bar', style: `fill:var(--s-ours);transition-delay:${delay + 120}ms` }, svg);
+      const rb = S('rect', { x: xb, y: y(d.base), width: bw, height: y(Y0) - y(d.base), rx: 4, class: 'anim-bar', style: `fill:var(--s-base);transition-delay:${delay}ms` }, svg);
+      const ro = S('rect', { x: xo, y: y(d.ours), width: bw, height: y(Y0) - y(d.ours), rx: 4, class: 'anim-bar', style: `fill:var(--s-ours);transition-delay:${delay + 120}ms` }, svg);
       // square off the bottom corners
-      S('rect', { x: xb, y: y(0) - 4, width: bw, height: 4, class: 'anim-bar', style: `fill:var(--s-base);transition-delay:${delay}ms` }, svg);
-      S('rect', { x: xo, y: y(0) - 4, width: bw, height: 4, class: 'anim-bar', style: `fill:var(--s-ours);transition-delay:${delay + 120}ms` }, svg);
+      S('rect', { x: xb, y: y(Y0) - 4, width: bw, height: 4, class: 'anim-bar', style: `fill:var(--s-base);transition-delay:${delay}ms` }, svg);
+      S('rect', { x: xo, y: y(Y0) - 4, width: bw, height: 4, class: 'anim-bar', style: `fill:var(--s-ours);transition-delay:${delay + 120}ms` }, svg);
       if (bw >= 22) {
         S('text', { x: xb + bw / 2, y: y(d.base) - 5, 'text-anchor': 'middle', class: 'val-label anim-fade', style: `transition-delay:${delay + 700}ms;font-size:10.5px`, text: fmt1(d.base) }, svg);
       }
