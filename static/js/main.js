@@ -120,34 +120,50 @@
 
   /* ---------------------------------------------------------------- hero detection box */
   setTimeout(() => $('#detBox').classList.add('on'), REDUCED ? 0 : 350);
-  // Title label: real tool readouts from recorded trajectories (examples.js: ex01, ex17, ex08, ex09).
+  // Title label: tool calls and their outputs, verbatim from recorded trajectories
+  // (examples.js: ex01 #0,#1,#3 · ex06 #0,#1 · ex08 #5,#7 · ex17 #1,#0,#7). Long lines are truncated with an ellipsis.
   (function detLabel() {
     const lab = $('#detBox .det-label'), box = $('#detBox');
     const R = [
-      ['Visual_Grounding_Tool', '"pill" → 134 objects'],
-      ['Depth_Estimation_Tool', 'depth_meters [966, 1302]'],
-      ['Camera_Trajectory_Tool', 'yaw +40.7°'],
-      ['Image_Search_Tool', '→ "DEUTER Speed Lite Pro 25"'],
-      ['Python_Coding_Agent_Tool', 'd = 1.1957 m'],
-      ['Text_Search_Tool', 'webpage_url_4'],
+      ['Visual_Grounding_Tool', 'query="pill"', 'grounded 134 objects'],
+      ['Visual_Grounding_Tool', 'query="round pill"', 'grounded 72 objects'],
+      ['Python_Coding_Agent_Tool', 'objective="Use ONLY the pred_boxes …"', 'Round detections missing from original: [23, 25, 26, 40, 41]'],
+      ['Zoom_In_Tool', 'coords=[812, 0, 872, 178]', 'tool_generated_image_1'],
+      ['OCR_Tool', 'image_id="tool_generated_image_1"', '1982年10月1日'],
+      ['Image_Search_Tool', 'image_id="tool_generated_image_3"', 'DEUTER Speed Lite Pro 25 Hiking Backpack [webpage_url_1]'],
+      ['Text_Search_Tool', 'query="awards won by Deuter Speed Lite Pro backpack"', 'The New deuter Speed Lite Pro Wins ISPO Award … [webpage_url_4]'],
+      ['Depth_Estimation_Tool', 'image_id="input_image_1"', 'depth_meters float32 [966, 1302]'],
+      ['Camera_Trajectory_Tool', 'image_ids=[input_image_1, 2, 3]', 'input_image_2: right (yaw +40.7°)'],
+      ['Python_Coding_Agent_Tool', 'objective="Compute the 3D coordinates of …"', 'Euclidean distance between them: 1.1957 meters'],
     ];
-    const set = ([t, v]) => `<b>${t}</b> · ${v}`;
-    if (REDUCED) { lab.innerHTML = set(R[0]); return; }
+    const esc = t => t.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+    const html = (t, a, r, nCall, nRes, running) => {
+      const call = `${t}(${a})`, cut = call.slice(0, nCall);
+      let h = cut.length <= t.length ? `<b>${esc(cut)}</b>` : `<b>${esc(t)}</b><span class="ag">${esc(cut.slice(t.length))}</span>`;
+      if (running) h += ' <span class="run">running</span>';
+      if (nRes > 0) h += ` <span class="ar">→</span> <span class="rs">${esc(r.slice(0, nRes))}</span>`;
+      return h;
+    };
+    if (REDUCED) { const [t, a, r] = R[0]; lab.innerHTML = html(t, a, r, 1e9, 1e9); return; }
     let k = 0;
-    function typeOut(txt, done) {
-      let n = 0; const plain = txt.replace(/<[^>]+>/g, '');
-      const tick = () => {
-        n++;
-        // reveal characters of the plain string while keeping the <b> wrapper on the tool name
-        const cut = plain.slice(0, n), tn = R[k][0];
-        lab.innerHTML = cut.length <= tn.length ? `<b>${cut}</b>` : `<b>${tn}</b>${cut.slice(tn.length)}`;
-        if (n < plain.length) setTimeout(tick, 22); else done && done();
-      };
-      tick();
-    }
     function next() {
+      const [t, a, r] = R[k], call = `${t}(${a})`;
       box.classList.remove('relock'); void box.offsetWidth; box.classList.add('relock');
-      typeOut(set(R[k]), () => setTimeout(() => { k = (k + 1) % R.length; next(); }, 2600));
+      lab.classList.remove('out');
+      let n = 0;
+      (function typeCall() {
+        n = Math.min(call.length, n + 2); lab.innerHTML = html(t, a, r, n, 0);
+        if (n < call.length) return setTimeout(typeCall, 26);
+        lab.innerHTML = html(t, a, r, n, 0, true);
+        setTimeout(() => {
+          let m = 0;
+          (function typeRes() {
+            m = Math.min(r.length, m + 3); lab.innerHTML = html(t, a, r, n, m);
+            if (m < r.length) return setTimeout(typeRes, 18);
+            setTimeout(() => { lab.classList.add('out'); setTimeout(() => { k = (k + 1) % R.length; next(); }, 260); }, 3400);
+          })();
+        }, 700);
+      })();
     }
     setTimeout(next, 1100);
   })();

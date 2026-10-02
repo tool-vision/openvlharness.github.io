@@ -1073,3 +1073,15 @@ footer a { color: var(--ink-2); }
 #methodFig .b-user .thumbs.n4 { grid-template-columns: repeat(4, minmax(0, 1fr)) auto; }
 #methodFig .b-user .thumbs.n4 img { height: 46px; }
 #methodFig .mf-row.top > .box { height: 236px; }
+
+/* title banner: tool call → output, typed */
+.det-box .det-label { --lb-tool: #f28a4c; --lb-res: #a9c1ff; max-width: min(640px, calc(100vw - 40px)); overflow: hidden; text-overflow: ellipsis; padding: 3px 9px; font-size: 11.5px; transition: opacity .25s; }
+:root[data-theme="dark"] .det-box .det-label { --lb-tool: #b34507; --lb-res: #2653c1; }
+.det-box .det-label b { color: var(--lb-tool); font-weight: 600; }
+.det-box .det-label .ag { opacity: .7; }
+.det-box .det-label .ar { opacity: .6; }
+.det-box .det-label .rs { color: var(--lb-res); font-weight: 500; }
+.det-box .det-label .run { opacity: .55; }
+.det-box .det-label .run::after { content: ""; animation: runDots 1s steps(4) infinite; }
+@keyframes runDots { 0% { content: ""; } 25% { content: "."; } 50% { content: ".."; } 75% { content: "..."; } }
+.det-box .det-label.out { opacity: 0; }
