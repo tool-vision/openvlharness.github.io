@@ -1325,3 +1325,6 @@ table.abl thead th.sc { font-size: 12.5px; }
 table.abl thead th.cfg { font-size: 14px; }
 table.res th, table.res td { padding-left: 5px; padding-right: 5px; }
 table.res thead tr.sub th { font-size: 12px; letter-spacing: -0.01em; }
+#methodFig .pb.pb-lbl { width: auto; padding: 0 14px; gap: 6px; display: inline-flex; align-items: center; font: 600 13.5px var(--f-body); }
+#methodFig .pb.pb-lbl svg { flex: none; }
+@media (max-width: 520px) { #methodFig .pb.pb-lbl span { display: none; } #methodFig .pb.pb-lbl { padding: 0; width: 44px; justify-content: center; } }

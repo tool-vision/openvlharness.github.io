@@ -12,7 +12,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="static/css/style.css?v=61">
+  <link rel="stylesheet" href="static/css/style.css?v=62">
   <script>
     try { var t = localStorage.getItem('ovh-theme'); if (t) document.documentElement.setAttribute('data-theme', t); } catch (e) {}
   </script>
@@ -241,9 +241,9 @@
       <div class="steps mf-steps" id="mfSteps"></div>
       <div class="mf-caption" id="mfCaption"><div class="s"></div><div class="t"></div><p class="d"></p></div>
       <div class="mf-controls" role="toolbar" aria-label="Playback">
-        <button class="ctl pb" id="mfPrev" aria-label="Previous step" title="Previous step"><svg><use href="#i-prev"/></svg></button>
+        <button class="ctl pb pb-lbl" id="mfPrev" aria-label="Previous step"><svg><use href="#i-prev"/></svg><span>Previous step</span></button>
         <button class="ctl pb play-btn" id="mfPlay" aria-label="Pause" title="Play / pause"><svg><use href="#i-pause"/></svg></button>
-        <button class="ctl pb" id="mfNext" aria-label="Next step" title="Next step"><svg><use href="#i-next"/></svg></button>
+        <button class="ctl pb pb-lbl" id="mfNext" aria-label="Next step"><span>Next step</span><svg><use href="#i-next"/></svg></button>
         <div class="speed-dd" id="mfSpeedDd">
           <button type="button" class="speed-btn" id="mfSpeedBtn" aria-haspopup="listbox" aria-expanded="false" aria-label="Playback speed"><span class="sl">Speed</span><b id="mfSpeedV">1×</b><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></button>
           <ul class="speed-menu" id="mfSpeed" role="listbox" aria-label="Playback speed" tabindex="-1" hidden></ul>
@@ -259,23 +259,6 @@
       </div>
     </div>
 
-    <details class="card cap-table reveal">
-      <summary>Capabilities, interfaces, and backends</summary>
-      <table>
-        <thead><tr><th>Capability</th><th>Interface</th><th>Backends (default in bold)</th></tr></thead>
-        <tbody>
-          <tr><td><span class="grp">perception</span>Zoom-in</td><td>image, box → cropped image</td><td><b>built-in</b></td></tr>
-          <tr><td><span class="grp">perception</span>Visual Grounding</td><td>image, text query → boxes, masks, annotated image</td><td><b>SAM 3</b>; Grounding DINO</td></tr>
-          <tr><td><span class="grp">perception</span>OCR</td><td>image → transcribed text</td><td><b>PaddleOCR-VL</b>; DeepSeek-OCR</td></tr>
-          <tr><td><span class="grp">perception</span>Depth Estimation</td><td>image → depth map</td><td><b>Depth Anything 3</b>; VGGT</td></tr>
-          <tr><td><span class="grp">perception</span>Camera Trajectory</td><td>images → camera poses, trajectory plot</td><td><b>Depth Anything 3</b>; VGGT</td></tr>
-          <tr><td><span class="grp">search</span>Text Search</td><td>text query → summarized results with cited URLs</td><td><b>Serper</b>; Gemini w/ Google Search</td></tr>
-          <tr><td><span class="grp">search</span>Image Search</td><td>image → visual matches (entities, URLs)</td><td><b>Serper (Google Lens)</b>; Gemini w/ Google Search</td></tr>
-          <tr><td><span class="grp">search</span>Webpage Visit</td><td>URLs, goal → goal-relevant evidence</td><td><b>Serper + LLM extractor</b></td></tr>
-          <tr><td><span class="grp">compute</span>Python Coding Agent</td><td>objective → program output, new bindings</td><td><b>single-shot code generator</b>; full coding agent</td></tr>
-        </tbody>
-      </table>
-    </details>
   </div>
 </section>
 
