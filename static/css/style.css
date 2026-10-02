@@ -1418,3 +1418,16 @@ table.res thead tr.sub th { font-size: 12px; letter-spacing: -0.01em; }
   #methodFig .mf-dock .mf-caption { grid-column: 1; }
   #methodFig .mf-dock .mf-controls { grid-column: 2; justify-content: center; }
 }
+/* step title left, controls centered, "STEP n / N" right; no accent bar */
+@media (min-width: 761px) {
+  #methodFig .mf-dock .mf-caption { display: contents; }
+  #methodFig .mf-dock .mf-caption .t { grid-column: 1; grid-row: 1; align-self: center; margin: 0; padding-left: 4px; }
+  #methodFig .mf-dock .mf-caption .s { grid-column: 3; grid-row: 1; align-self: center; justify-self: end; padding-right: 4px; white-space: nowrap; }
+  #methodFig .mf-dock .mf-caption .d { grid-column: 1 / -1; grid-row: 2; }
+  #methodFig .mf-dock .mf-controls { grid-row: 1; }
+}
+@media (max-width: 760px) {
+  #methodFig .mf-dock .mf-caption { border-left: 0; padding-left: 0; display: flex; justify-content: space-between; align-items: baseline; gap: 10px; }
+  #methodFig .mf-dock .mf-caption .s { order: 2; white-space: nowrap; }
+}
+@media (max-width: 760px) { #methodFig .mf-dock .mf-caption { flex-wrap: nowrap; } #methodFig .mf-dock .mf-caption .t { min-width: 0; } }
