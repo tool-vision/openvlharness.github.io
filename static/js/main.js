@@ -384,34 +384,6 @@
   });
   segmented($('#hcSeg'), D.HARNESS.map(h => [h.id, h.label]), hcSel, v => { hcSel = v; hcChart.draw(true); });
 
-  /* ================================================================ INSIGHT 3: effort scaling */
-  const el3 = $('#effortLegend');
-  D.EFFORT.forEach(s => el3.appendChild(H('span', {}, `<i class="line" style="background:var(${s.color})"></i>${s.name}`)));
-  chart($('#effortChart'), (el, W) => {
-    const Hh = 270;
-    const m = { l: 34, r: 44, t: 14, b: 34 };
-    const svg = S('svg', { viewBox: `0 0 ${W} ${Hh}`, height: Hh }, el);
-    const x = i => m.l + 16 + i * (W - m.l - m.r - 32) / 3;
-    const y = lin(45, 71, Hh - m.b, m.t);
-    [45, 50, 55, 60, 65, 70].forEach(v => {
-      S('line', { x1: m.l, x2: W - m.r, y1: y(v), y2: y(v), class: v === 45 ? 'base-line' : 'grid-line' }, svg);
-      S('text', { x: m.l - 7, y: y(v) + 4, 'text-anchor': 'end', class: 'ax-label', text: v }, svg);
-    });
-    D.EFFORTS.forEach((e, i) => S('text', { x: x(i), y: Hh - m.b + 18, 'text-anchor': 'middle', class: 'ax-label', text: e }, svg));
-    S('text', { x: (m.l + W - m.r) / 2, y: Hh - 2, 'text-anchor': 'middle', class: 'ax-title', text: 'reasoning effort' }, svg);
-    D.EFFORT.forEach((s, si) => {
-      const isOurs = s.key === 'ours';
-      const d = s.score.map((v, i) => (i ? 'L' : 'M') + x(i) + ',' + y(v)).join(' ');
-      S('path', { d, pathLength: 1, class: 'anim-line', style: `fill:none;stroke:var(${s.color});stroke-width:${isOurs ? 2.5 : 2};stroke-linejoin:round;transition-delay:${si * 160}ms` }, svg);
-      s.score.forEach((v, i) => {
-        S('circle', { cx: x(i), cy: y(v), r: isOurs ? 5 : 4, class: 'anim-pop', style: `fill:var(${s.color});stroke:var(--surface);stroke-width:2;transition-delay:${300 + si * 160 + i * 100}ms` }, svg);
-        const hit = S('circle', { cx: x(i), cy: y(v), r: 11, fill: 'transparent' }, svg);
-        hover(hit, `<b>${s.name}</b> · ${D.EFFORTS[i]}<br>score <b>${v.toFixed(2)}</b> · $${s.cost[i].toFixed(2)} / 1k q`);
-      });
-    });
-    S('text', { x: x(3) + 9, y: y(D.EFFORT[3].score[3]) + 4, class: 'val-label strong anim-fade', style: 'transition-delay:1.2s', text: '68.6' }, svg);
-  });
-
   /* ================================================================ INSIGHT 4: ablation staircase */
   let abM = '8B', abD = 'Overall';
   const abChart = chart($('#ablation'), (el, W) => {
