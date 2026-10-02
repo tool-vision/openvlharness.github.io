@@ -1351,3 +1351,5 @@ table.res thead tr.sub th { font-size: 12px; letter-spacing: -0.01em; }
 .tm-pies.chart.in .tm-n { opacity: 1; }
 .chart.tm-pies svg { width: 100%; overflow: hidden; }
 @media (prefers-reduced-motion: reduce) { .tm-pie svg { -webkit-mask: none; mask: none; } .tm-pies.chart .tm-n { opacity: 1; transition: none; } }
+.authors a { color: inherit; text-decoration: none; border-bottom: 1px solid transparent; transition: border-color .15s, color .15s; }
+.authors a:hover, .authors a:focus-visible { color: var(--cap); border-bottom-color: currentColor; }
