@@ -1306,3 +1306,6 @@ table.abl th.cfg { width: 17%; }
 .sec-head, .insight.wide .ins-text, #insights .insight.wide .ins-text { max-width: none; }
 .sec-head p.lead, .ins-text p { max-width: none; }
 #resTable th .ver { font: 500 10px var(--f-mono); color: var(--ink-3); letter-spacing: 0; }
+/* ablation row highlight (matches the results table) */
+table.abl tbody tr td, table.abl tbody tr th.cfg { transition: box-shadow .12s; }
+table.abl tbody tr:hover td, table.abl tbody tr:hover th.cfg { box-shadow: inset 0 0 0 999px color-mix(in srgb, var(--ink) 6%, transparent); }
