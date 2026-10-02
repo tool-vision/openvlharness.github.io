@@ -224,7 +224,7 @@
     [R.call, R.orch, R.user].forEach(b => b.classList.remove('lit'));
     R.ev.classList.remove('lit-a'); R.mem.classList.remove('lit-v'); R.env.classList.remove('lit-v'); R.orch.classList.remove('thinking');
     $$('.cap', fig).forEach(c => c.classList.remove('on')); $$('.be', fig).forEach(c => c.classList.remove('on'));
-    $('#flowDown').classList.remove('go'); $('#flowUp').classList.remove('go');
+    ['#flowDown', '#flowUp', '#flowDown2', '#flowUp2'].forEach(id => $(id).classList.remove('go'));
     $('#ioStore').classList.remove('on'); $('#ioFetch').classList.remove('on');
     $$('#memData div').forEach(d => d.classList.remove('fetch'));
   }
@@ -389,7 +389,7 @@
     await typeText(R.callTxt, callText(s), { r, maxMs: 500, cps: 500, render: t => t, caret: false });
     R.callTxt.innerHTML = callText(s);
     if (!(await sleep(250, r))) return;
-    $('#flowDown').classList.add('go');
+    $('#flowDown').classList.add('go'); $('#flowDown2').classList.add('go');
     const capEl = $(`.cap[data-cap="${c.ui}"]`, fig); if (capEl) capEl.classList.add('on');
     const beEl = $(`.be[data-be="${c.be}"]`, fig); if (beEl) beEl.classList.add('on');
     if (s.cap === 'code') {
@@ -397,11 +397,11 @@
       $$('#memData div').forEach((d, k) => setTimeout(() => d.classList.add('fetch'), REDUCED ? 0 : k * 120 / speed));
     }
     if (!(await sleep(550, r))) return;
-    $('#flowDown').classList.remove('go'); $('#flowUp').classList.add('go');
+    ['#flowDown', '#flowDown2'].forEach(id => $(id).classList.remove('go')); $('#flowUp').classList.add('go'); $('#flowUp2').classList.add('go');
     R.call.classList.remove('lit'); R.ev.classList.add('lit-a');
     await evidence(s, r, false);
     if (!alive(r)) return;
-    $('#flowUp').classList.remove('go'); R.orch.classList.remove('thinking');
+    $('#flowUp').classList.remove('go'); $('#flowUp2').classList.remove('go'); R.orch.classList.remove('thinking');
     $('#ioStore').classList.add('on'); R.mem.classList.add('lit-v'); R.env.classList.add('lit-v');
     renderMem(i, i - 1);
   }
