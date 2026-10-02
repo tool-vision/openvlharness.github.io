@@ -120,12 +120,43 @@
 
   /* ---------------------------------------------------------------- hero detection box */
   setTimeout(() => $('#detBox').classList.add('on'), REDUCED ? 0 : 350);
+  // Title label: real tool readouts from recorded trajectories (examples.js: ex01, ex17, ex08, ex09).
+  (function detLabel() {
+    const lab = $('#detBox .det-label'), box = $('#detBox');
+    const R = [
+      ['Visual_Grounding_Tool', '"pill" → 134 objects'],
+      ['Depth_Estimation_Tool', 'depth_meters [966, 1302]'],
+      ['Camera_Trajectory_Tool', 'yaw +40.7°'],
+      ['Image_Search_Tool', '→ "DEUTER Speed Lite Pro 25"'],
+      ['Python_Coding_Agent_Tool', 'd = 1.1957 m'],
+      ['Text_Search_Tool', 'webpage_url_4'],
+    ];
+    const set = ([t, v]) => `<b>${t}</b> · ${v}`;
+    if (REDUCED) { lab.innerHTML = set(R[0]); return; }
+    let k = 0;
+    function typeOut(txt, done) {
+      let n = 0; const plain = txt.replace(/<[^>]+>/g, '');
+      const tick = () => {
+        n++;
+        // reveal characters of the plain string while keeping the <b> wrapper on the tool name
+        const cut = plain.slice(0, n), tn = R[k][0];
+        lab.innerHTML = cut.length <= tn.length ? `<b>${cut}</b>` : `<b>${tn}</b>${cut.slice(tn.length)}`;
+        if (n < plain.length) setTimeout(tick, 22); else done && done();
+      };
+      tick();
+    }
+    function next() {
+      box.classList.remove('relock'); void box.offsetWidth; box.classList.add('relock');
+      typeOut(set(R[k]), () => setTimeout(() => { k = (k + 1) % R.length; next(); }, 2600));
+    }
+    setTimeout(next, 1100);
+  })();
 
   /* ================================================================ HERO: grouped bars */
   chart($('#heroBars'), (el, W) => {
     const data = D.BACKBONES;
     const Hh = W < 480 ? 250 : 280;
-    const m = { l: 30, r: 6, t: 34, b: 44 };
+    const m = { l: 30, r: 6, t: 34, b: 58 };
     const svg = S('svg', { viewBox: `0 0 ${W} ${Hh}`, height: Hh }, el);
     const y = lin(0, 75, Hh - m.b, m.t);
     [0, 20, 40, 60].forEach(v => {
@@ -149,7 +180,7 @@
       S('text', { x: xo + bw / 2, y: y(d.ours) - 5, 'text-anchor': 'middle', class: 'val-label strong anim-fade', style: `transition-delay:${delay + 800}ms;font-size:10.5px`, text: fmt1(d.ours) }, svg);
       // delta chip row
       const g = S('g', { class: 'delta-chip anim-fade', style: `transition-delay:${delay + 900}ms` }, svg);
-      const txt = '+' + (d.ours - d.base).toFixed(1);
+      const txt = '+' + (Math.round((d.ours - d.base) * 10 + 1e-6) / 10).toFixed(1);
       S('rect', { x: cx - 21, y: 2, width: 42, height: 19, rx: 6 }, g);
       S('text', { x: cx, y: 15.5, 'text-anchor': 'middle', text: txt }, g);
       // category label (two lines)
@@ -160,20 +191,27 @@
       const t = S('text', { x: cx, y: Hh - m.b + 17, 'text-anchor': 'middle', class: 'cat-label' }, svg);
       S('tspan', { x: cx, dy: 0, text: parts ? parts[1] : d.name }, t);
       if (parts[2]) S('tspan', { x: cx, dy: 14, text: parts[2], style: 'fill:var(--ink-3)' }, t);
+      const EFF = { kimi: 'max', luna: 'medium', sol: 'medium' };
+      if (EFF[d.id]) S('text', { x: cx, y: Hh - m.b + 47, 'text-anchor': 'middle', class: 'ax-label', style: 'font-size:10.5px', text: `(${EFF[d.id]})` }, svg);
       const hit = S('rect', { x: cx - gw / 2, y: m.t, width: gw, height: Hh - m.t - m.b, fill: 'transparent' }, svg);
       hover(hit, `<b>${d.name}</b><br><span class="k">Base</span> ${d.base.toFixed(2)}<br><span class="k">+ OpenVLHarness</span> <b>${d.ours.toFixed(2)}</b> (${txt})`);
       [rb, ro].forEach(r => r.setAttribute('pointer-events', 'none'));
     });
   });
 
-  /* ================================================================ HERO: pareto */
+  /* ================================================================ HERO: score vs. cost (paper Fig. 1c) */
   const lg = $('#paretoLegend');
   D.EFFORT.forEach(s => lg.appendChild(H('span', {}, `<i style="background:var(${s.color})"></i>${s.name}`)));
-  lg.appendChild(H('span', {}, `<i class="line" style="background:repeating-linear-gradient(90deg,var(--ink-3) 0 4px,transparent 4px 7px)"></i>Pareto frontier`));
-
+  // effort-label placement per series and point: [dx, dy, anchor]
+  const ELAB = {
+    base: [[0, -10, 'middle'], [0, 16, 'middle'], [-8, -8, 'end'], [8, 4, 'start']],
+    codex: [[9, 4, 'start'], [-9, 4, 'end'], [-7, -7, 'end'], [0, -10, 'middle']],
+    vs: [[-3, 16, 'end'], [3, 16, 'start'], [8, 14, 'start'], [0, -10, 'middle']],
+    ours: [[0, 18, 'middle'], [-6, -10, 'end'], [0, 18, 'middle'], [9, 4, 'start']],
+  };
   chart($('#heroPareto'), (el, W) => {
-    const Hh = W < 480 ? 260 : 288;
-    const m = { l: 34, r: 16, t: 14, b: 40 };
+    const Hh = W < 480 ? 270 : 300;
+    const m = { l: 34, r: 40, t: 14, b: 40 };
     const svg = S('svg', { viewBox: `0 0 ${W} ${Hh}`, height: Hh }, el);
     const lx = lin(Math.log10(0.5), Math.log10(5), m.l, W - m.r);
     const x = v => lx(Math.log10(v));
@@ -182,42 +220,23 @@
       S('line', { x1: m.l, x2: W - m.r, y1: y(v), y2: y(v), class: v === 45 ? 'base-line' : 'grid-line' }, svg);
       S('text', { x: m.l - 7, y: y(v) + 4, 'text-anchor': 'end', class: 'ax-label', text: v }, svg);
     });
-    [0.5, 1, 2, 4].forEach(v => S('text', { x: x(v), y: Hh - m.b + 16, 'text-anchor': 'middle', class: 'ax-label', text: '$' + v }, svg));
-    S('text', { x: (m.l + W - m.r) / 2, y: Hh - 6, 'text-anchor': 'middle', class: 'ax-title', text: 'Model-token cost, $ per 1k questions (log scale)' }, svg);
-
-    // pareto frontier across all points
-    const pts = [];
-    D.EFFORT.forEach(s => s.cost.forEach((c, i) => pts.push([c, s.score[i]])));
-    pts.sort((a, b) => a[0] - b[0]);
-    const front = []; let best = -1;
-    pts.forEach(p => { if (p[1] > best) { front.push(p); best = p[1]; } });
-    const fpath = front.map((p, i) => (i ? 'L' : 'M') + x(p[0]) + ',' + y(p[1])).join(' ') + ` L${W - m.r},${y(best)}`;
-    // region dominated by the frontier
-    S('path', { d: fpath + ` L${W - m.r},${Hh - m.b} L${x(front[0][0])},${Hh - m.b} Z`, class: 'anim-fade', style: 'fill:var(--cap-soft);transition-delay:1.4s;fill-opacity:.6' }, svg);
-    S('path', { d: fpath, class: 'anim-fade', style: 'fill:none;stroke:var(--ink-3);stroke-width:1.5;stroke-dasharray:4 4;transition-delay:1.6s' }, svg);
+    [0.5, 1, 2, 4].forEach(v => S('text', { x: x(v), y: Hh - m.b + 16, 'text-anchor': 'middle', class: 'ax-label', text: v }, svg));
+    S('text', { x: (m.l + W - m.r) / 2, y: Hh - 6, 'text-anchor': 'middle', class: 'ax-title', text: 'Cost ($ / 1k questions, log scale)' }, svg);
     D.EFFORT.forEach((s, si) => {
       const isOurs = s.key === 'ours';
       const d = s.cost.map((c, i) => (i ? 'L' : 'M') + x(c) + ',' + y(s.score[i])).join(' ');
       S('path', { d, pathLength: 1, class: 'anim-line', style: `fill:none;stroke:var(${s.color});stroke-width:${isOurs ? 2.5 : 2};stroke-linejoin:round;stroke-linecap:round;transition-delay:${si * 150}ms` }, svg);
       s.cost.forEach((c, i) => {
         const cx = x(c), cy = y(s.score[i]);
-        const r = isOurs ? 5 : 4;
-        S('circle', { cx, cy, r, class: 'anim-pop', style: `fill:var(${s.color});stroke:var(--surface);stroke-width:2;transition-delay:${400 + si * 150 + i * 110}ms` }, svg);
+        S('circle', { cx, cy, r: isOurs ? 5 : 4, class: 'anim-pop', style: `fill:var(${s.color});stroke:var(--surface);stroke-width:2;transition-delay:${400 + si * 150 + i * 110}ms` }, svg);
+        const [dx, dy, an] = ELAB[s.key][i];
+        S('text', { x: cx + dx, y: cy + dy, 'text-anchor': an, class: 'eff-label anim-fade', style: `fill:var(${s.color});transition-delay:${900 + si * 150}ms`, text: D.EFFORTS[i] }, svg);
         const hit = S('circle', { cx, cy, r: 11, fill: 'transparent' }, svg);
-        hover(hit, `<b>${s.name}</b> · ${D.EFFORTS[i]} effort<br>score <b>${s.score[i].toFixed(2)}</b> · $${c.toFixed(2)} / 1k q`);
-        if (isOurs && (i === 0 || i === 3)) {
-          S('text', { x: cx + (i === 0 ? -8 : 8), y: cy - 10, 'text-anchor': i === 0 ? 'end' : 'middle', class: 'val-label anim-fade', style: 'transition-delay:1.5s;font-size:10.5px', text: D.EFFORTS[i] }, svg);
-        }
+        hover(hit, `<b>${s.name}</b> · ${D.EFFORTS[i]} effort<br>score <b>${s.score[i].toFixed(2)}</b> · $${c.toFixed(2)} / 1k questions`);
       });
     });
-    // direct label for ours + annotation
-    const o = D.EFFORT[3];
-    S('text', { x: x(o.cost[3]) + 9, y: y(o.score[3]) + 4, class: 'val-label strong anim-fade', style: 'transition-delay:1.6s', text: o.score[3].toFixed(1) }, svg);
-    const ax = x(o.cost[0]), ay = y(o.score[0]);
-    const ann = S('g', { class: 'anim-fade', style: 'transition-delay:1.9s' }, svg);
-    S('text', { x: ax + 10, y: ay + 22, class: 'val-label', style: 'font-size:11px', text: 'medium effort already beats' }, ann);
-    S('text', { x: ax + 10, y: ay + 36, class: 'val-label', style: 'font-size:11px', text: 'every baseline at max' }, ann);
   });
+
   /* ================================================================ INSIGHT 1: dumbbell explorer */
   let dbGroup = 'sol';
   let dbPrev = null;
@@ -360,11 +379,6 @@
     });
     D.EFFORTS.forEach((e, i) => S('text', { x: x(i), y: Hh - m.b + 18, 'text-anchor': 'middle', class: 'ax-label', text: e }, svg));
     S('text', { x: (m.l + W - m.r) / 2, y: Hh - 2, 'text-anchor': 'middle', class: 'ax-title', text: 'reasoning effort' }, svg);
-    // gap annotation: ours@medium vs best baseline@max
-    const bestMax = Math.max(...D.EFFORT.filter(s => s.key !== 'ours').map(s => s.score[3]));
-    const g = S('g', { class: 'anim-fade', style: 'transition-delay:1.6s' }, svg);
-    S('line', { x1: x(0), x2: x(3), y1: y(D.EFFORT[3].score[0]), y2: y(D.EFFORT[3].score[0]), style: 'stroke:var(--cap);stroke-width:1;stroke-dasharray:3 4' }, g);
-    S('text', { x: x(3) - 2, y: y(D.EFFORT[3].score[0]) + 15, 'text-anchor': 'end', class: 'val-label', style: 'font-size:10.5px;fill:var(--cap)', text: `ours @ medium (62.9) > best baseline @ max (${bestMax.toFixed(1)})` }, g);
     D.EFFORT.forEach((s, si) => {
       const isOurs = s.key === 'ours';
       const d = s.score.map((v, i) => (i ? 'L' : 'M') + x(i) + ',' + y(v)).join(' ');
@@ -487,224 +501,6 @@
     });
   });
 
-  /* ================================================================ METHOD: animated figure */
-  (function methodFigure() {
-    const IM = 'static/images/';
-    const IMGS = {
-      in1: { h: 'input_image_1', src: IM + 'method/input_image_1.png' },
-      in2: { h: 'input_image_2', src: IM + 'method/input_image_2.png' },
-      in3: { h: 'input_image_3', src: IM + 'method/input_image_3.png' },
-      traj: { h: 'tool_image_1', src: IM + 'method/trajectory.png', sq: true },
-      d1: { h: 'tool_image_2', src: IM + 'method/depth_1.png' },
-      d2: { h: 'tool_image_3', src: IM + 'method/depth_2.png' },
-      d3: { h: 'tool_image_4', src: IM + 'method/depth.png' },
-      win: { h: 'tool_image_5', src: IM + 'method/window_overlay.png' },
-      cab: { h: 'tool_image_6', src: IM + 'method/cabinet_overlay.png' },
-    };
-    const STEPS = [
-      { n: 'query', title: 'A query arrives with three views',
-        desc: 'Input images are registered in persistent memory under reusable handles. The orchestrator only ever sees names and compact descriptors; the harness keeps the payloads.',
-        orch: 'planning…', imgs: ['in1', 'in2', 'in3'], data: [] },
-      { n: 'camera', title: 'Recover camera poses',
-        desc: 'Camera Trajectory runs Depth Anything 3 behind a task-level interface. The pose plot is rendered for the model to inspect; intrinsics and extrinsics go to memory as a data binding.',
-        orch: 'calling tool', cap: 'camera', be: 'da',
-        call: ['Camera_Trajectory_Tool', ['images: [input_image_1,', '         input_image_2,', '         input_image_3]']],
-        ev: { img: 'traj', text: 'Recovered 3 camera poses in a shared coordinate frame.\nIntrinsics K and extrinsics [R | t] stored as camera_trajectory_result.' },
-        imgs: ['traj'], data: [['camera_trajectory_result', 'dict (pose)']] },
-      { n: 'depth', title: 'Estimate metric depth',
-        desc: 'Dense depth arrays would flood the context. Instead the model sees colorized maps, and the raw arrays stay in memory, addressable for computation later.',
-        orch: 'calling tool', cap: 'depth', be: 'da',
-        call: ['Depth_Estimation_Tool', ['images: [input_image_1,', '         input_image_2,', '         input_image_3]']],
-        ev: { img: 'd3', text: 'Depth maps for 3 images rendered as tool_image_2–4.\nMetric depth arrays stored as depth_result.' },
-        imgs: ['d1', 'd2', 'd3'], data: [['depth_result', 'dict (depth map)']] },
-      { n: 'window', title: 'Ground the window',
-        desc: 'Visual Grounding (SAM 3) returns a labeled mask overlay plus normalized boxes. The precise RLE mask is retained as a binding rather than serialized into the prompt.',
-        orch: 'calling tool', cap: 'ground', be: 'sam',
-        call: ['Visual_Grounding_Tool', ['image: input_image_1', 'query: "window"']],
-        ev: { img: 'win', text: "Visual_Grounding_Tool grounded 1 object for the prompt 'window'. Its bounding box (0–1000 scale, [x1, y1, x2, y2]) is: …" },
-        imgs: ['win'], data: [['segment_window', 'dict (bbox, RLE mask)']] },
-      { n: 'cabinet', title: 'Ground the cabinets',
-        desc: 'The same interface, a new query. After every tool turn, an Environment Update advertises the current namespace of images and data bindings, without repeating payloads.',
-        orch: 'calling tool', cap: 'ground', be: 'sam',
-        call: ['Visual_Grounding_Tool', ['image: input_image_3', 'query: "cabinet"']],
-        ev: { img: 'cab', text: "Visual_Grounding_Tool grounded 5 objects for the prompt 'cabinet'. Their corresponding bounding boxes (on a 0-1000 scale, [x1, y1, x2, y2]) are: …" },
-        imgs: ['cab'], data: [['segment_cabinet', 'dict (bbox, RLE mask)']] },
-      { n: 'compute', title: 'Compute over memory',
-        desc: 'The orchestrator states an objective in plain language. A fresh coding session of the same backbone writes a program, and the harness executes it with the masks, depth arrays and poses bound as real variables.',
-        orch: 'delegating', cap: 'code', be: 'coder', fetch: true,
-        call: ['Python_Coding_Agent', ['objective: "3D distance between', '  the window and cabinet centers', '  using masks, depth and poses"']],
-        ev: { code: '# pixel + metric depth\nX = (u - cx) * z / fx\nY = (v - cy) * z / fy\n# camera to world\nP_world = R.T @ (P_cam - t)\n# window-to-cabinet distance\nd = np.linalg.norm(P_w - P_c)\n→ 1.1957' },
-        imgs: [], data: [] },
-      { n: 'answer', title: 'Answer, grounded in evidence',
-        desc: 'Every number in the final answer traces back to retained artifacts: poses, depth, and masks that were rendered for inspection and then reused for exact computation.',
-        orch: 'answered ✓', final: '1.1957 m', imgs: [], data: [] },
-    ];
-    const STEP_MS = 4200;
-    const fig = $('#methodFig');
-    const stepsEl = $('#mfSteps');
-    fig.style.setProperty('--step-ms', STEP_MS + 'ms');
-    STEPS.forEach((s, i) => {
-      const b = H('button', { type: 'button', 'data-n': i + 1, 'aria-label': `Step ${i + 1}: ${s.title}` }, `<span class="bar"></span>${i + 1} · ${s.n}`);
-      b.addEventListener('click', () => { go(i); });
-      stepsEl.appendChild(b);
-    });
-
-    let cur = -1, playing = !REDUCED, timers = [], advanceT = null, visible = false;
-    const T = (fn, ms) => timers.push(setTimeout(fn, REDUCED ? 0 : ms));
-    function clearTimers() { timers.forEach(clearTimeout); timers = []; clearTimeout(advanceT); }
-
-    function memState(upto) {
-      const imgs = [], data = [];
-      for (let i = 0; i <= upto; i++) { imgs.push(...STEPS[i].imgs); data.push(...STEPS[i].data); }
-      return { imgs, data };
-    }
-    function renderMem(upto, animateFrom) {
-      const st = memState(upto);
-      const prev = animateFrom >= 0 ? memState(animateFrom) : { imgs: [], data: [] };
-      const mi = $('#memImgs'); mi.innerHTML = '';
-      st.imgs.forEach(k => {
-        const im = IMGS[k];
-        const f = H('figure', {}, `<img src="${im.src}" alt="${im.h}"${im.sq ? ' class="sq"' : ''}><figcaption>${im.h}</figcaption>`);
-        if (prev.imgs.includes(k)) f.style.animation = 'none';
-        mi.appendChild(f);
-      });
-      const md = $('#memData'); md.innerHTML = '';
-      if (!st.data.length) md.innerHTML = '<span class="ev-empty" style="font-family:var(--f-body)">no bindings yet</span>';
-      st.data.forEach(([n, t]) => {
-        const d = H('div', { 'data-b': n }, `${n}: <span class="ty">${t}</span>`);
-        if (prev.data.find(p => p[0] === n)) d.style.animation = 'none';
-        md.appendChild(d);
-      });
-      // environment update text
-      const names = st.imgs.map(k => IMGS[k].h);
-      const newNames = st.imgs.filter(k => !prev.imgs.includes(k)).map(k => IMGS[k].h);
-      const newData = st.data.filter(d => !prev.data.find(p => p[0] === d[0])).map(d => d[0]);
-      const inputs = names.filter(n => n.startsWith('input'));
-      const tools = names.filter(n => n.startsWith('tool'));
-      const span = (n, isNew) => isNew ? `<span class="new">${n}</span>` : n;
-      let txt = '<span class="k">Available image IDs:</span>\n';
-      txt += inputs.map(n => span(n, newNames.includes(n))).join(', ');
-      if (tools.length) txt += ',\n' + tools.map(n => span(n, newNames.includes(n))).join(', ');
-      txt += '\n\n<span class="k">Available data bindings:</span>\n';
-      txt += st.data.length ? st.data.map(d => span(d[0] + ': dict', newData.includes(d[0]))).join(',\n') : '—';
-      $('#mfEnvTxt').innerHTML = txt;
-    }
-    function setLit(id, cls, on) { $(id).classList.toggle(cls, !!on); }
-    function resetTransient() {
-      ['#mfCall', '#mfOrch', '#mfUser'].forEach(id => $(id).classList.remove('lit'));
-      $('#mfEv').classList.remove('lit-a'); $('#mfMem').classList.remove('lit-v'); $('#mfEnv').classList.remove('lit-v');
-      $('#mfOrch').classList.remove('thinking');
-      $$('.cap', fig).forEach(c => c.classList.remove('on'));
-      $$('.be', fig).forEach(c => c.classList.remove('on'));
-      $('#flowDown').classList.remove('go'); $('#flowUp').classList.remove('go');
-      $('#ioStore').classList.remove('on'); $('#ioFetch').classList.remove('on');
-      $$('#memData div').forEach(d => d.classList.remove('fetch'));
-    }
-    function renderCall(s) {
-      if (!s.call) return;
-      const [fn, args] = s.call;
-      $('#mfCallTxt').innerHTML = `<span class="fn">${fn}</span>\n${args.join('\n')}`;
-      $('#mfCallTxt').classList.remove('swap'); void $('#mfCallTxt').offsetWidth; $('#mfCallTxt').classList.add('swap');
-    }
-    function renderEv(s) {
-      const b = $('#mfEvBody');
-      if (s.ev && s.ev.img) {
-        const im = IMGS[s.ev.img];
-        b.innerHTML = `<div class="ev"><div><img src="${im.src}" alt="${im.h}"${im.sq ? ' class="sq"' : ''}><div class="cap">${im.h}</div></div><pre>${s.ev.text}</pre></div>`;
-      } else if (s.ev && s.ev.code) {
-        b.innerHTML = `<div class="ev" style="grid-template-columns:1fr"><pre>${s.ev.code.replace('→ 1.1957', '<b style="color:var(--cap)">→ d = 1.1957 m</b>')}</pre></div>`;
-      }
-      b.firstElementChild && b.firstElementChild.classList.add('swap');
-    }
-    function setCaption(i) {
-      const s = STEPS[i];
-      const c = $('#mfCaption');
-      $('.s', c).textContent = `STEP ${i + 1} / ${STEPS.length}`;
-      $('.t', c).textContent = s.title;
-      $('.d', c).textContent = s.desc;
-    }
-    function staticTo(i) {
-      // put the figure into the end-state of step i-1 (no animation), keeping last call/evidence visible
-      resetTransient();
-      $('#mfAns').textContent = '…'; $('#mfFinal').classList.remove('done');
-      $('#mfCallTxt').innerHTML = '<span class="ev-empty">waiting for the orchestrator…</span>';
-      $('#mfEvBody').innerHTML = '<span class="ev-empty">Raw outputs (masks, arrays, poses) are rendered into images + concise text the model can inspect.</span>';
-      for (let k = i - 1; k >= 0; k--) { if (STEPS[k].call) { renderCall(STEPS[k]); renderEv(STEPS[k]); break; } }
-      renderMem(i - 1, i - 1);
-      if (i - 1 < 0) { $('#memImgs').innerHTML = ''; $('#memData').innerHTML = '<span class="ev-empty" style="font-family:var(--f-body)">no bindings yet</span>'; $('#mfEnvTxt').innerHTML = '<span class="k">Available image IDs:</span>\n—\n\n<span class="k">Available data bindings:</span>\n—'; }
-    }
-    function animate(i) {
-      const s = STEPS[i];
-      setCaption(i);
-      $('#mfOrchSt').textContent = s.orch;
-      $('#mfOrch').classList.add('lit', 'thinking');
-      if (s.n === 'query') {
-        $('#mfUser').classList.add('lit');
-        T(() => { $('#ioStore').classList.add('on'); $('#mfMem').classList.add('lit-v'); renderMem(i, i - 1); $('#mfEnv').classList.add('lit-v'); }, 700);
-        T(() => { $('#mfOrch').classList.remove('thinking'); }, 1800);
-        return;
-      }
-      if (s.final) {
-        T(() => { $('#mfOrch').classList.remove('thinking'); $('#mfUser').classList.add('lit'); $('#mfAns').textContent = s.final; $('#mfFinal').classList.add('done'); }, 600);
-        return;
-      }
-      T(() => { $('#mfCall').classList.add('lit'); renderCall(s); }, 350);
-      T(() => {
-        $('#flowDown').classList.add('go');
-        $(`.cap[data-cap="${s.cap}"]`, fig).classList.add('on');
-        $(`.be[data-be="${s.be}"]`, fig).classList.add('on');
-        if (s.fetch) { $('#ioFetch').classList.add('on'); $('#mfMem').classList.add('lit-v'); $$('#memData div').forEach((d, k) => setTimeout(() => d.classList.add('fetch'), REDUCED ? 0 : k * 150)); }
-      }, 1000);
-      T(() => {
-        $('#flowDown').classList.remove('go'); $('#flowUp').classList.add('go');
-        $('#mfCall').classList.remove('lit'); $('#mfEv').classList.add('lit-a'); renderEv(s);
-      }, 1800);
-      T(() => {
-        $('#flowUp').classList.remove('go'); $('#mfOrch').classList.remove('thinking');
-        if (!s.fetch) { $('#ioStore').classList.add('on'); $('#mfMem').classList.add('lit-v'); renderMem(i, i - 1); $('#mfEnv').classList.add('lit-v'); }
-      }, 2600);
-    }
-    function markSteps() {
-      $$('button', stepsEl).forEach((b, k) => {
-        b.classList.toggle('done', k < cur);
-        b.classList.toggle('cur', k === cur);
-        b.classList.toggle('paused', !playing);
-        const bar = $('.bar', b); bar.style.animation = 'none'; void bar.offsetWidth; bar.style.animation = '';
-      });
-    }
-    function go(i) {
-      clearTimers();
-      cur = (i + STEPS.length) % STEPS.length;
-      staticTo(cur);
-      markSteps();
-      animate(cur);
-      schedule();
-    }
-    function schedule() {
-      clearTimeout(advanceT);
-      if (playing && visible) advanceT = setTimeout(() => go(cur === STEPS.length - 1 ? 0 : cur + 1), cur === STEPS.length - 1 ? STEP_MS + 1800 : STEP_MS);
-    }
-    function setPlaying(p) {
-      playing = p;
-      $('#mfPlay use').setAttribute('href', p ? '#i-pause' : '#i-play');
-      markSteps();
-      if (p) { if (cur === STEPS.length - 1) go(0); else schedule(); }
-      else clearTimeout(advanceT);
-    }
-    $('#mfPlay').addEventListener('click', () => setPlaying(!playing));
-    $('#mfPrev').addEventListener('click', () => { setPlaying(false); go(cur - 1); });
-    $('#mfNext').addEventListener('click', () => { setPlaying(false); go(cur + 1); });
-    if (!playing) $('#mfPlay use').setAttribute('href', '#i-play');
-
-    staticTo(0); setCaption(0);
-    new IntersectionObserver(es => es.forEach(e => {
-      visible = e.isIntersecting;
-      if (visible && cur < 0) go(0);
-      else if (visible) schedule();
-      else clearTimeout(advanceT);
-    }), { threshold: 0.35 }).observe(fig);
-  })();
-
   /* ================================================================ EXAMPLES GALLERY */
   (function gallery() {
     const EX = window.OVH_EXAMPLES || [];
@@ -774,7 +570,13 @@
       }).join('');
     }
     render();
-    $('#exgGrid').addEventListener('click', e => { const c = e.target.closest('.exg-card'); if (c) open(+c.dataset.i); });
+    $('#exgGrid').addEventListener('click', e => {
+      const c = e.target.closest('.exg-card'); if (!c) return;
+      const ex = shown[+c.dataset.i];
+      if (window.OVHPlayer) { window.OVHPlayer.load(ex.id); $('#method').scrollIntoView({ behavior: REDUCED ? 'auto' : 'smooth' }); }
+      else open(+c.dataset.i);
+    });
+    window.OVHGallery = { openById: id => { let k = shown.findIndex(x => x.id === id); if (k < 0) { shown = EX; k = EX.findIndex(x => x.id === id); } open(k); } };
 
     // viewer
     const exv = $('#exv');
