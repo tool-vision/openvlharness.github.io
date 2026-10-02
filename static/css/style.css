@@ -1262,3 +1262,8 @@ table.res th.first, table.res td.first { padding-left: 10px; padding-right: 10px
 #methodFig .b-orch .brain { width: 30px; height: 30px; margin: -5px 0 -5px -3px; }
 
 @media (max-width: 1040px) { #methodFig .mf-grid { grid-template-columns: minmax(0, 1fr); } #methodFig .mem-sec .h { flex-wrap: wrap; white-space: normal; } }
+
+/* academic section headings */
+.sec-head h2 { font-size: clamp(24px, 2.6vw, 30px); font-weight: 700; letter-spacing: -0.015em; margin: 0 0 8px; }
+.sec-head { margin-bottom: 22px; }
+.sec-head p.lead { font-size: 16px; }
