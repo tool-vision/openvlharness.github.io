@@ -302,11 +302,13 @@
     }
     if (s.cap === 'grounding' && s.srcSrc && img) {
       const boxes = s.boxes.slice(0, 160);
-      const svg = `<svg class="bx" viewBox="0 0 1000 1000" preserveAspectRatio="none">${boxes.map((q, k) => `<rect x="${q[0]}" y="${q[1]}" width="${Math.max(q[2] - q[0], 4)}" height="${Math.max(q[3] - q[1], 4)}" style="animation-delay:${fast ? 0 : Math.round(k * Math.min(40, 900 / Math.max(boxes.length, 1)) / speed)}ms"/>`).join('')}</svg>`;
+      // draw every box within ~0.6 s, then hold the full set briefly before showing the rendered masks
+      const step = Math.min(40, 600 / Math.max(boxes.length, 1));
+      const svg = `<svg class="bx" viewBox="0 0 1000 1000" preserveAspectRatio="none">${boxes.map((q, k) => `<rect x="${q[0]}" y="${q[1]}" width="${Math.max(q[2] - q[0], 4)}" height="${Math.max(q[3] - q[1], 4)}" style="animation-delay:${fast ? 0 : Math.round(k * step / speed)}ms"/>`).join('')}</svg>`;
       b.innerHTML = `<div class="ev2">${stage(s.srcSrc, svg + `<img class="after" src="${img.src}" alt="">`)}<div class="ev-txt">${handle}<div class="count"><b>${s.nObj}</b> ${s.nObj === 1 ? 'object' : 'objects'} · "${esc(clip(s.args.query, 40))}"</div><pre></pre></div></div>`;
       const st = $('.stage', b); fitStage(st);
       if (fast) st.classList.add('done', 'drawn');
-      else { requestAnimationFrame(() => st.classList.add('drawn')); if (!(await sleep(Math.min(1100, 300 + boxes.length * 30), r))) return; st.classList.add('done'); }
+      else { requestAnimationFrame(() => st.classList.add('drawn')); if (!(await sleep(boxes.length * step + 220 + 450, r))) return; st.classList.add('done'); }
       await typed($('pre', b), 200);
       return;
     }
