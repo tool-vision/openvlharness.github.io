@@ -393,7 +393,8 @@
     // paper colors: perception blues, web oranges, coding purple
     const COL = { Visual_Grounding: '#1F6F8B', Zoom_In: '#3E8AA3', OCR: '#66A7BB', Depth_Estimation: '#93C3D1', Camera_Trajectory: '#BFDCE5', Text_Search: '#B4530A', Image_Search: '#CE7327', Webpage_Visit: '#E19A5C', Python_Coding_Agent: '#6A2E7A' };
     const DOMS = [['Counting and Grounding', 'Counting & Grounding'], ['Visual Search and Deep Research', 'Search & Deep Research'], ['General VQA and Hallucination', 'General VQA'], ['Spatial Understanding', 'Spatial']];
-    const MODELS = [['8B', 'Qwen3-VL-8B'], ['32B', 'Qwen3-VL-32B'], ['kimi', 'Kimi K3'], ['luna', 'GPT-6 Luna'], ['sol', 'GPT-6 Sol']];
+    const SHOW_KIMI = false; // temporarily hidden; data (counting & grounding only) stays in data.js
+    const MODELS = [['8B', 'Qwen3-VL-8B'], ['32B', 'Qwen3-VL-32B'], ...(SHOW_KIMI ? [['kimi', 'Kimi K3']] : []), ['luna', 'GPT-6 Luna'], ['sol', 'GPT-6 Sol']];
     let model = '8B', mode = 'micro';
     const fmt = n => n.toLocaleString('en-US');
     function render() {
