@@ -63,9 +63,9 @@
     <div class="nav-links">
       <a href="#method">Architecture</a>
       <a href="#playground">Demo</a>
-      <a href="#insights">Results</a>
+      <a href="#results">Results</a>
+      <a href="#insights">Analysis</a>
       <a href="#optimization">Optimization</a>
-      <a href="#results">Benchmarks</a>
       <a href="#cite">Citation</a>
     </div>
     <button class="theme-switch" id="themeBtn" type="button" role="switch" aria-checked="false" aria-label="Dark mode">
@@ -331,15 +331,26 @@
   </div>
 </section>
 
-
-
-
+<!-- ============ full results ============ -->
+<section class="block" id="results">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <h2>Per-benchmark results</h2>
+      <p class="lead">Base: backbone without tools. Ours: OpenVLHarness.</p>
+    </div>
+    <div class="tbl-controls">
+      <span class="muted" style="font-size:13px">Scroll horizontally on small screens →</span>
+    </div>
+    <div class="tbl-wrap reveal"><table class="res" id="resTable"></table></div>
+    <p class="tbl-cap"><b>Bold</b> = best within each backbone group; <span style="text-decoration:underline;text-decoration-color:var(--cap);text-decoration-thickness:2px;text-underline-offset:3px">underline</span> = best across all shown backbones. Qwen3-VL results are means of three runs; GPT-6, GPT-5 and Kimi K3 results are single runs. GPT-5 and Kimi K3 are from the appendix (Table 6).</p>
+  </div>
+</section>
 
 <!-- ============ insights ============ -->
 <section class="block" id="insights">
   <div class="wrap">
     <div class="sec-head reveal">
-      <h2>Main results</h2>
+      <h2>Analysis</h2>
     </div>
 
     <!-- 1 -->
@@ -486,20 +497,6 @@
 </div>
 <div class="lightbox" id="lightbox" hidden><img alt=""><span class="lb-cap"></span></div>
 
-<!-- ============ full results ============ -->
-<section class="block" id="results">
-  <div class="wrap">
-    <div class="sec-head reveal">
-      <h2>Per-benchmark results</h2>
-      <p class="lead">Base: backbone without tools. Ours: OpenVLHarness.</p>
-    </div>
-    <div class="tbl-controls">
-      <span class="muted" style="font-size:13px">Scroll horizontally on small screens →</span>
-    </div>
-    <div class="tbl-wrap reveal"><table class="res" id="resTable"></table></div>
-    <p class="tbl-cap"><b>Bold</b> = best within each backbone group; <span style="text-decoration:underline;text-decoration-color:var(--cap);text-decoration-thickness:2px;text-underline-offset:3px">underline</span> = best across all shown backbones. Qwen3-VL results are means of three runs; GPT-6, GPT-5 and Kimi K3 results are single runs. GPT-5 and Kimi K3 are from the appendix (Table 6).</p>
-  </div>
-</section>
 
 <!-- ============ cite ============ -->
 <section class="block" id="cite">
