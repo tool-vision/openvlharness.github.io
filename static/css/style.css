@@ -1406,3 +1406,9 @@ table.res thead tr.sub th { font-size: 12px; letter-spacing: -0.01em; }
 #methodFig .b-orch h5 { color: var(--ev); }
 .tm-pie.na svg circle { fill: none; stroke: var(--line-2); stroke-width: 1.5; stroke-dasharray: 5 5; }
 .tm-pie.na .tm-n { opacity: 1; }
+
+/* step caption + playback controls share one panel: caption left, buttons right */
+#methodFig .mf-dock { margin-top: 12px; display: flex; align-items: center; gap: 12px 20px; flex-wrap: wrap; padding: 10px 14px; border-radius: 14px; background: var(--surface-2); border: 1px solid var(--line); }
+#methodFig .mf-dock .mf-caption { margin: 0; flex: 1 1 320px; min-width: 0; background: none; border-radius: 0; border-left: 3px solid var(--cap); padding: 4px 0 4px 12px; }
+#methodFig .mf-dock .mf-controls { margin: 0; flex: 0 0 auto; padding: 0; background: none; border: 0; border-radius: 0; }
+@media (max-width: 760px) { #methodFig .mf-dock .mf-controls { flex: 1 1 100%; } }

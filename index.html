@@ -23,7 +23,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="static/css/style.css?v=74">
+  <link rel="stylesheet" href="static/css/style.css?v=75">
   <script>
     try { var t = localStorage.getItem('ovh-theme'); if (t) document.documentElement.setAttribute('data-theme', t); } catch (e) {}
   </script>
@@ -250,14 +250,16 @@
       </div>
 
       <div class="steps mf-steps" id="mfSteps"></div>
-      <div class="mf-caption" id="mfCaption"><div class="s"></div><div class="t"></div><p class="d"></p></div>
-      <div class="mf-controls" role="toolbar" aria-label="Playback">
-        <button class="ctl pb pb-lbl" id="mfPrev" aria-label="Previous step"><svg><use href="#i-prev"/></svg><span>Previous step</span></button>
-        <button class="ctl pb play-btn" id="mfPlay" aria-label="Pause" title="Play / pause"><svg><use href="#i-pause"/></svg></button>
-        <button class="ctl pb pb-lbl" id="mfNext" aria-label="Next step"><span>Next step</span><svg><use href="#i-next"/></svg></button>
-        <div class="speed-dd" id="mfSpeedDd">
-          <button type="button" class="speed-btn" id="mfSpeedBtn" aria-haspopup="listbox" aria-expanded="false" aria-label="Playback speed"><span class="sl">Speed</span><b id="mfSpeedV">1×</b><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></button>
-          <ul class="speed-menu" id="mfSpeed" role="listbox" aria-label="Playback speed" tabindex="-1" hidden></ul>
+      <div class="mf-dock">
+        <div class="mf-caption" id="mfCaption"><div class="s"></div><div class="t"></div><p class="d"></p></div>
+        <div class="mf-controls" role="toolbar" aria-label="Playback">
+          <button class="ctl pb pb-lbl" id="mfPrev" aria-label="Previous step"><svg><use href="#i-prev"/></svg><span>Previous step</span></button>
+          <button class="ctl pb play-btn" id="mfPlay" aria-label="Pause" title="Play / pause"><svg><use href="#i-pause"/></svg></button>
+          <button class="ctl pb pb-lbl" id="mfNext" aria-label="Next step"><span>Next step</span><svg><use href="#i-next"/></svg></button>
+          <div class="speed-dd" id="mfSpeedDd">
+            <button type="button" class="speed-btn" id="mfSpeedBtn" aria-haspopup="listbox" aria-expanded="false" aria-label="Playback speed"><span class="sl">Speed</span><b id="mfSpeedV">1×</b><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></button>
+            <ul class="speed-menu" id="mfSpeed" role="listbox" aria-label="Playback speed" tabindex="-1" hidden></ul>
+          </div>
         </div>
       </div>
     </div>
