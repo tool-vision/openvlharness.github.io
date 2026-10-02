@@ -438,18 +438,27 @@
   $('#mfPrev').addEventListener('click', () => { setPlaying(false); go(cur - 1); });
   $('#mfNext').addEventListener('click', () => { setPlaying(false); go(cur + 1); });
   const SPEEDS = [0.25, 0.5, 0.75, 1, 1.25, 1.5, 2];
+  const sBtn = $('#mfSpeedBtn'), sVal = $('#mfSpeedV');
   function setSpeed(v) {
     speed = v; fig.style.setProperty('--spd', v);
-    $$('button', R.speed).forEach(b => b.setAttribute('aria-checked', +b.dataset.v === v));
+    sVal.textContent = v + '×';
+    $$('li', R.speed).forEach(li => li.setAttribute('aria-selected', +li.dataset.v === v));
   }
-  if (R.speed) {
-    R.speed.innerHTML = SPEEDS.map(v => `<button type="button" role="radio" data-v="${v}" aria-checked="${v === 1}">${v}×</button>`).join('');
-    R.speed.addEventListener('click', ev => { const b = ev.target.closest('button'); if (b) setSpeed(+b.dataset.v); });
+  function openMenu(o) {
+    R.speed.hidden = !o; sBtn.setAttribute('aria-expanded', o);
+    if (o) { const cur = $('li[aria-selected="true"]', R.speed); (cur || R.speed).focus(); }
+  }
+  if (R.speed && sBtn) {
+    R.speed.innerHTML = SPEEDS.map(v => `<li role="option" tabindex="-1" data-v="${v}" aria-selected="${v === 1}">${v}×${v === 1 ? '<span>normal</span>' : ''}</li>`).join('');
+    sBtn.addEventListener('click', () => openMenu(R.speed.hidden));
+    R.speed.addEventListener('click', ev => { const li = ev.target.closest('li'); if (li) { setSpeed(+li.dataset.v); openMenu(false); sBtn.focus(); } });
     R.speed.addEventListener('keydown', ev => {
-      if (ev.key !== 'ArrowRight' && ev.key !== 'ArrowLeft') return;
-      const k = Math.max(0, Math.min(SPEEDS.length - 1, SPEEDS.indexOf(speed) + (ev.key === 'ArrowRight' ? 1 : -1)));
-      setSpeed(SPEEDS[k]); $(`button[data-v="${SPEEDS[k]}"]`, R.speed).focus(); ev.preventDefault();
+      const items = $$('li', R.speed), k = items.indexOf(document.activeElement);
+      if (ev.key === 'ArrowDown' || ev.key === 'ArrowUp') { items[Math.max(0, Math.min(items.length - 1, k + (ev.key === 'ArrowDown' ? 1 : -1)))].focus(); ev.preventDefault(); }
+      else if (ev.key === 'Enter' || ev.key === ' ') { if (k >= 0) { setSpeed(+items[k].dataset.v); openMenu(false); sBtn.focus(); } ev.preventDefault(); }
+      else if (ev.key === 'Escape' || ev.key === 'Tab') { openMenu(false); sBtn.focus(); }
     });
+    document.addEventListener('click', ev => { if (!R.speed.hidden && !ev.target.closest('#mfSpeedDd')) openMenu(false); });
   }
 
   function load(id, opt = {}) {

@@ -976,3 +976,40 @@ footer a { color: var(--ink-2); }
 #methodFig .stage .cam-in img { transition-duration: calc(.8s / var(--spd, 1)), calc(.5s / var(--spd, 1)); transition-delay: 0s, calc(.5s / var(--spd, 1)); }
 #methodFig .stage .zr { transition-duration: calc(.3s / var(--spd, 1)), calc(.5s / var(--spd, 1)); }
 @media (max-width: 640px) { .speed-ctl { margin-left: 0; } }
+
+/* ---------- playback toolbar (steps → caption → controls) ---------- */
+#methodFig .mf-caption { margin-top: 10px; }
+#methodFig .mf-controls {
+  display: flex; align-items: center; justify-content: center; gap: 12px; flex-wrap: wrap;
+  margin-top: 12px; padding: 10px 14px; border-radius: 14px; background: var(--surface-2); border: 1px solid var(--line);
+}
+#methodFig .pb { width: 44px; height: 44px; border-radius: 12px; border: 1.5px solid var(--line-2); background: var(--surface); color: var(--ink); transition: border-color .15s, color .15s, background .15s, transform .1s; }
+#methodFig .pb svg { width: 18px; height: 18px; }
+#methodFig .pb:hover { border-color: var(--cap); color: var(--cap); background: var(--cap-soft); }
+#methodFig .pb:active { transform: scale(.95); }
+#methodFig .pb.play-btn { width: 54px; height: 54px; border-radius: 50%; background: var(--cap); border-color: var(--cap); color: var(--on-accent); box-shadow: 0 6px 18px -6px var(--cap), 0 0 0 4px var(--cap-soft); }
+#methodFig .pb.play-btn:hover { filter: brightness(1.08); color: var(--on-accent); }
+#methodFig .pb.play-btn svg { width: 20px; height: 20px; }
+#methodFig .pb:focus-visible, .speed-btn:focus-visible, .speed-menu li:focus-visible, #mfSteps button:focus-visible { outline: 2.5px solid var(--cap); outline-offset: 2px; }
+.speed-dd { position: relative; margin-left: 6px; }
+.speed-btn { height: 44px; display: inline-flex; align-items: center; gap: 8px; padding: 0 12px 0 14px; border-radius: 999px; border: 1.5px solid var(--cap); background: var(--surface); color: var(--cap); cursor: pointer; font: inherit; transition: background .15s; }
+.speed-btn:hover, .speed-btn[aria-expanded="true"] { background: var(--cap-soft); }
+.speed-btn .sl { font: 500 11px var(--f-mono); letter-spacing: .06em; text-transform: uppercase; color: var(--ink-3); }
+.speed-btn b { font: 700 14px var(--f-mono); min-width: 3.4ch; text-align: left; }
+.speed-btn svg { width: 15px; height: 15px; transition: transform .15s; }
+.speed-btn[aria-expanded="true"] svg { transform: rotate(180deg); }
+.speed-menu { position: absolute; bottom: calc(100% + 8px); left: 50%; transform: translateX(-50%); z-index: 20; list-style: none; margin: 0; padding: 6px; min-width: 132px; background: var(--surface); border: 1px solid var(--line-2); border-radius: 12px; box-shadow: 0 16px 40px -12px rgba(0,0,0,.35); outline: none; }
+.speed-menu[hidden] { display: none; }
+.speed-menu li { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 7px 10px; border-radius: 8px; font: 500 13.5px var(--f-mono); color: var(--ink-2); cursor: pointer; }
+.speed-menu li span { font: 400 11px var(--f-body); color: var(--ink-3); }
+.speed-menu li:hover { background: var(--surface-2); color: var(--ink); }
+.speed-menu li[aria-selected="true"] { background: var(--cap-soft); color: var(--cap); font-weight: 700; }
+.speed-menu li[aria-selected="true"]::after { content: "✓"; font-family: var(--f-body); }
+/* steps: clearer current / done states */
+#mfSteps button { height: 34px; border: 1.5px solid var(--line); color: var(--ink-3); transition: border-color .15s, background .15s, color .15s; }
+#mfSteps button:hover { border-color: var(--cap); color: var(--cap); }
+#mfSteps button.done { color: var(--ink-2); border-color: var(--line-2); }
+#mfSteps button.done .bar { background: var(--cap); opacity: .55; }
+#mfSteps button.cur { background: var(--cap); border-color: var(--cap); color: var(--on-accent); font-weight: 600; box-shadow: 0 4px 12px -6px var(--cap); }
+#mfSteps button.cur .bar { opacity: 0; }
+@media (max-width: 640px) { .speed-dd { margin-left: 0; } .speed-menu { left: auto; right: 0; transform: none; } }
