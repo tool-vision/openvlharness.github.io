@@ -524,6 +524,78 @@
   });
   document.addEventListener('keydown', ev => { if (ev.key === 'Escape' && !X.hidden && $('#lightbox').hidden) closeX(); });
 
+  /* ------------------------------------------------------------ connectors (paper Fig. 2) */
+  const grid = $('.mf-grid', fig);
+  const NS = 'http://www.w3.org/2000/svg';
+  const arrowsSvg = document.createElementNS(NS, 'svg');
+  arrowsSvg.setAttribute('class', 'mf-arrows'); arrowsSvg.setAttribute('aria-hidden', 'true');
+  grid.appendChild(arrowsSvg);
+  const AR = {};
+  function arrow(id, cls, x1, y1, x2, y2) {
+    const g = document.createElementNS(NS, 'g'); g.setAttribute('class', 'ar ' + cls); g.dataset.id = id;
+    const dx = x2 - x1, dy = y2 - y1, len = Math.hypot(dx, dy) || 1, ux = dx / len, uy = dy / len, hl = 9, hw = 6.5;
+    const bx = x2 - ux * hl, by = y2 - uy * hl;
+    const ln = document.createElementNS(NS, 'line');
+    ln.setAttribute('x1', x1); ln.setAttribute('y1', y1); ln.setAttribute('x2', bx); ln.setAttribute('y2', by);
+    const hd = document.createElementNS(NS, 'polygon');
+    hd.setAttribute('points', `${x2},${y2} ${bx - uy * hw},${by + ux * hw} ${bx + uy * hw},${by - ux * hw}`);
+    g.append(ln, hd); arrowsSvg.appendChild(g); AR[id] = g;
+  }
+  function label(x, y, text, anchor = 'middle', id) {
+    const t = document.createElementNS(NS, 'text'); t.setAttribute('x', x); t.setAttribute('y', y); t.setAttribute('text-anchor', anchor);
+    t.textContent = text; if (id) t.dataset.id = id; arrowsSvg.appendChild(t); return t;
+  }
+  function drawArrows() {
+    arrowsSvg.innerHTML = '';
+    for (const k in AR) delete AR[k];
+    if (getComputedStyle(arrowsSvg).display === 'none') return;
+    const o = grid.getBoundingClientRect();
+    const b = el => { const r = el.getBoundingClientRect(); return { l: r.left - o.left, r: r.right - o.left, t: r.top - o.top, b: r.bottom - o.top, cx: (r.left + r.right) / 2 - o.left, cy: (r.top + r.bottom) / 2 - o.top }; };
+    const U = b(R.user), O = b(R.orch), E = b(R.env), C = b(R.call), V = b(R.ev), M = b(R.mem), L = b($('#mfCap')), SV = b($('#mfSvc'));
+    const pad = 6, mid = (a, c) => (a + c) / 2;
+    // user <-> orchestrator
+    arrow('u2o', 'c-user', U.r + pad, O.t + (O.b - O.t) * 0.36, O.l - pad, O.t + (O.b - O.t) * 0.36);
+    arrow('o2u', 'c-user', O.l - pad, O.t + (O.b - O.t) * 0.64, U.r + pad, O.t + (O.b - O.t) * 0.64);
+    // environment update -> orchestrator; memory -> environment update
+    arrow('e2o', 'c-mem', E.l - pad, mid(E.t, E.b), O.r + pad, mid(E.t, E.b));
+    arrow('m2e', 'c-mem', M.l - pad, mid(E.t, E.b), E.r + pad, mid(E.t, E.b));
+    // orchestrator -> tool call; rendered evidence -> orchestrator (x within both boxes)
+    const xd = mid(Math.max(O.l, C.l), Math.min(O.r, C.r)), xu = mid(Math.max(O.l, V.l), Math.min(O.r, V.r));
+    arrow('o2c', 'c-cap', xd, O.b + pad, xd, C.t - pad);
+    arrow('v2o', 'c-ev', xu, V.t - pad, xu, O.b + pad);
+    // tool call -> capability layer; capability layer -> rendered evidence
+    arrow('c2l', 'c-cap', C.cx, C.b + pad, C.cx, L.t - pad);
+    arrow('l2v', 'c-ev', V.cx, L.t - pad, V.cx, V.b + pad);
+    // capability layer <-> models & services
+    arrow('l2s', 'c-svc', C.cx, L.b + pad, C.cx, SV.t - pad);
+    arrow('s2l', 'c-svc', V.cx, SV.t - pad, V.cx, L.b + pad);
+    // capability layer <-> memory: store results / fetch artifacts
+    const ys = mid(L.t, L.b), gx1 = L.r + pad, gx2 = M.l - pad;
+    arrow('store', 'c-mem', gx1, ys - 8, gx2, ys - 8);
+    arrow('fetch', 'c-cap', gx2, ys + 8, gx1, ys + 8);
+    label(mid(gx1, gx2), ys - 18, 'store', 'middle', 'storeL');
+    label(mid(gx1, gx2), ys + 28, 'fetch', 'middle', 'fetchL');
+    syncArrows();
+  }
+  // light up the connectors that the replay is currently using
+  function syncArrows() {
+    const on = (id, v) => { if (AR[id]) AR[id].classList.toggle('go', !!v); };
+    const has = (sel, cls) => { const e = $(sel); return e && e.classList.contains(cls); };
+    const down = has('#flowDown', 'go'), up = has('#flowUp', 'go');
+    on('o2c', down || has('#mfCall', 'lit')); on('c2l', down);
+    on('l2v', up); on('v2o', up);
+    on('l2s', has('#flowDown2', 'go')); on('s2l', has('#flowUp2', 'go'));
+    const store = has('#ioStore', 'on'), fetch = has('#ioFetch', 'on');
+    on('store', store); on('fetch', fetch); on('m2e', store); on('e2o', has('#mfEnv', 'lit-v'));
+    on('u2o', has('#mfUser', 'lit') && !has('#mfFinal', 'done')); on('o2u', has('#mfFinal', 'done'));
+    $$('text', arrowsSvg).forEach(t => t.classList.toggle('on', (t.dataset.id === 'storeL' && store) || (t.dataset.id === 'fetchL' && fetch)));
+  }
+  const watch = new MutationObserver(syncArrows);
+  ['#flowDown', '#flowUp', '#flowDown2', '#flowUp2', '#ioStore', '#ioFetch', '#mfUser', '#mfFinal', '#mfCall', '#mfEnv']
+    .forEach(sel => { const e = $(sel); if (e) watch.observe(e, { attributes: true, attributeFilter: ['class'] }); });
+  new ResizeObserver(() => requestAnimationFrame(drawArrows)).observe(grid);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(drawArrows);
+
   /* ------------------------------------------------------------ boot */
   // 'visible' = some part of the figure is within the middle 60% of the viewport (works for figures taller than the screen)
   new IntersectionObserver(es => es.forEach(e => { visible = e.isIntersecting; }), { threshold: 0, rootMargin: '-20% 0px -20% 0px' }).observe(fig);

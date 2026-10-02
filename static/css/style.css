@@ -1214,3 +1214,29 @@ table.res th.first, table.res td.first { padding-left: 10px; padding-right: 10px
 .op-tools td:first-child { min-width: 210px; }
 .op-tools td code { word-break: normal; }
 @media (max-width: 640px) { .op-tools td:first-child { min-width: 0; } .op-tools td code { word-break: break-all; } }
+
+/* ---------- method figure connectors (SVG overlay, paper Fig. 2) ---------- */
+#methodFig .mf-grid { position: relative; column-gap: 46px; }
+#methodFig .mf-main { row-gap: 34px; }
+#methodFig .mf-row.top { column-gap: 40px; }
+#methodFig .mf-row.mid { grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); column-gap: 18px; }
+#methodFig .flow { height: 30px; }
+#methodFig .flow .pipe-v { visibility: hidden; }
+#methodFig .mem-io { display: none; }
+.mf-arrows { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; overflow: visible; z-index: 2; }
+.mf-arrows .ar { color: var(--ink-3); opacity: .9; transition: opacity .25s; }
+.mf-arrows .ar line { stroke: currentColor; stroke-width: 3; stroke-linecap: butt; }
+.mf-arrows .ar polygon { fill: currentColor; }
+.mf-arrows .ar.c-user { color: var(--ink-2); }
+.mf-arrows .ar.c-cap { color: var(--cap); }
+.mf-arrows .ar.c-ev { color: var(--ev); }
+.mf-arrows .ar.c-mem { color: var(--mem); }
+.mf-arrows .ar.c-svc { color: var(--ink-3); opacity: .55; }
+.mf-arrows .ar.go { opacity: 1; filter: drop-shadow(0 0 4px currentColor); }
+.mf-arrows .ar.go line { stroke-dasharray: 7 5; animation: arFlow .6s linear infinite; }
+.mf-arrows text { font: 600 10.5px var(--f-body); fill: var(--ink-3); }
+.mf-arrows text.on { fill: var(--mem); }
+@keyframes arFlow { to { stroke-dashoffset: -12; } }
+@media (prefers-reduced-motion: reduce) { .mf-arrows .ar.go line { animation: none; stroke-dasharray: none; } }
+@media (max-width: 1040px) { .mf-arrows { display: none; } #methodFig .mf-grid { column-gap: 14px; } #methodFig .mf-main { row-gap: 12px; } #methodFig .mf-row.top { column-gap: 12px; } }
+#methodFig .flow:not(.svc) { height: 0; }
