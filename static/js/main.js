@@ -693,7 +693,7 @@
 
   /* ================================================================ RESULTS TABLE */
   (function table() {
-    const NAMES = { Base: 'Base', OT: 'OT', VS: 'VS', CX: 'CX', Ours: 'Ours' };
+    const NAMES = { Base: 'Base', OT: 'OctoTools', VS: 'Visual<br>Sketchpad', CX: 'Codex', Ours: 'Ours' };
     const ORDER = ['q8', 'q32', 'gpt5', 'kimi', 'luna', 'sol'];
     function render() {
       const groups = ORDER.map(id => D.GROUPS.find(g => g.id === id));

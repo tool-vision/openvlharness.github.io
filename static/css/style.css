@@ -1170,3 +1170,8 @@ footer a { color: var(--ink-2); }
 .dm-prov { display: grid; grid-template-columns: 1fr 1fr; width: 100%; }
 .dm-prov button { text-align: center; padding: 8px 10px; font-size: 13.5px; }
 .dm-sample em.x { color: var(--ink-3); }
+
+/* results table: full baseline names wrap within their column */
+table.res thead tr.sub th { line-height: 1.2; vertical-align: bottom; font-size: 10.5px; }
+table.res th, table.res td { padding: 7px 6px; }
+table.res th.first, table.res td.first { padding-left: 10px; padding-right: 10px; }
