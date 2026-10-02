@@ -136,10 +136,9 @@
       ['Python_Coding_Agent_Tool', 'distance = 1.196 m', ['segment_window', 'depth_result', 'camera_trajectory_result']],
     ];
     const esc = t => t.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-    const html = (t, nCall, r, nRes, hs, nH, running) => {
+    const html = (t, nCall, r, nRes, hs, nH) => {
       const call = `${t}(…)`, cut = call.slice(0, nCall);
       let h = cut.length <= t.length ? `<b>${esc(cut)}</b>` : `<b>${esc(t)}</b><span class="ag">${esc(cut.slice(t.length))}</span>`;
-      if (running) h += ' <span class="run">running</span>';
       if (nRes > 0) h += ` <span class="ar">→</span> <span class="rs">${esc(r.slice(0, nRes))}</span>`;
       if (nH > 0) h += hs.slice(0, nH).map(x => ` <span class="hd">[${esc(x)}]</span>`).join('');
       return h;
@@ -154,8 +153,7 @@
       (function typeCall() {
         n = Math.min(call.length, n + 2); lab.innerHTML = html(t, n, r, 0, hs, 0);
         if (n < call.length) return setTimeout(typeCall, 26);
-        lab.innerHTML = html(t, n, r, 0, hs, 0, true);
-        setTimeout(() => {
+        {
           let m = 0;
           (function typeRes() {
             m = Math.min(r.length, m + 2); lab.innerHTML = html(t, n, r, m, hs, 0);
@@ -167,7 +165,7 @@
               setTimeout(() => { lab.classList.add('out'); setTimeout(() => { k = (k + 1) % R.length; next(); }, 260); }, 3300);
             })();
           })();
-        }, 650);
+        }
       })();
     }
     setTimeout(next, 1100);
