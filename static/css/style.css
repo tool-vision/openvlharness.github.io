@@ -1267,3 +1267,4 @@ table.res th.first, table.res td.first { padding-left: 10px; padding-right: 10px
 .sec-head h2 { font-size: clamp(24px, 2.6vw, 30px); font-weight: 700; letter-spacing: -0.015em; margin: 0 0 8px; }
 .sec-head { margin-bottom: 22px; }
 .sec-head p.lead { font-size: 16px; }
+#methodFig .b-orch .brain { width: 22px; height: 22px; margin: -2px 0 -2px -1px; }
