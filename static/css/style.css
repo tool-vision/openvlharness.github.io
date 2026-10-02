@@ -1175,3 +1175,42 @@ footer a { color: var(--ink-2); }
 table.res thead tr.sub th { line-height: 1.2; vertical-align: bottom; font-size: 10.5px; }
 table.res th, table.res td { padding: 7px 6px; }
 table.res th.first, table.res td.first { padding-left: 10px; padding-right: 10px; }
+
+/* ---------- harness optimization ---------- */
+.op-flow { list-style: none; margin: 0 0 16px; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; counter-reset: none; }
+.op-flow li { display: flex; gap: 12px; align-items: flex-start; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 14px 16px; position: relative; }
+.op-flow li:not(:last-child)::after { content: "→"; position: absolute; right: -11px; top: 50%; transform: translateY(-50%); font: 600 15px var(--f-body); color: var(--ink-3); background: var(--bg); padding: 0 1px; }
+.op-n { flex: none; width: 26px; height: 26px; border-radius: 50%; background: var(--cap); color: var(--on-accent); display: grid; place-items: center; font: 700 13px var(--f-mono); }
+.op-flow h4 { margin: 2px 0 4px; font: 600 15px var(--f-display); }
+.op-flow p { margin: 0; font-size: 13.5px; line-height: 1.55; color: var(--ink-2); }
+.ch-t, .ch-y, .ch-z { font-family: var(--f-mono); font-size: 12px; padding: 0 4px; border-radius: 4px; }
+.ch-t { background: var(--cap-soft); color: var(--cap); } .ch-y { background: var(--ev-soft); color: var(--ev); } .ch-z { background: var(--surface-2); color: var(--ink-3); }
+.op-fig { padding: 18px 20px; margin-bottom: 16px; }
+.op-fig .chart-title { margin-bottom: 10px; }
+.op-wf { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.35fr); gap: 16px; margin-bottom: 16px; align-items: start; }
+.op-card { padding: 18px 20px; display: grid; gap: 10px; }
+.op-card header { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.op-card h3 { margin: 0; font: 600 19px var(--f-display); }
+.op-card > p { margin: 0; font-size: 14px; line-height: 1.6; color: var(--ink-2); }
+.op-tag { font: 600 11px var(--f-mono); padding: 2px 8px; border-radius: 999px; }
+.op-tag.y { background: var(--ev-soft); color: var(--ev); } .op-tag.t { background: var(--cap-soft); color: var(--cap); }
+.op-params { display: flex; flex-wrap: wrap; gap: 6px; margin: 0; }
+.op-params div { display: flex; gap: 6px; align-items: baseline; border: 1px solid var(--line); border-radius: 8px; padding: 3px 9px; background: var(--surface-2); }
+.op-params dt { font: 500 10.5px var(--f-mono); color: var(--ink-3); text-transform: uppercase; letter-spacing: .04em; }
+.op-params dd { margin: 0; font: 600 12.5px var(--f-mono); color: var(--ink); }
+.op-more summary { cursor: pointer; font-size: 13.5px; font-weight: 600; color: var(--cap); }
+.op-more blockquote { margin: 8px 0 0; padding: 8px 12px; border-left: 3px solid var(--ev); background: var(--surface-2); border-radius: 0 8px 8px 0; font-size: 13px; line-height: 1.55; color: var(--ink-2); }
+.op-more blockquote b { color: var(--ink); }
+.op-src { margin: 6px 0 0; font-size: 12px; color: var(--ink-3); }
+.op-tools { overflow-x: auto; }
+.op-tools table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+.op-tools th { text-align: left; font: 500 10.5px var(--f-mono); text-transform: uppercase; letter-spacing: .05em; color: var(--ink-3); padding: 6px 8px; border-bottom: 1px solid var(--line); }
+.op-tools td { padding: 7px 8px; border-bottom: 1px solid var(--line); vertical-align: top; color: var(--ink-2); line-height: 1.45; }
+.op-tools td:nth-child(3), .op-tools td:nth-child(4), .op-tools th:nth-child(3), .op-tools th:nth-child(4) { text-align: right; white-space: nowrap; font-family: var(--f-mono); }
+.op-tools td code { font-size: 11.5px; color: var(--cap); word-break: break-word; }
+.op-tools tr.g td { background: var(--surface-2); font: 500 11px var(--f-mono); color: var(--ink-3); text-transform: uppercase; letter-spacing: .04em; padding: 5px 8px; }
+@media (max-width: 960px) { .op-flow, .op-wf { grid-template-columns: 1fr; } .op-flow li:not(:last-child)::after { content: "↓"; right: 50%; top: auto; bottom: -15px; transform: translateX(50%); } }
+.det-box .det-label { max-width: min(760px, calc(100vw - 64px)); }
+.op-tools td:first-child { min-width: 210px; }
+.op-tools td code { word-break: normal; }
+@media (max-width: 640px) { .op-tools td:first-child { min-width: 0; } .op-tools td code { word-break: break-all; } }

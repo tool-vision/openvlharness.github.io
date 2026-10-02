@@ -100,5 +100,8 @@ Average|35.99 33.31 32.15 47.14|40.10 38.61 37.66 52.51|43.18 42.78 41.46 55.76|
     { name: 'FREAK-VQA', tool: 62, text: 35, none: 2, hs: -1.0, tg: 4.5 },
   ];
 
-  return { DOMAINS, GROUPS, TABLE, BACKBONES, EFFORTS, EFFORT, HARNESS, ABL_STEPS, ABLATION, REMEDY };
+  // Appendix per-dataset critique table (Qwen3-VL-8B, 9,980 failures): domain = unweighted mean over its datasets (Fig. 4a/b)
+  const FAILURE = [{"name": "Counting & Grounding", "fail": 3117, "k": 6, "NC": 13.2, "Wrong": 72.3, "UI": 2.3, "Reas": 5.3, "Label": 7.0, "A": 5.0, "B": 72.8, "C": 1.0, "Y": 14.0, "Z": 7.0}, {"name": "Search & Deep Research", "fail": 1805, "k": 6, "NC": 48.5, "Wrong": 16.2, "UI": 2.8, "Reas": 24.3, "Label": 8.3, "A": 18.5, "B": 14.8, "C": 2.3, "Y": 55.7, "Z": 8.8}, {"name": "General VQA", "fail": 2400, "k": 6, "NC": 36.5, "Wrong": 12.3, "UI": 7.7, "Reas": 39.0, "Label": 4.5, "A": 34.5, "B": 14.0, "C": 2.5, "Y": 43.7, "Z": 5.0}, {"name": "Spatial", "fail": 2658, "k": 5, "NC": 48.8, "Wrong": 5.6, "UI": 5.4, "Reas": 40.0, "Label": 0.4, "A": 24.4, "B": 8.2, "C": 13.0, "Y": 53.8, "Z": 0.4}];
+
+  return { DOMAINS, GROUPS, TABLE, BACKBONES, EFFORTS, EFFORT, HARNESS, ABL_STEPS, ABLATION, REMEDY, FAILURE };
 })();

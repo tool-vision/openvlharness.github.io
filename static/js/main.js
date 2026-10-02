@@ -460,6 +460,55 @@
   segmented($('#abModel'), [['8B', 'Qwen3-VL-8B'], ['32B', '32B']], abM, v => { abM = v; abChart.draw(true); });
   segmented($('#abDomain'), ['Overall', 'Count & Ground', 'Search', 'General VQA', 'Spatial'].map(d => [d, d]), abD, v => { abD = v; abChart.draw(true); });
 
+  /* ================================================================ HARNESS OPTIMIZATION: failure causes + remedy channels by domain (Fig. 4a/b) */
+  chart($('#failDomain'), (el, W) => {
+    const narrow = W < 760;
+    const PANELS = [
+      { title: '(a) Primary failure cause, % of failures', keys: [
+        ['NC', 'Tool not called', 'var(--cap)', '#fff'], ['Wrong', 'Tool output wrong', 'var(--ev)', '#fff'],
+        ['UI', 'Output unusable or ignored', 'var(--s-octo)', '#fff'], ['Reas', 'Reasoning error', 'var(--mem)', '#fff'],
+        ['Label', 'Label or question issue', 'var(--s-base)', 'var(--ink)']] },
+      { title: '(b) Proposed remedy channel, % of failures', keys: [
+        ['A', 'A · evidence interpretation', 'color-mix(in srgb, var(--cap) 100%, #000 18%)', '#fff'],
+        ['B', 'B · output verification', 'var(--cap)', '#fff'],
+        ['C', 'C · tool composition', 'color-mix(in srgb, var(--cap) 45%, var(--surface))', 'var(--ink)'],
+        ['Y', 'Y · harness text', 'var(--ev)', '#fff'], ['Z', 'Z · no remedy', 'var(--s-base)', 'var(--ink)']] },
+    ];
+    const rows = D.FAILURE, labW = 152, barH = 24, rowH = 36, legH = 44;
+    const pw = narrow ? W : (W - 36) / 2;
+    const ph = 26 + rows.length * rowH + legH;
+    const Hh = narrow ? ph * 2 + 16 : ph;
+    const svg = S('svg', { viewBox: `0 0 ${W} ${Hh}`, height: Hh }, el);
+    PANELS.forEach((P, pi) => {
+      const ox = narrow ? 0 : pi * (pw + 36), oy = narrow ? pi * (ph + 16) : 0;
+      const lw = pi === 0 || narrow ? labW : 0;
+      const sx = lin(0, 100, ox + lw, ox + pw - 4);
+      S('text', { x: ox + lw, y: oy + 13, class: 'ax-title', style: 'font-weight:600;fill:var(--ink-2)', text: P.title }, svg);
+      rows.forEach((r, i) => {
+        const y = oy + 26 + i * rowH;
+        if (lw) S('text', { x: ox, y: y + barH / 2 + 4, class: 'cat-label', style: 'font-weight:600;fill:var(--ink)', text: r.name }, svg);
+        let acc = 0;
+        P.keys.forEach(([k, lab, col, tc], j) => {
+          const v = r[k]; if (!v) { return; }
+          const x0 = sx(acc) + (acc ? 1 : 0), x1 = sx(Math.min(100, acc + v)) - 1;
+          const rect = S('rect', { x: x0, y, width: Math.max(1, x1 - x0), height: barH, rx: 3, class: 'anim-hbar', style: `fill:${col};transition-delay:${i * 90 + j * 110}ms` }, svg);
+          if (x1 - x0 > 30) S('text', { x: (x0 + x1) / 2, y: y + barH / 2 + 4, 'text-anchor': 'middle', class: 'anim-fade', style: `fill:${tc};font-size:10.5px;font-weight:700;font-family:var(--f-mono);transition-delay:${600 + i * 90}ms`, text: Math.round(v) }, svg);
+          hover(rect, `<b>${r.name}</b> · ${r.k} datasets, ${r.fail.toLocaleString()} failures<br>${lab}: <b>${v.toFixed(1)}%</b>`);
+          acc += v;
+        });
+      });
+      // legend
+      let lx = ox + lw, ly = oy + 26 + rows.length * rowH + 14;
+      P.keys.forEach(([k, lab, col]) => {
+        const tw = lab.length * 6.1 + 22;
+        if (lx + tw > ox + pw) { lx = ox + lw; ly += 17; }
+        S('rect', { x: lx, y: ly - 8, width: 10, height: 10, rx: 2, style: `fill:${col}` }, svg);
+        S('text', { x: lx + 14, y: ly + 1, class: 'ax-label', style: 'font-size:11px', text: lab }, svg);
+        lx += tw;
+      });
+    });
+  });
+
   /* ================================================================ INSIGHT 5: remedy profile + specialization gains */
   chart($('#remedy'), (el, W) => {
     const narrow = W < 440;

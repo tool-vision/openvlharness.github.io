@@ -12,7 +12,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="static/css/style.css?v=35">
+  <link rel="stylesheet" href="static/css/style.css?v=37">
   <script>
     try { var t = localStorage.getItem('ovh-theme'); if (t) document.documentElement.setAttribute('data-theme', t); } catch (e) {}
   </script>
@@ -63,6 +63,7 @@
       <a href="#method">Method</a>
       <a href="#playground">Demo</a>
       <a href="#insights">Insights</a>
+      <a href="#optimization">Optimization</a>
       <a href="#results">Results</a>
       <a href="#cite">Cite</a>
     </div>
@@ -359,7 +360,7 @@
     <div class="sec-head reveal">
       <span class="sec-tag">INSIGHTS</span>
       <h2>Findings</h2>
-      <p class="lead">23 benchmarks, seven backbones, component ablations, and a failure analysis of 9,980 trajectories.</p>
+      <p class="lead">23 benchmarks, seven backbones, and component ablations.</p>
     </div>
 
     <!-- 1 -->
@@ -441,23 +442,70 @@
       </div>
     </div>
 
-    <!-- 5 -->
-    <div class="insight">
-      <div class="ins-text reveal">
-        <div class="ins-num">INSIGHT 05</div>
-        <h3>Failure analysis guides specialization</h3>
-        <p>Kimi K3 critiques 9,980 failed Qwen3-VL-8B trajectories (92% agreement with human labels on 100 samples). Primary causes differ by domain: incorrect tool output accounts for 72% of counting and grounding failures, and an omitted tool call for 49% of search failures. Unusable or ignored correct tool outputs account for 2–8%.</p>
-        <p>Harness search improves ERQA and RealWorldQA (+4.1, +3.7), where harness-text remedies dominate. Tool generation improves SparBench and FREAK-VQA (+8.2, +4.5), where task-specific-tool remedies dominate. Neither updates model weights.</p>
-      </div>
-      <div class="card ins-fig reveal">
-        <div class="chart-kicker">Qwen3-VL-8B · four datasets with contrasting remedy profiles</div>
-        <div class="legend">
-          <span><i style="background:var(--cap)"></i>New task-specific tools (A+B+C)</span>
-          <span><i style="background:var(--ev)"></i>Harness text (Y)</span>
-          <span><i style="background:var(--s-base)"></i>No remedy (Z)</span>
+  </div>
+</section>
+
+<!-- ============ harness optimization ============ -->
+<section class="block" id="optimization">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="sec-tag">HARNESS OPTIMIZATION</span>
+      <h2>Specializing the harness to a domain</h2>
+      <p class="lead">Failures on the target data indicate which part of the harness to change. A coding agent then edits the harness text or builds task-specific tools from existing capabilities. Model weights are not updated.</p>
+    </div>
+
+    <ol class="op-flow reveal">
+      <li><span class="op-n">1</span><div><h4>Diagnose</h4><p>A critic (Kimi K3) reads each failed trajectory with its images and toolbox, and assigns one root cause and one fix type: new tool code, text only, or none. 9,980 Qwen3-VL-8B failures; 92% agreement with human labels on 100 samples.</p></div></li>
+      <li><span class="op-n">2</span><div><h4>Route</h4><p>Cause and fix type map to a remedy channel: <b class="ch-t">A</b> evidence interpretation, <b class="ch-t">B</b> output verification and refinement, <b class="ch-t">C</b> tool composition, <b class="ch-y">Y</b> harness text, <b class="ch-z">Z</b> no remedy.</p></div></li>
+      <li><span class="op-n">3</span><div><h4>Optimize</h4><p>Channels A–C call for tool generation, Y for harness search. Both use a coding agent (Codex, GPT-5.5) on a scratch copy of the harness; candidates are scored by running the Qwen3-VL-8B orchestrator with the benchmark judge.</p></div></li>
+    </ol>
+
+    <div class="card op-fig reveal">
+      <div class="chart-title">Failure causes and remedy channels by domain <span class="chart-sub">Qwen3-VL-8B · 9,980 critiqued failures · domain = mean over its datasets</span></div>
+      <div class="chart" id="failDomain" role="img" aria-label="Stacked bars of failure causes and remedy channels for four task domains"></div>
+    </div>
+
+    <div class="op-wf">
+      <article class="card op-card reveal">
+        <header><span class="op-tag y">Y · harness text</span><h3>Harness search</h3></header>
+        <p>Edits the system prompt and tool-use policy, tool descriptions, and evidence-rendering templates. Each round, an analysis agent inspects failures of every harness in the pool, a proposer writes text-only patches, and patches and their combinations are evaluated; the best states survive to the next round.</p>
+        <dl class="op-params"><div><dt>pool</dt><dd>N = 4</dd></div><div><dt>patches / parent</dt><dd>M = 4</dd></div><div><dt>max combined</dt><dd>K = 4</dd></div><div><dt>samples / item</dt><dd>S = 3</dd></div><div><dt>rounds</dt><dd>3</dd></div></dl>
+        <details class="op-more"><summary>Example: edits in a top-scoring RealWorldQA harness</summary>
+          <p class="op-src">Additions only, from three search rounds.</p>
+          <blockquote><b>Visual Grounding output template</b> (appended after the list of boxes). Treat these as candidate regions, not a verified final count. Before answering count, presence, or relation questions, compare each candidate with the original image and remove duplicates, mirror/reflection copies, partial regions, off-target detections, and objects that fail the question's location or context constraint.</blockquote>
+          <blockquote><b>System prompt, final answer.</b> For multiple-choice questions, before writing <code>&lt;answer&gt;</code>, explicitly bind your visual conclusion to the option table. The option letter and option text you output must match each other and match the conclusion in your thinking; if your conclusion is not one of the options, re-check the evidence instead of choosing a nearby option.</blockquote>
+        </details>
+      </article>
+      <article class="card op-card reveal">
+        <header><span class="op-tag t">A–C · new tools</span><h3>Tool generation</h3></header>
+        <p>Groups failures into candidate tool directions. A tool-writing agent implements each direction by composing existing capabilities and revises it over several rounds using a diagnosis of how the orchestrator used the tool. A tool is accepted only if it recovers failures with positive net lift, including on a held-out half the agent never saw.</p>
+        <dl class="op-params"><div><dt>directions</dt><dd>D ≤ 5</dd></div><div><dt>forge rounds</dt><dd>T = 5</dd></div><div><dt>gate</dt><dd>≥ 2 recovered, net lift &gt; 0; held-out ≥ 1</dd></div></dl>
+        <div class="op-tools">
+          <table>
+            <thead><tr><th>Accepted tool</th><th>What it does</th><th>Gate</th><th>Held-out</th></tr></thead>
+            <tbody>
+              <tr class="g"><td colspan="4">From SparBench failures</td></tr>
+              <tr><td><code>image_points_to_metric_3d</code></td><td>Lifts image points or box centers into camera coordinates using depth and inverse intrinsics; returns pairwise and observer distances in meters.</td><td>30/50</td><td>13/25</td></tr>
+              <tr><td><code>camera_center_image_projector</code></td><td>Estimates camera poses across views and projects another view's camera center into a reference image.</td><td>40/50</td><td>18/25</td></tr>
+              <tr class="g"><td colspan="4">From FREAK-MCQ failures</td></tr>
+              <tr><td><code>target_visibility_absence_verifier</code></td><td>Checks whether a small object or part is actually visible; returns visible or not visible instead of a raw detection.</td><td>12/30</td><td>7/15</td></tr>
+              <tr><td><code>object_layout_relation_resolver</code></td><td>Converts grounded boxes into explicit layout relations: sides, neighbors, row order, counts per side, symmetry.</td><td>4/30</td><td>3/15</td></tr>
+              <tr><td><code>visible_part_count_verifier</code></td><td>Merges duplicate boxes of repeated parts and rejects off-target ones; returns the visible count.</td><td>2/30</td><td>1/15</td></tr>
+            </tbody>
+          </table>
+          <p class="op-src">Gate: recovered failures / examples for that direction. Held-out: recovered / examples withheld from the tool-writing agent. Recovery on selected failures, not benchmark accuracy.</p>
         </div>
-        <div class="chart" id="remedy" role="img" aria-label="Stacked bars of remedy channel shares and diverging bars of gains from harness search and tool generation"></div>
+      </article>
+    </div>
+
+    <div class="card op-fig reveal">
+      <div class="chart-title">Remedy profile predicts which workflow helps <span class="chart-sub">Qwen3-VL-8B · four datasets with contrasting remedy profiles · gains over the unoptimized harness</span></div>
+      <div class="legend">
+        <span><i style="background:var(--cap)"></i>New task-specific tools (A+B+C)</span>
+        <span><i style="background:var(--ev)"></i>Harness text (Y)</span>
+        <span><i style="background:var(--s-base)"></i>No remedy (Z)</span>
       </div>
+      <div class="chart" id="remedy" role="img" aria-label="Stacked bars of remedy channel shares and diverging bars of gains from harness search and tool generation"></div>
     </div>
   </div>
 </section>
@@ -526,9 +574,9 @@
 </footer>
 
 <div class="tip" id="tip"></div>
-<script src="static/js/data.js?v=10"></script>
+<script src="static/js/data.js?v=11"></script>
 <script src="static/js/examples.js?v=9"></script>
-<script src="static/js/main.js?v=25"></script>
+<script src="static/js/main.js?v=26"></script>
 <script src="static/js/player.js?v=6"></script>
 <script type="module" src="static/js/demo.js?v=6"></script>
 </body>
