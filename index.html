@@ -12,7 +12,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="static/css/style.css?v=63">
+  <link rel="stylesheet" href="static/css/style.css?v=64">
   <script>
     try { var t = localStorage.getItem('ovh-theme'); if (t) document.documentElement.setAttribute('data-theme', t); } catch (e) {}
   </script>
@@ -375,6 +375,19 @@
       </div>
     </div>
 
+    <div class="insight wide">
+      <div class="ins-text reveal">
+        <h3>Tool usage by domain</h3>
+        <p>Share of tool calls in each domain, per backbone, over all evaluated questions. Micro counts every call; per-instance counts each tool at most once per question. Totals are given below each panel.</p>
+      </div>
+      <div class="card ins-fig tm-card reveal">
+        <div class="fig-controls"><div class="seg" id="tmModel"></div><div class="seg" id="tmMode"></div></div>
+        <div class="tm-pies" id="tmPies" role="img" aria-label="Pie charts of tool-call shares per domain"></div>
+        <div class="tm-legend" id="tmLegend"></div>
+        <p class="abl-cap">Source: paper Fig. 7 (appendix) telemetry. Micro view reproduces the figure.</p>
+      </div>
+    </div>
+
   </div>
 </section>
 
@@ -451,9 +464,9 @@
 </footer>
 
 <div class="tip" id="tip"></div>
-<script src="static/js/data.js?v=13"></script>
+<script src="static/js/data.js?v=14"></script>
 <script src="static/js/examples.js?v=9"></script>
-<script src="static/js/main.js?v=36"></script>
+<script src="static/js/main.js?v=37"></script>
 <script src="static/js/player.js?v=14"></script>
 <script type="module" src="static/js/demo.js?v=9"></script>
 </body>

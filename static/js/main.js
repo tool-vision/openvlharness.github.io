@@ -384,6 +384,48 @@
   });
   segmented($('#hcSeg'), D.HARNESS.map(h => [h.id, h.label]), hcSel, v => { hcSel = v; hcChart.draw(true); });
 
+  /* ================================================================ TOOL USAGE BY DOMAIN (paper Fig. 7) */
+  (function toolMix() {
+    const box = $('#tmPies'); if (!box || !D.TOOL_MIX) return;
+    const T = D.TOOL_MIX_TOOLS;
+    const LBL = { Visual_Grounding: 'Visual Grounding', Zoom_In: 'Zoom-in', OCR: 'OCR', Depth_Estimation: 'Depth', Camera_Trajectory: 'Camera Traj.', Text_Search: 'Text Search', Image_Search: 'Image Search', Webpage_Visit: 'Webpage Visit', Python_Coding_Agent: 'Coding Agent' };
+    // paper colors: perception blues, web oranges, coding purple
+    const COL = { Visual_Grounding: '#1F6F8B', Zoom_In: '#3E8AA3', OCR: '#66A7BB', Depth_Estimation: '#93C3D1', Camera_Trajectory: '#BFDCE5', Text_Search: '#B4530A', Image_Search: '#CE7327', Webpage_Visit: '#E19A5C', Python_Coding_Agent: '#6A2E7A' };
+    const DOMS = [['Counting and Grounding', 'Counting & Grounding'], ['Visual Search and Deep Research', 'Search & Deep Research'], ['General VQA and Hallucination', 'General VQA'], ['Spatial Understanding', 'Spatial']];
+    const MODELS = [['8B', 'Qwen3-VL-8B'], ['32B', 'Qwen3-VL-32B'], ['luna', 'GPT-6 Luna'], ['sol', 'GPT-6 Sol']];
+    let model = '8B', mode = 'micro';
+    const fmt = n => n.toLocaleString('en-US');
+    function render() {
+      box.innerHTML = '';
+      DOMS.forEach(([dk, dn]) => {
+        const c = D.TOOL_MIX[model][dk], v = c[mode], tot = v.reduce((a, b) => a + b, 0);
+        const fig = H('figure', { class: 'tm-pie' });
+        fig.appendChild(H('figcaption', { class: 'tm-t' }, dn));
+        const R = 70, C = 80, svg = S('svg', { viewBox: '0 0 160 160', width: 160, height: 160 }, fig);
+        let a0 = -Math.PI / 2;
+        T.forEach((t, i) => {
+          if (!v[i]) return;
+          const f = v[i] / tot, a1 = a0 + f * 2 * Math.PI;
+          const el = f > 0.9995 ? S('circle', { cx: C, cy: C, r: R, fill: COL[t] }, svg)
+            : S('path', { d: `M${C} ${C} L${(C + R * Math.cos(a0)).toFixed(2)} ${(C + R * Math.sin(a0)).toFixed(2)} A${R} ${R} 0 ${a1 - a0 > Math.PI ? 1 : 0} 1 ${(C + R * Math.cos(a1)).toFixed(2)} ${(C + R * Math.sin(a1)).toFixed(2)}Z`, fill: COL[t] }, svg);
+          el.setAttribute('stroke', 'var(--surface)'); el.setAttribute('stroke-width', '1.2');
+          el.classList.add('tm-w');
+          const pct = (100 * f).toFixed(1);
+          hover(el, mode === 'micro'
+            ? `<b>${LBL[t]}</b><br>${pct}% of calls · ${fmt(v[i])} calls`
+            : `<b>${LBL[t]}</b><br>${pct}% of question–tool pairs<br>used on ${fmt(v[i])} of ${fmt(c.q)} questions (${(100 * v[i] / c.q).toFixed(1)}%)`);
+          a0 = a1;
+        });
+        fig.appendChild(H('div', { class: 'tm-n' }, mode === 'micro' ? `${fmt(tot)} calls` : `${fmt(c.q)} questions`));
+        box.appendChild(fig);
+      });
+    }
+    segmented($('#tmModel'), MODELS, model, v => { model = v; render(); });
+    segmented($('#tmMode'), [['micro', 'Micro — every call'], ['inst', 'Per-instance — once per question']], mode, v => { mode = v; render(); });
+    $('#tmLegend').innerHTML = T.map(t => `<span><i style="background:${COL[t]}"></i>${LBL[t]}</span>`).join('');
+    render();
+  })();
+
   /* ================================================================ ABLATION TABLE (paper Table 2) */
   (function ablationTable() {
     const el = $('#ablTable'); if (!el) return;
