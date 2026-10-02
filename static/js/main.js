@@ -694,10 +694,9 @@
   /* ================================================================ RESULTS TABLE */
   (function table() {
     const NAMES = { Base: 'Base', OT: 'OT', VS: 'VS', CX: 'CX', Ours: 'Ours' };
-    let filter = 'all';
-    const FILTERS = { all: ['q8', 'q32', 'luna', 'sol', 'gpt5', 'kimi'], qwen: ['q8', 'q32'], gpt6: ['luna', 'sol'], app: ['gpt5', 'kimi'] };
+    const ORDER = ['q8', 'q32', 'gpt5', 'kimi', 'luna', 'sol'];
     function render() {
-      const groups = D.GROUPS.filter(g => FILTERS[filter].includes(g.id));
+      const groups = ORDER.map(id => D.GROUPS.find(g => g.id === id));
       let h = '<thead><tr class="grp"><th class="first" rowspan="2" style="vertical-align:bottom">Dataset</th>';
       groups.forEach(g => h += `<th colspan="${g.methods.length}" class="gstart">${g.name}</th>`);
       h += '</tr><tr class="sub">';
@@ -726,7 +725,6 @@
       h += rowHtml('Average', 'avg') + '</tbody>';
       $('#resTable').innerHTML = h;
     }
-    segmented($('#tblSeg'), [['all', 'All backbones'], ['qwen', 'Qwen3-VL'], ['gpt6', 'GPT-6'], ['app', 'GPT-5 · Kimi K3']], filter, v => { filter = v; render(); });
     render();
   })();
 
