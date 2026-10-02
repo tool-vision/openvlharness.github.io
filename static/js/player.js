@@ -245,7 +245,9 @@
   }
   function markSteps() {
     $$('button', R.steps).forEach((b, k) => { b.classList.toggle('done', k < cur); b.classList.toggle('cur', k === cur); });
-    const c = $('button.cur', R.steps); if (c) c.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+    // keep the current step visible by scrolling the step row only, never the page
+    const c = $('button.cur', R.steps);
+    if (c) { const sr = R.steps, l = c.offsetLeft - sr.offsetLeft; if (l < sr.scrollLeft || l + c.offsetWidth > sr.scrollLeft + sr.clientWidth) sr.scrollLeft = l - sr.clientWidth / 2 + c.offsetWidth / 2; }
   }
   function callText(s) {
     const a = s.args || {};
@@ -446,17 +448,17 @@
   }
   function openMenu(o) {
     R.speed.hidden = !o; sBtn.setAttribute('aria-expanded', o);
-    if (o) { const cur = $('li[aria-selected="true"]', R.speed); (cur || R.speed).focus(); }
+    if (o) { const cur = $('li[aria-selected="true"]', R.speed); (cur || R.speed).focus({ preventScroll: true }); }
   }
   if (R.speed && sBtn) {
     R.speed.innerHTML = SPEEDS.map(v => `<li role="option" tabindex="-1" data-v="${v}" aria-selected="${v === 1}">${v}×${v === 1 ? '<span>normal</span>' : ''}</li>`).join('');
     sBtn.addEventListener('click', () => openMenu(R.speed.hidden));
-    R.speed.addEventListener('click', ev => { const li = ev.target.closest('li'); if (li) { setSpeed(+li.dataset.v); openMenu(false); sBtn.focus(); } });
+    R.speed.addEventListener('click', ev => { const li = ev.target.closest('li'); if (li) { setSpeed(+li.dataset.v); openMenu(false); sBtn.focus({ preventScroll: true }); } });
     R.speed.addEventListener('keydown', ev => {
       const items = $$('li', R.speed), k = items.indexOf(document.activeElement);
-      if (ev.key === 'ArrowDown' || ev.key === 'ArrowUp') { items[Math.max(0, Math.min(items.length - 1, k + (ev.key === 'ArrowDown' ? 1 : -1)))].focus(); ev.preventDefault(); }
-      else if (ev.key === 'Enter' || ev.key === ' ') { if (k >= 0) { setSpeed(+items[k].dataset.v); openMenu(false); sBtn.focus(); } ev.preventDefault(); }
-      else if (ev.key === 'Escape' || ev.key === 'Tab') { openMenu(false); sBtn.focus(); }
+      if (ev.key === 'ArrowDown' || ev.key === 'ArrowUp') { items[Math.max(0, Math.min(items.length - 1, k + (ev.key === 'ArrowDown' ? 1 : -1)))].focus({ preventScroll: true }); ev.preventDefault(); }
+      else if (ev.key === 'Enter' || ev.key === ' ') { if (k >= 0) { setSpeed(+items[k].dataset.v); openMenu(false); sBtn.focus({ preventScroll: true }); } ev.preventDefault(); }
+      else if (ev.key === 'Escape' || ev.key === 'Tab') { openMenu(false); sBtn.focus({ preventScroll: true }); }
     });
     document.addEventListener('click', ev => { if (!R.speed.hidden && !ev.target.closest('#mfSpeedDd')) openMenu(false); });
   }
@@ -467,7 +469,9 @@
     ex = e; P = prep(e);
     renderStrip(); renderHead(); renderUser(); renderSteps();
     const chip = $(`.tp-chip[data-id="${e.id}"]`, R.strip);
-    if (chip) { const sl = R.strip; sl.scrollTo({ left: chip.offsetLeft - sl.clientWidth / 2 + chip.clientWidth / 2, behavior: REDUCED ? 'auto' : 'smooth' }); }
+    // only the strip scrolls (never the page), and only when autoplay moves to an off-screen chip
+    if (chip && opt.keepTour) { const sl = R.strip, l = chip.offsetLeft - sl.offsetLeft; if (l < sl.scrollLeft || l + chip.offsetWidth > sl.scrollLeft + sl.clientWidth) sl.scrollTo({ left: l - 8, behavior: REDUCED ? 'auto' : 'smooth' }); }
+    window.dispatchEvent(new CustomEvent('ovh:load', { detail: e.id }));
     playFrom(0);
   }
 
@@ -505,9 +509,9 @@
     XT.textContent = title; XB.innerHTML = body; XB.scrollTop = 0;
     xLast = document.activeElement;
     X.hidden = false; requestAnimationFrame(() => X.classList.add('show'));
-    $('[data-close].ctl', X).focus();
+    $('[data-close].ctl', X).focus({ preventScroll: true });
   }
-  function closeX() { X.classList.remove('show'); setTimeout(() => { X.hidden = true; }, 180); if (xLast) xLast.focus(); }
+  function closeX() { X.classList.remove('show'); setTimeout(() => { X.hidden = true; }, 180); if (xLast) xLast.focus({ preventScroll: true }); }
   fig.addEventListener('click', ev => {
     const z = ev.target.closest('[data-zoom]');
     if (z && !ev.target.closest('.xp')) { const lb = $('#lightbox'); if (lb) { $('img', lb).src = z.src; $('.lb-cap', lb).textContent = z.alt; lb.hidden = false; } return; }
@@ -521,7 +525,8 @@
   document.addEventListener('keydown', ev => { if (ev.key === 'Escape' && !X.hidden && $('#lightbox').hidden) closeX(); });
 
   /* ------------------------------------------------------------ boot */
-  new IntersectionObserver(es => es.forEach(e => { visible = e.isIntersecting; }), { threshold: 0.3 }).observe(fig);
+  // 'visible' = some part of the figure is within the middle 60% of the viewport (works for figures taller than the screen)
+  new IntersectionObserver(es => es.forEach(e => { visible = e.isIntersecting; }), { threshold: 0, rootMargin: '-20% 0px -20% 0px' }).observe(fig);
   if (!playing) $('use', R.play).setAttribute('href', '#i-play');
   const start = (new URLSearchParams(location.search).get('ex')) || 'ex17';
   window.OVHPlayer = {

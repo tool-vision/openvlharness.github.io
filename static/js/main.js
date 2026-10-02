@@ -573,9 +573,19 @@
     $('#exgGrid').addEventListener('click', e => {
       const c = e.target.closest('.exg-card'); if (!c) return;
       const ex = shown[+c.dataset.i];
-      if (window.OVHPlayer) { window.OVHPlayer.load(ex.id); $('#method').scrollIntoView({ behavior: REDUCED ? 'auto' : 'smooth' }); }
+      if (window.OVHPlayer) {
+        // keep the clicked card where it is on screen, even if the figure above changes height
+        const before = c.getBoundingClientRect().top;
+        window.OVHPlayer.load(ex.id);
+        const fix = () => { const d = c.getBoundingClientRect().top - before; if (Math.abs(d) > 1) window.scrollBy(0, d); };
+        fix(); requestAnimationFrame(fix);
+      }
       else open(+c.dataset.i);
     });
+    const markPlaying = id => $$('.exg-card', $('#exgGrid')).forEach(c => c.classList.toggle('playing', shown[+c.dataset.i] && shown[+c.dataset.i].id === id));
+    window.addEventListener('ovh:load', e => markPlaying(e.detail));
+    const _render = render;
+    render = function () { _render(); if (window.OVHPlayer) markPlaying(window.OVHPlayer.current()); };
     window.OVHGallery = { openById: id => { let k = shown.findIndex(x => x.id === id); if (k < 0) { shown = EX; k = EX.findIndex(x => x.id === id); } open(k); } };
 
     // viewer
@@ -629,14 +639,14 @@
         exv.hidden = false;
         document.documentElement.classList.add('modal-open');
         requestAnimationFrame(() => exv.classList.add('show'));
-        $('[data-close].ctl', exv).focus();
+        $('[data-close].ctl', exv).focus({ preventScroll: true });
       }
     }
     function close() {
       exv.classList.remove('show');
       document.documentElement.classList.remove('modal-open');
       setTimeout(() => { exv.hidden = true; }, 200);
-      if (lastFocus) lastFocus.focus();
+      if (lastFocus) lastFocus.focus({ preventScroll: true });
     }
     exv.addEventListener('click', e => {
       if (e.target.closest('[data-close]')) close();
