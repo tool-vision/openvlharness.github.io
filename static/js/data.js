@@ -67,10 +67,10 @@ Average|35.99 33.31 32.15 47.14|40.10 38.61 37.66 52.51|43.18 42.78 41.46 55.76|
   // Table 12: GPT-6 Luna, 12 datasets, reasoning effort medium/high/xhigh/max
   const EFFORTS = ['medium', 'high', 'xhigh', 'max'];
   const EFFORT = [
-    { key: 'base', name: 'Base', color: '--s-base', score: [49.65, 50.62, 55.31, 58.31], cost: [0.62, 0.89, 1.16, 2.92] },
-    { key: 'codex', name: 'Codex', color: '--s-codex', score: [48.06, 52.96, 55.77, 57.43], cost: [1.33, 1.47, 1.62, 2.48] },
-    { key: 'vs', name: 'Visual Sketchpad', color: '--s-vs', score: [55.62, 55.49, 56.36, 58.47], cost: [1.78, 2.09, 2.45, 4.28] },
-    { key: 'ours', name: 'OpenVLHarness', color: '--s-ours', score: [62.89, 66.57, 67.00, 68.63], cost: [0.94, 1.14, 1.39, 2.45] },
+    { key: 'base', name: 'GPT-6 Luna', color: '--s-base', score: [49.65, 50.62, 55.31, 58.31], cost: [0.62, 0.89, 1.16, 2.92] },
+    { key: 'codex', name: '+ Codex', color: '--s-codex', score: [48.06, 52.96, 55.77, 57.43], cost: [1.33, 1.47, 1.62, 2.48] },
+    { key: 'vs', name: '+ Visual Sketchpad', color: '--s-vs', score: [55.62, 55.49, 56.36, 58.47], cost: [1.78, 2.09, 2.45, 4.28] },
+    { key: 'ours', name: '+ OpenVLHarness', color: '--s-ours', score: [62.89, 66.57, 67.00, 68.63], cost: [0.94, 1.14, 1.39, 2.45] },
   ];
 
   // Harness comparisons (Table 1 averages + Table 8)

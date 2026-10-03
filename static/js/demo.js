@@ -28,7 +28,7 @@ const SAMPLES = (window.OVH_EXAMPLES || []).filter(e => e.inputs.length <= MAX_I
   web: e.tags.some(t => SEARCH_TAGS.includes(t)), n: e.inputs.length,
 }));
 
-const OPENAI_MODEL = 'gpt-6-luna';
+const OPENAI_MODEL = 'gpt-6.1-sol';
 const S = { client: null, base: null, files: [], provider: 'OpenAI', job: null, running: false };
 const R = {
   status: $('#dmStatus'), form: $('#dmForm'), drop: $('#dmDrop'), input: $('#dmFiles'), thumbs: $('#dmThumbs'), samples: $('#dmSamples'),
