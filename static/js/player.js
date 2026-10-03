@@ -283,7 +283,8 @@
     const set = () => { if (im.naturalWidth) st.style.aspectRatio = `${im.naturalWidth} / ${im.naturalHeight}`; };
     im.complete ? set() : im.addEventListener('load', set, { once: true });
   }
-  async function evidence(s, r, fast) {
+  // shown(): called the moment the step's final output is visible, so memory can register it in sync
+  async function evidence(s, r, fast, shown = () => {}) {
     const b = R.evBody;
     let out = s.out;
     if (s.cap === 'grounding') { const k = out.indexOf('are:'); if (k > 0) out = out.slice(0, k + 4) + ' […]'; }
@@ -300,6 +301,7 @@
       if (s.code) await typeText(src, s.code, { r, maxMs: fast ? 0 : 3000, cps: 1400, render: hlPy, scroll: src });
       if (!fast && !(await sleep(250, r))) return;
       $('.term .st', b).textContent = s.err ? '✗ failed' : '✓ exit 0';
+      shown();
       await typeText(term, clip(s.out, 400), { r, maxMs: fast ? 0 : 700, cps: 400 });
       return;
     }
@@ -312,6 +314,7 @@
       const st = $('.stage', b); fitStage(st);
       if (fast) st.classList.add('done', 'drawn');
       else { requestAnimationFrame(() => st.classList.add('drawn')); if (!(await sleep(boxes.length * step + 220 + 450, r))) return; st.classList.add('done'); }
+      shown();
       await typed($('pre', b), 200);
       return;
     }
@@ -319,6 +322,7 @@
       b.innerHTML = `<div class="ev2">${stage(s.srcSrc, `<img class="after wipe" src="${img.src}" alt=""><i class="scan"></i>`)}<div class="ev-txt">${handle}<div class="count">metric depth · <b>${esc(s.binds[0][0])}</b></div><pre></pre></div></div>`;
       const st = $('.stage', b); fitStage(st);
       if (fast) st.classList.add('done'); else { requestAnimationFrame(() => st.classList.add('go')); if (!(await sleep(1000, r))) return; st.classList.add('done'); }
+      shown();
       await typed($('pre', b), 200);
       return;
     }
@@ -326,7 +330,7 @@
       const [x1, y1, x2, y2] = s.args.coords.map(v => v / 10);
       b.innerHTML = `<div class="ev2">${stage(s.srcSrc, `<i class="zr" style="left:${x1}%;top:${y1}%;width:${x2 - x1}%;height:${y2 - y1}%"></i><img class="after zoomed" src="${img.src}" alt="" style="--x:${x1}%;--y:${y1}%;--w:${x2 - x1}%;--h:${y2 - y1}%">`)}<div class="ev-txt">${handle}<div class="count">crop [${s.args.coords.join(', ')}]</div><pre></pre></div></div>`;
       const st = $('.stage', b); fitStage(st);
-      if (fast) st.classList.add('drawn', 'done'); else { requestAnimationFrame(() => st.classList.add('drawn')); if (!(await sleep(650, r))) return; st.classList.add('done'); if (!(await sleep(500, r))) return; }
+      if (fast) { st.classList.add('drawn', 'done'); shown(); } else { requestAnimationFrame(() => st.classList.add('drawn')); if (!(await sleep(650, r))) return; st.classList.add('done'); shown(); if (!(await sleep(500, r))) return; }
       await typed($('pre', b), 160);
       return;
     }
@@ -335,6 +339,7 @@
       b.innerHTML = `<div class="ev2">${stage(null, `<div class="cam-in">${ins.map((im, k) => `<img src="${im.src}" alt="" style="--k:${k}">`).join('')}</div><img class="after plot" src="${img.src}" alt="">`)}<div class="ev-txt">${handle}<div class="count">${ins.length} camera poses · <b>camera_trajectory_result</b></div><pre></pre></div></div>`;
       const st = $('.stage', b); st.style.aspectRatio = '4 / 3';
       if (fast) st.classList.add('done'); else { requestAnimationFrame(() => st.classList.add('go')); if (!(await sleep(1100, r))) return; st.classList.add('done'); }
+      shown();
       await typed($('pre', b), 260, 1100);
       return;
     }
@@ -344,6 +349,7 @@
       : s.srcSrc ? stage(s.srcSrc) : '';
     b.innerHTML = `<div class="ev2${left ? '' : ' txt-only'}">${left}<div class="ev-txt">${s.web.length ? `<div class="count">${s.web.slice(0, 3).map(w => `<span class="url">${w}</span>`).join(' ')}</div>` : ''}<pre></pre></div></div>`;
     const st = $('.stage', b); if (st) { fitStage(st); st.classList.add('done'); }
+    shown();
     await typed($('pre', b), left ? 260 : 420, 1300);
   }
 
@@ -406,11 +412,17 @@
     if (!(await sleep(550, r))) return;
     ['#flowDown', '#flowDown2'].forEach(id => $(id).classList.remove('go')); $('#flowUp').classList.add('go'); $('#flowUp2').classList.add('go');
     R.call.classList.remove('lit'); R.ev.classList.add('lit-a');
-    await evidence(s, r, false);
+    // memory registers the output the moment the evidence panel shows it (e.g. the masked image after all boxes)
+    let stored = false;
+    const store = () => {
+      if (stored || !alive(r)) return; stored = true;
+      $('#ioStore').classList.add('on'); R.mem.classList.add('lit-v'); R.env.classList.add('lit-v');
+      renderMem(i, i - 1);
+    };
+    await evidence(s, r, false, store);
     if (!alive(r)) return;
+    store();
     $('#flowUp').classList.remove('go'); $('#flowUp2').classList.remove('go'); R.orch.classList.remove('thinking');
-    $('#ioStore').classList.add('on'); R.mem.classList.add('lit-v'); R.env.classList.add('lit-v');
-    renderMem(i, i - 1);
   }
   async function playFrom(i) {
     const r = ++run;
@@ -501,7 +513,7 @@
       title = s ? `Tool call · ${s.tool}` : 'Tool call';
       body = s ? `<pre class="x-pre">${esc(JSON.stringify({ name: s.tool, arguments: s.args }, null, 2))}</pre>` : '<p class="ev-empty">No tool call at this step.</p>';
     } else if (kind === 'ev') {
-      title = s ? `Rendered evidence · ${(CAP[s.cap] || { n: s.tool }).n}` : 'Rendered evidence';
+      title = s ? `Processed tool outputs · ${(CAP[s.cap] || { n: s.tool }).n}` : 'Processed tool outputs';
       body = s ? `${s.imgs.length ? `<div class="x-imgs">${s.imgs.map(im => thumbHTML(im, true)).join('')}</div>` : ''}
         ${s.code ? `<div class="x-lbl">Generated program · ${s.code.split('\n').length} lines</div><pre class="x-pre code">${hlPy(s.code)}</pre>` : ''}
         <div class="x-lbl">${s.code ? 'Execution output' : 'Text returned to the orchestrator'}</div><pre class="x-pre">${esc(s.out)}</pre>` : '<p class="ev-empty">No evidence at this step.</p>';
@@ -578,11 +590,11 @@
     // environment update -> orchestrator; memory -> environment update
     arrow('e2o', 'c-mem', E.l - pad, mid(E.t, E.b), O.r + pad, mid(E.t, E.b));
     arrow('m2e', 'c-mem', M.l - pad, mid(E.t, E.b), E.r + pad, mid(E.t, E.b));
-    // orchestrator -> tool call; rendered evidence -> orchestrator (x within both boxes)
+    // orchestrator -> tool call; processed outputs -> orchestrator (x within both boxes)
     const xd = mid(Math.max(O.l, C.l), Math.min(O.r, C.r)), xu = mid(Math.max(O.l, V.l), Math.min(O.r, V.r));
     arrow('o2c', 'c-cap', xd, O.b + pad, xd, C.t - pad);
     arrow('v2o', 'c-ev', xu, V.t - pad, xu, O.b + pad);
-    // tool call -> capability layer; capability layer -> rendered evidence
+    // tool call -> capability layer; capability layer -> processed outputs
     arrow('c2l', 'c-cap', C.cx, C.b + pad, C.cx, L.t - pad);
     arrow('l2v', 'c-ev', V.cx, L.t - pad, V.cx, V.b + pad);
     // capability layer <-> models & services
