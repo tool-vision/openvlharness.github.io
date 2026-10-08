@@ -40,6 +40,9 @@ function setStatus(kind, html) { R.status.dataset.k = kind; $('.txt', R.status).
 
 /* ---------------------------------------------------------------- connection */
 async function discover() {
+  // ?demo_server=<url> points the page at another backend (e.g. a local test server)
+  const override = new URLSearchParams(location.search).get('demo_server');
+  if (override && /^https?:\/\/[^\s]+$/.test(override)) return override.replace(/\/+$/, '');
   const r = await fetch(SPACE_PAGE, { cache: 'no-store' });
   const m = (await r.text()).match(/https:\/\/[a-z0-9-]+\.trycloudflare\.com/);
   if (!m) throw new Error('no server URL on the Space page');

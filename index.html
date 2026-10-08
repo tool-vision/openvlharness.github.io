@@ -279,14 +279,14 @@
   <div class="wrap">
     <div class="sec-head reveal">
       <h2>Interactive demo</h2>
-      <p class="lead">The agent loop and tools run on our server; the orchestrator is a user-supplied model (OpenAI, or an OpenAI-compatible endpoint with tool calling).</p>
+      <p class="lead">The agent loop and perception tools run on our server; your model (OpenAI, or an OpenAI-compatible endpoint with tool calling) orchestrates, writes the coding tool's Python and summarizes web results.</p>
     </div>
     <div class="dm reveal" id="dm">
       <div class="dm-status" id="dmStatus"><span class="dot"></span><span class="txt">Connecting to the demo server…</span></div>
       <div class="dm-grid">
         <form class="card dm-setup" id="dmForm" autocomplete="off">
           <div class="dm-f">
-            <label class="dm-l" for="dmFiles">Images <span>up to 4 · 10 MB each</span></label>
+            <label class="dm-l" for="dmFiles">Images <span>up to 4 · 10 MB each · resized to 1536 px</span></label>
             <label class="dm-drop" id="dmDrop" for="dmFiles"><input type="file" id="dmFiles" accept="image/*" multiple hidden><span>Drop images here or click to choose</span></label>
             <div class="dm-thumbs" id="dmThumbs"></div>
             <div class="dm-samples"><span class="dm-l2">Samples <em>web = requires a Serper key</em></span><div id="dmSamples"></div></div>
@@ -480,6 +480,6 @@
 <script src="static/js/examples.js?v=10"></script>
 <script src="static/js/main.js?v=42"></script>
 <script src="static/js/player.js?v=20"></script>
-<script type="module" src="static/js/demo.js?v=13"></script>
+<script type="module" src="static/js/demo.js?v=14"></script>
 </body>
 </html>

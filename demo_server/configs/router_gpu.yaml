@@ -1,0 +1,50 @@
+# Shared demo router: GPU perception tools (all on GPU 7) and zoom.
+# Search and coding run inside the demo app per visitor, so they are not selected here.
+# services.models is required by the configuration format; the router never calls it
+# because no model-backed tool is selected.
+agent_name: MainAgent
+agent_config_version: demo_router_v1
+agent:
+  model_service: orchestrator
+memory:
+  emit_policy: always
+  modules:
+  - name: image
+  - name: tool_context
+  - name: url
+capabilities:
+  registries:
+  - paper
+  tools:
+    grounding:
+      backend: sam3_segment
+    ocr:
+      backend: ocr
+    depth:
+      backend: depth_estimation
+    camera_pose:
+      backend: camera_trajectory
+    zoom:
+      backend: zoom_in_image_by_bbox
+services:
+  client:
+    base_url: http://127.0.0.1:8101
+  server:
+    host: 127.0.0.1
+    port: 8101
+    registration: configured_only
+  tools:
+    sam3_segment:
+      server_url: http://127.0.0.1:8086
+    ocr:
+      server_url: http://127.0.0.1:8085
+    depth_estimation:
+      server_url: http://127.0.0.1:8087
+    camera_trajectory:
+      server_url: http://127.0.0.1:8087
+    zoom_in_image_by_bbox: {}
+  models:
+    orchestrator:
+      alias: qwen3-vl-8b-instruct
+      base: http://127.0.0.1:8222/v1
+      key: empty
