@@ -21,3 +21,5 @@ All chart numbers live in `static/js/data.js` (transcribed from Tables 1, 2, 6, 
 After editing CSS/JS, bump the `?v=` query in `index.html` so browsers pick up the change.
 
 Live demo: `static/js/demo.js` is the client; its backend lives in [`demo_server/`](demo_server/README.md) (Gradio app on the released `openvlharness` package, GPU tool budget, launch scripts). Append `?demo_server=<url>` to the page URL to test against another backend.
+
+Hugging Face Space: `python scripts/build_space.py <tunnel-url> <out-dir>` builds the Space page from this page's demo section (same markup, `demo.js`, styles and samples) and records the demo server URL that both pages read; upload `<out-dir>` to the Space after each tunnel restart.
